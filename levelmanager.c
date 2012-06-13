@@ -5,17 +5,20 @@
 */
 int enter_edit_mode()
 {
-	POINT click;
+	POINT click, info;
 	SDL_Rect position;
 	SDL_Event event;
 	position.x=position.y=0;
-	int type=-1, ok=1;
+	int type=0, ok=1, save=0, load=0, delete=0;
+	int tempsPrecedent=0, tempsActuel=0;
 	SDL_ShowCursor(SDL_ENABLE);
 	SDL_EnableKeyRepeat(0, 10);
 	init_blocks();
 	init_level();
 	load_gui();
 	SDL_Flip(screen);
+	info.x=WIDTH+10;
+	info.y=HEIGHT-100;
 	while(ok)
 	{
 		while(SDL_PollEvent(&event))
@@ -64,7 +67,8 @@ int enter_edit_mode()
 					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
 						save_level();
-						fprintf(stdout, "Level saved successfully!\n");
+						save=1; load=0; delete=0;
+						tempsPrecedent = SDL_GetTicks();
 					}
 					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
 					{
@@ -72,8 +76,8 @@ int enter_edit_mode()
 						SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 						load_gui();
 						draw_level();
-						SDL_Flip(screen);
-						fprintf(stdout, "Last level loaded successfully!\n");
+						load=1; save=0; delete=0;
+						tempsPrecedent = SDL_GetTicks();
 					}
 					else if (event.key.keysym.sym == SDLK_r) //'r' --> supprime tout
 					{
@@ -81,8 +85,8 @@ int enter_edit_mode()
 						init_level();
 						load_gui();
 						draw_level();
-						SDL_Flip(screen);
-						fprintf(stdout, "Level destroyed successfully!\n");
+						delete=1; save=0; load=0;
+						tempsPrecedent = SDL_GetTicks();
 					}
 					else if (event.key.keysym.sym == SDLK_p) //'p' --> quitte et joue
 					{
@@ -92,15 +96,30 @@ int enter_edit_mode()
 				default : break;
 			}
 		}
-		if(type >= 0)
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		load_gui(); //Affiche l'interface
+		highlight_block(type); //Encadre l'élément actif
+		draw_level(); //Dessine le niveau
+		SDL_BlitSurface(block[type], NULL, screen, &position); //Dessine l'élément actif au niveau de la souris
+		if(save)
 		{
-			SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-			load_gui(); //Affiche l'interface
-			highlight_block(type); //Encadre l'élément actif
-			draw_level(); //Dessine le niveau
-			SDL_BlitSurface(block[type], NULL, screen, &position); //Dessine l'élément actif au niveau de la souris
-			SDL_Flip(screen);
+			tempsActuel = SDL_GetTicks();
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", 25, info, blanc);
+			else save = 0;
 		}
+		else if(load)
+		{
+			tempsActuel = SDL_GetTicks();
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", 25, info, blanc);
+			else load = 0;
+		}
+		else if(delete)
+		{
+			tempsActuel = SDL_GetTicks();
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level destroyed !", 25, info, blanc);
+			else delete = 0;
+		}
+		SDL_Flip(screen);
 	}
 	return 0;
 }
@@ -166,10 +185,23 @@ void load_gui()
 	for (i=0; i<NB_BLOCKS; i++)
 	{
 		position.x=2+WIDTH+((i%5)*(BLOCK_SIZE+3));
-		p1.x=p2.x=position.x+BLOCK_SIZE+2;
+		//p1.x=p2.x=position.x+BLOCK_SIZE+2;
 		position.y=2+(BLOCK_SIZE+3)*(i/5);
 		SDL_BlitSurface(block[i], NULL, screen, &position);
 	}
+	p1.x=WIDTH+10;
+	p1.y=position.y + 50;
+	aff_pol("Sauvegarder : s", 25, p1, blanc);
+	p1.y=p1.y+50;
+	aff_pol("Charger : l", 25, p1, blanc);
+	p1.y=p1.y+50;
+	aff_pol("Effacer : Clic droit", 25, p1, blanc);
+	p1.y=p1.y+50;
+	aff_pol("Tout effacer : r", 25, p1, blanc);
+	p1.y=p1.y+50;
+	aff_pol("Jouer : p", 25, p1, blanc);
+	p1.y=p1.y+50;
+	aff_pol("Quitter : Echap", 25, p1, blanc);
 }
 
 /* Cette méthode récupere les valeurs

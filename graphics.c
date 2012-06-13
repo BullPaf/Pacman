@@ -245,3 +245,52 @@ POINT get_mouse()
 	}
 	return dep;
 }
+
+#ifdef POLICE_NAME
+// Affiche le texte passé en argument
+// necessite l'installation  de SDL_ttf.h
+void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
+{
+	SDL_Surface *texte = NULL;
+	SDL_Rect position;
+	TTF_Font *police = NULL;
+	SDL_Color Noire   = {  0,   0,   0};
+	SDL_Color Blanche = {255, 255, 255};
+
+	SDL_Color Rouge   = {255,   0,   0};
+	SDL_Color Verte   = {  0, 255,   0};
+	SDL_Color Bleue   = {  0,   0, 255};
+
+	SDL_Color Jaune   = {255, 255,   0};
+	SDL_Color Cyan    = {  0, 255, 255};
+	SDL_Color Magenta = {255,   0, 255};
+	SDL_Color sdl_C;
+
+	sdl_C = Noire;
+	if (C == blanc) sdl_C = Blanche;
+
+	if (C == rouge) sdl_C = Rouge;
+	if (C == vert)  sdl_C = Verte;
+	if (C == bleu)  sdl_C = Bleue;
+
+	if (C == jaune)   sdl_C = Jaune;
+	if (C == cyan)    sdl_C = Cyan;
+	if (C == magenta) sdl_C = Magenta;
+
+	TTF_Init();
+
+	/* Chargement de la police */
+	police = TTF_OpenFont(POLICE_NAME, taille);
+	/* Ecriture du texte dans la SDL_Surface "texte" en mode Blended (optimal) */
+	if (police) texte = TTF_RenderText_Blended(police, a_ecrire, sdl_C);
+
+	position.x = p.x;
+	position.y = p.y;
+	if (texte) SDL_BlitSurface(texte, NULL, screen, &position); /* Blit du texte par-dessus */
+
+	//SDL_Flip(screen);
+	if (police) TTF_CloseFont(police);
+	TTF_Quit();
+	if (texte) SDL_FreeSurface(texte);
+}
+#endif

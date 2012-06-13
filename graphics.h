@@ -2,10 +2,12 @@
 #define H_GRAPHICS
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL/SDL_ttf.h>
 #define WIDTH 840
 #define HEIGHT 840
 #define EDIT_WIDTH WIDTH+216
 #define EDIT_HEIGHT HEIGHT
+#define POLICE_NAME "angelina.ttf"
 // la definition d'un point
 typedef struct point {int x,y;} POINT;
 
@@ -44,6 +46,10 @@ void draw_fill_rectangle(POINT p1, POINT p2, Uint16 color, SDL_Surface* s);
 void draw_rectangle(POINT p1, POINT p2, Uint16 color, SDL_Surface* s);
 //dessine une croix
 void draw_cross(POINT p1, int T, COULEUR c, SDL_Surface* s);
+#ifdef POLICE_NAME
+// Affiche le texte passé en argument
+void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C);
+#endif
 
 // Attend le nombre de millisecondes passé en argument
 void attendre(int millisecondes);
