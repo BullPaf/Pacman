@@ -4,7 +4,7 @@
 #include <string.h>
 #define BLOCK_SIZE 40
 #define OFFSET 4
-#define NB_BLOCKS 11
+#define NB_BLOCKS 13
 #define LINE_SIZE 128
 
 /*Les surface qui contiennent toutes les textures du jeu*/

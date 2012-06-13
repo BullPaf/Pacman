@@ -52,7 +52,7 @@ int enter_edit_mode()
 					else if (event.button.button == SDL_BUTTON_WHEELUP)
 					{
 						type = (type-1)%NB_BLOCKS;
-						if (type < 0) type = 10;
+						if (type < 0) type = NB_BLOCKS-1;
 					}
 					break;
 				case SDL_MOUSEMOTION : //On déplace la souris
@@ -254,16 +254,20 @@ void init_level()
 }
 
 /*Affecte à chaque block une texture*/
+/*A REVOIR!!!!!!*/
 int init_blocks()
 {
 	int i;
 	char img[32];
-	for (i=0; i<NB_BLOCKS; i++)
+	for (i=0; i<NB_BLOCKS-2; i++)
 	{
 		sprintf(img, "%d.bmp", i);
-		block[i] = SDL_LoadBMP(img);
 		block[i] = IMG_Load(img);
+		//SDL_SetColorKey(block[i], SDL_SRCCOLORKEY, SDL_MapRGB(block[i]->format, 0, 0, 0));
 	}
+	block[i] = IMG_Load("11.png");
+	i++;
+	block[i] = IMG_Load("12.png");
 	return 1;
 }
 

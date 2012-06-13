@@ -2,7 +2,7 @@
 #define H_PACMAN
 #include "graphics.h"
 
-#define PAC_SIZE 30
+#define PAC_SIZE 19
 
 typedef struct Pacman
 {
