@@ -1,5 +1,8 @@
 #include "levelmanager.h"
 
+/*
+ * Met en place l'environement d'edition
+*/
 int enter_edit_mode()
 {
 	POINT click;
@@ -21,28 +24,27 @@ int enter_edit_mode()
 			{
 				case SDL_QUIT : exit(0);
 				case SDL_MOUSEBUTTONDOWN :
-					if (event.button.button == SDL_BUTTON_LEFT)
+					if (event.button.button == SDL_BUTTON_LEFT) //Click gauche
 					{
 						click.x = event.button.x;
 						click.y = event.button.y;
-						if( (click.x >= WIDTH) && (click.x < EDIT_WIDTH-1) ) //On a choisi un nouvel element
+						if( (click.x >= WIDTH) && (click.x < EDIT_WIDTH-1) ) //On click dans le menu de droite
 						{
-							type = get_block_type(click);
-							position.x = click.x-BLOCK_SIZE/2;
+							type = get_block_type(click, type); //Recupère l'élément choisi
+							position.x = click.x-BLOCK_SIZE/2; //Centre la texture sur le pointeur
 							position.y = click.y-BLOCK_SIZE/2;
 						}
 						else if ( (click.x < WIDTH) && (click.x >= 0) ) //On veut placer l'objet
-							LEVEL[click.x/BLOCK_SIZE][click.y/BLOCK_SIZE].block_type = type;
+							LEVEL[click.y/BLOCK_SIZE][click.x/BLOCK_SIZE].block_type = type;
 					}
-					else if (event.button.button == SDL_BUTTON_RIGHT)
+					else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
 					{
 						click.x = event.button.x;
 						click.y = event.button.y;
-						if( (click.x < WIDTH) && (click.x >= 0) ) //On a choisi un nouvel element
-						{
-							LEVEL[click.x/BLOCK_SIZE][click.y/BLOCK_SIZE].block_type = -1;
-						}
+						if( (click.x < WIDTH) && (click.x >= 0) )
+							LEVEL[click.y/BLOCK_SIZE][click.x/BLOCK_SIZE].block_type = -1; //On efface la texture
 					}
+					//Change d'élément avec le scroll de la souris
 					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%NB_BLOCKS;
 					else if (event.button.button == SDL_BUTTON_WHEELUP)
 					{
@@ -50,8 +52,8 @@ int enter_edit_mode()
 						if (type < 0) type = 10;
 					}
 					break;
-				case SDL_MOUSEMOTION :
-					if(type >= 0)
+				case SDL_MOUSEMOTION : //On déplace la souris
+					if(type >= 0) //Si un élément est séléctionné
 					{
 						position.x = (event.motion.x/BLOCK_SIZE)*BLOCK_SIZE;
 						position.y = (event.motion.y/BLOCK_SIZE)*BLOCK_SIZE;
@@ -59,12 +61,12 @@ int enter_edit_mode()
 					break;
 				case SDL_KEYDOWN :
 					if (event.key.keysym.sym == SDLK_ESCAPE) exit(0);
-					else if (event.key.keysym.sym == SDLK_s)
+					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
 						save_level();
 						fprintf(stdout, "Level saved successfully!\n");
 					}
-					else if (event.key.keysym.sym == SDLK_l)
+					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
 					{
 						load_level();
 						SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
@@ -73,7 +75,7 @@ int enter_edit_mode()
 						SDL_Flip(screen);
 						fprintf(stdout, "Last level loaded successfully!\n");
 					}
-					else if (event.key.keysym.sym == SDLK_r)
+					else if (event.key.keysym.sym == SDLK_r) //'r' --> supprime tout
 					{
 						SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 						init_level();
@@ -82,7 +84,7 @@ int enter_edit_mode()
 						SDL_Flip(screen);
 						fprintf(stdout, "Level destroyed successfully!\n");
 					}
-					else if (event.key.keysym.sym == SDLK_p)
+					else if (event.key.keysym.sym == SDLK_p) //'p' --> quitte et joue
 					{
 						return 1;
 					}
@@ -93,20 +95,24 @@ int enter_edit_mode()
 		if(type >= 0)
 		{
 			SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-			load_gui();
-			highlight_block(type);
-			draw_level();
-			SDL_BlitSurface(block[type], NULL, screen, &position);
+			load_gui(); //Affiche l'interface
+			highlight_block(type); //Encadre l'élément actif
+			draw_level(); //Dessine le niveau
+			SDL_BlitSurface(block[type], NULL, screen, &position); //Dessine l'élément actif au niveau de la souris
 			SDL_Flip(screen);
 		}
 	}
 	return 0;
 }
 
+/*
+ * Encadre en rouge l'élément correspondant
+ * au type
+*/
 void highlight_block(int type)
 {
 	POINT p1, p2;
-	p1.x=WIDTH+2+(type%5)*(BLOCK_SIZE+3);
+	p1.x=WIDTH+1+(type%5)*(BLOCK_SIZE+3);
 	p2.x=p1.x+BLOCK_SIZE+1;
 	
 	p1.y=HEIGHT-2-(type/5)*(BLOCK_SIZE+3);
@@ -114,15 +120,26 @@ void highlight_block(int type)
 	draw_rectangle(p1, p2, rouge, screen);
 }
 
-int get_block_type(POINT p)
+/*
+ * En fonction de la zone clické
+ * Renvoie le type de l'élément correspondant.
+ * Si la zone cliqué ne correspond à aucun élément
+ * l'ancien type est retourné
+*/
+int get_block_type(POINT p, int type)
 {
 	int col = (p.x-WIDTH)/(BLOCK_SIZE+3);
 	int line = p.y/(BLOCK_SIZE+3);
-	int type = line*5 + col;
-	if(type<NB_BLOCKS) return type;
-	else return -1;
+	int new_type = line*5 + col;
+	if(new_type<NB_BLOCKS) return new_type;
+	else return type;
 }
 
+/*
+ * Charge l'interface graphique de l'editeur
+ * en gros trace des carrée et affiche les
+ * textures à l'interieur
+*/
 void load_gui()
 {
 	POINT p1, p2;
@@ -143,7 +160,7 @@ void load_gui()
 	p1.y=HEIGHT-1;
 	for(i=0; i<=nb_col; i++)
 	{
-		p1.x=p2.x=WIDTH+1+i*(BLOCK_SIZE+3);
+		p1.x=p2.x=WIDTH+i*(BLOCK_SIZE+3);
 		draw_line(p1, p2, blanc, screen);
 	}
 	for (i=0; i<NB_BLOCKS; i++)
@@ -155,41 +172,56 @@ void load_gui()
 	}
 }
 
+/* Cette méthode récupere les valeurs
+ * séparées par des espaces dans le string s
+ * et affecte cette valeur à la case du niveau
+ * correspondante
+*/
 void extract_val(char *s, int line)
 {
 	if(line>=HEIGHT/BLOCK_SIZE) return;
 	char nb[3];
 	nb[0]='0'; nb[1]='0'; nb[2]='\0';
 	int nb_val=0,i=0,j=0;
-	while(nb_val < WIDTH/BLOCK_SIZE)
+	while(nb_val < WIDTH/BLOCK_SIZE) //Tant qu'on a pas lu autant de valeur qu'il n'y a de case pour le niveau
 	{
-		if(s[i] != ' ')
+		if(s[i] != ' ') //Si ce n'est pas espace on conserve le caractere lu
 		{
 			nb[j] = s[i];
 			j++; i++;
 		}
-		else
+		else //Si le caractere courant est espace, alors on a lu une valeur
 		{
-			if(j==1)
+			if(j==1) //Si la valeur ne fait qu'un caractere==>decalage
 			{
 				nb[1]=nb[0];
 				nb[0]='0';
 			}
-			LEVEL[nb_val][line].block_type = atoi(nb);
+			LEVEL[line][nb_val].block_type = atoi(nb);
 			nb_val++; i++; j=0;
 		}
 	}
+	if (nb_val != WIDTH/BLOCK_SIZE)
+	{
+		fprintf(stderr, "Error, file level not correctly formated: Expected %d values, only %d values were read\n", WIDTH/BLOCK_SIZE, nb_val);
+		exit(EXIT_FAILURE);
+	}
 }
 
+/*
+ * Initialize le tableau du niveau
+*/
 void init_level()
 {
 	int i,j;
 	for(i=0; i<HEIGHT/BLOCK_SIZE; i++)
 	{
-		for(j=0; j<WIDTH/BLOCK_SIZE; j++) LEVEL[i][j].block_type = -1;
+		for(j=0; j<WIDTH/BLOCK_SIZE; j++)
+			LEVEL[i][j].block_type = -1;
 	}
 }
 
+/*Affecte à chaque block une texture*/
 int init_blocks()
 {
 	int i;
@@ -203,6 +235,7 @@ int init_blocks()
 	return 1;
 }
 
+/*Dessine le niveau à l'écran*/
 void draw_level()
 {
 	int i,j;
@@ -213,12 +246,16 @@ void draw_level()
 		for(j=0; j<WIDTH/BLOCK_SIZE; j++)
 		{
 			position.x=j*BLOCK_SIZE;
-			if(LEVEL[j][i].block_type != -1)
-				SDL_BlitSurface(block[LEVEL[j][i].block_type], NULL, screen, &position); // Collage de la surface sur l'écran
+			if(LEVEL[i][j].block_type != -1)
+				SDL_BlitSurface(block[LEVEL[i][j].block_type], NULL, screen, &position); // Collage de la surface sur l'écran
 		}
 	}
 }
 
+/*
+ * Lit un fichier et extrait les valeurs
+ * pour affecter le tableau LEVEL
+*/
 void load_level()
 {
 	FILE *level_file = fopen("level.txt", "r");
@@ -226,15 +263,20 @@ void load_level()
 	int line=0;
 	if (level_file != NULL)
 	{
+		//Lit le fichier ligne par ligne et s'assure qu'on ne lit pas trop de ligne
 		while (fgets(chaine, LINE_SIZE, level_file) != NULL && line < HEIGHT/BLOCK_SIZE)
 		{
-			extract_val(chaine, line);
+			extract_val(chaine, line); //Recupere les valeurs dans la ligne
 			line++;
 		}
 		fclose(level_file);
 	}
 }
 
+/*
+ * Lit le tableau LEVEL est sauvegarde
+ * le niveau dans un fichier
+*/
 void save_level()
 {
 	int i,j;
@@ -243,7 +285,7 @@ void save_level()
 	{
 		for(j=0; j<WIDTH/BLOCK_SIZE; j++)
 		{
-			fprintf(level_file, "%d ", LEVEL[j][i].block_type);
+			fprintf(level_file, "%d ", LEVEL[i][j].block_type);
 		}
 		fputc('\n', level_file);
 	}

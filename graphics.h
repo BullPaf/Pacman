@@ -1,11 +1,10 @@
 #ifndef H_GRAPHICS
 #define H_GRAPHICS
-//#include "pacman.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #define WIDTH 840
 #define HEIGHT 840
-#define EDIT_WIDTH WIDTH+260
+#define EDIT_WIDTH WIDTH+216
 #define EDIT_HEIGHT HEIGHT
 // la definition d'un point
 typedef struct point {int x,y;} POINT;

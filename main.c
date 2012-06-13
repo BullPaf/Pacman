@@ -5,6 +5,10 @@
 
 int main(int argc, char** argv)
 {
+	Pacman pac;
+	Pacman *ptr=&pac;
+	int direction;
+
 	if(argc == 2)
 	{
 		if(!strcmp(argv[1], "edit"))
@@ -13,10 +17,7 @@ int main(int argc, char** argv)
 			if(enter_edit_mode());
 			else return 0;
 	}
-	Pacman pac;
-	Pacman *ptr=&pac;
-	int direction;
-	
+
 	init_pacman(ptr);
 	init_graphics(WIDTH, HEIGHT);
 	init_blocks();
@@ -26,7 +27,6 @@ int main(int argc, char** argv)
 	{
 		attendre(20);
 		direction = wait_fleche();
-		//test_color();
 		affiche_pacman(ptr, 0);
 		deplace_pacman(ptr, direction);
 		affiche_pacman(ptr, 1);
