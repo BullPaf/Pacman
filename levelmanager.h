@@ -15,7 +15,7 @@ typedef struct CASE
 }CASE;
 
 //Un niveau est un ensemble de CASE
-CASE LEVEL[HEIGHT/BLOCK_SIZE][WIDTH/BLOCK_SIZE];
+CASE LEVEL[NB_BLOCKS_HAUTEUR][NB_BLOCKS_LARGEUR];
 
 int init_blocks(); 
 void init_level();

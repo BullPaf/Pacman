@@ -7,11 +7,11 @@
 */
 void extract_val(char *s, int line)
 {
-	if(line>=HEIGHT/BLOCK_SIZE) return;
+	if(line>=NB_BLOCKS_HAUTEUR) return;
 	char nb[3];
 	nb[0]='0'; nb[1]='0'; nb[2]='\0';
 	int nb_val=0,i=0,j=0;
-	while(nb_val < WIDTH/BLOCK_SIZE) //Tant qu'on a pas lu autant de valeur qu'il n'y a de case pour le niveau
+	while(nb_val < NB_BLOCKS_LARGEUR) //Tant qu'on a pas lu autant de valeur qu'il n'y a de case pour le niveau
 	{
 		if(s[i] != ' ') //Si ce n'est pas espace on conserve le caractere lu
 		{
@@ -29,9 +29,9 @@ void extract_val(char *s, int line)
 			nb_val++; i++; j=0;
 		}
 	}
-	if (nb_val != WIDTH/BLOCK_SIZE)
+	if (nb_val != NB_BLOCKS_LARGEUR)
 	{
-		fprintf(stderr, "Error, file level not correctly formated: Expected %d values, only %d values were read\n", WIDTH/BLOCK_SIZE, nb_val);
+		fprintf(stderr, "Error, file level not correctly formated: Expected %d values, only %d values were read\n", NB_BLOCKS_LARGEUR, nb_val);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -42,9 +42,9 @@ void extract_val(char *s, int line)
 void init_level()
 {
 	int i,j;
-	for(i=0; i<HEIGHT/BLOCK_SIZE; i++)
+	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
-		for(j=0; j<WIDTH/BLOCK_SIZE; j++)
+		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 			LEVEL[i][j].block_type = -1;
 	}
 }
@@ -72,10 +72,10 @@ void draw_level()
 {
 	int i,j;
 	SDL_Rect position;
-	for(i=0; i<HEIGHT/BLOCK_SIZE; i++)
+	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		position.y=i*BLOCK_SIZE;
-		for(j=0; j<WIDTH/BLOCK_SIZE; j++)
+		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 		{
 			position.x=j*BLOCK_SIZE;
 			if(LEVEL[i][j].block_type != -1)
@@ -96,7 +96,7 @@ void load_level()
 	if (level_file != NULL)
 	{
 		//Lit le fichier ligne par ligne et s'assure qu'on ne lit pas trop de ligne
-		while (fgets(chaine, LINE_SIZE, level_file) != NULL && line < HEIGHT/BLOCK_SIZE)
+		while (fgets(chaine, LINE_SIZE, level_file) != NULL && line < NB_BLOCKS_HAUTEUR)
 		{
 			extract_val(chaine, line); //Recupere les valeurs dans la ligne
 			line++;
@@ -113,9 +113,9 @@ void save_level()
 {
 	int i,j;
 	FILE *level_file = fopen("level.txt", "w+");
-	for(i=0; i<HEIGHT/BLOCK_SIZE; i++)
+	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
-		for(j=0; j<WIDTH/BLOCK_SIZE; j++)
+		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 		{
 			fprintf(level_file, "%d ", LEVEL[i][j].block_type);
 		}
