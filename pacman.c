@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include "pacman.h"
 
-#define STEP 4
-
 /*
  * Return the pixel value at (x, y)
  * NOTE: The surface must be locked before calling this!
@@ -96,7 +94,7 @@ int can_go(Pacman *pac, int new_direction)
 	return 0;
 }
 
-void test_color()
+/*void test_color()
 {
 	Uint8 r1,g1,b1;
 	POINT click;
@@ -106,7 +104,7 @@ void test_color()
 		getPixelColor(click.x, click.y, screen, &r1, &g1, &b1);
 		fprintf(stderr, "r=%x, g=%x & b=%x\n", r1, g1, b1);
 	}
-}
+}*/
 
 void deplace_pacman(Pacman *pac, int new_direction)
 {

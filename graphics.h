@@ -3,10 +3,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL/SDL_ttf.h>
-#define WIDTH 840
-#define HEIGHT 840
-#define EDIT_WIDTH WIDTH+216
-#define EDIT_HEIGHT HEIGHT
 #define POLICE_NAME "angelina.ttf"
 // la definition d'un point
 typedef struct point {int x,y;} POINT;
@@ -27,21 +23,9 @@ typedef Uint16 COULEUR;
 
 /* fenetre sur laquelle on dessine */
 SDL_Surface* screen;
-//int WIDTH, HEIGHT;
 
-void init_graphics();
-void wait_escape();
-int wait_fleche();
-// attend que l'on clique à gauche
-POINT wait_clic();
-// attend un déplacement de souris
-POINT get_mouse();
-
+void init_graphics(int, int, char*);
 void draw_line(POINT p1, POINT p2, Uint16 color, SDL_Surface* s);
-// remplissage de tout l'écran
-void fill_screen(Uint16 color);
-//dessine un rectangle rempli
-void draw_fill_rectangle(POINT p1, POINT p2, Uint16 color, SDL_Surface* s);
 // dessine un rectangle non rempli
 void draw_rectangle(POINT p1, POINT p2, Uint16 color, SDL_Surface* s);
 //dessine une croix
@@ -50,8 +34,5 @@ void draw_cross(POINT p1, int T, COULEUR c, SDL_Surface* s);
 // Affiche le texte passé en argument
 void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C);
 #endif
-
-// Attend le nombre de millisecondes passé en argument
-void attendre(int millisecondes);
 
 #endif
