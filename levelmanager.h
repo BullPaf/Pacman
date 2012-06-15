@@ -32,5 +32,6 @@ void load_level(); //Ok
 //void save_level(); //NO
 void extract_val(char *s, int line); //OK
 void draw_level(); //NO
+void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);
 
 #endif

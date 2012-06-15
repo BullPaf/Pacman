@@ -10,12 +10,13 @@ int editer()
 	//POINT info;
 	//info.x=WIDTH+10;
 	//info.y=HEIGHT-100;
-	//SDL_Rect position;
+	SDL_Rect position;
 	SDL_Event event;
-	//position.x=position.y=0;
+	position.x=position.y=0;
 	int type=0, ok=1, message=AUCUN;
 	//int tempsPrecedent=0;
 	init_blocks();
+	init_editor();
 	init_level();
 	while(ok)
 	{
@@ -30,13 +31,14 @@ int editer()
 						if( (event.button.x >= WIDTH) && (event.button.x < EDIT_WIDTH-1) ) //On click dans le menu de droite
 						{
 							type = get_block_type(event.button.x, event.button.y, type); //Recupère l'élément choisi
+							fprintf(stderr, "Type = %d\n", type);
 							position.x = event.button.x-BLOCK_SIZE/2; //Centre la texture sur le pointeur
 							position.y = event.button.y-BLOCK_SIZE/2;
 						}
-						/*else if ( (event.button.x < WIDTH) && (event.button.x >= 0) ) //On veut placer l'objet
-							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].block_type = type;
+						else if ( (event.button.x < WIDTH) && (event.button.x >= 0) ) //On veut placer l'objet
+							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE] = editor[type];
 					}
-					else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
+					/*else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
 					{
 						if( (event.button.x < WIDTH) && (event.button.x >= 0) )
 							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].block_type = -1; //On efface la texture
@@ -89,12 +91,32 @@ int editer()
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		load_gui(); //Affiche l'interface
 		//highlight_block(type); //Encadre l'élément actif
-		//draw_level(); //Dessine le niveau
+		draw_level(); //Dessine le niveau
 		//SDL_BlitSurface(block[type], NULL, screen, &position); //Dessine l'élément actif au niveau de la souris
 		//print_info(&message, tempsPrecedent, info); //Affiche un message d'info s'il y en a
 		SDL_Flip(screen);
 	}
 	return 0;
+}
+
+void init_editor()
+{
+	int i, j;
+	for(i=0; i<NB_WALL_BLOCKS; i++)
+	{
+		editor[i].type=MUR;
+		editor[i].nb_elt=1;
+		editor[i].position[0]=CENTRE;
+		editor[i].elt_type[0]=i;
+	}
+	for(j=0; j<NB_BONUS_BLOCKS; j++)
+	{
+		editor[i].type=BONUS;
+		editor[i].nb_elt=1;
+		editor[i].position[0]=CENTRE;
+		editor[i].elt_type[0]=j;
+		i++;
+	}
 }
 
 void print_info(int *message, int tempsPrecedent, POINT p)
@@ -149,18 +171,11 @@ void load_gui()
 		p1.x=p2.x=WIDTH+i*(BLOCK_SIZE+3);
 		draw_line(p1, p2, blanc, screen);
 	}
-	for (i=0; i<NB_WALL_BLOCKS; i++)
+	for (i=0; i<NB_WALL_BLOCKS+NB_BONUS_BLOCKS; i++)
 	{
 		position.x=2+WIDTH+((i%5)*(BLOCK_SIZE+3));
 		position.y=2+(BLOCK_SIZE+3)*(i/5);
-		SDL_BlitSurface(BLOCK_MUR[i], NULL, screen, &position);
-	}
-	for (j=0; j<NB_BONUS_BLOCKS; j++)
-	{
-		position.x=2+WIDTH+((i%5)*(BLOCK_SIZE+3));
-		position.y=2+(BLOCK_SIZE+3)*(i/5);
-		SDL_BlitSurface(BLOCK_BONUS[j], NULL, screen, &position);
-		i++;
+		affiche_une_case(editor[i], &position, screen);
 	}
 	/*p1.x=WIDTH+10; p1.y=position.y + 200;
 	aff_pol("Sauvegarder : s", 25, p1, blanc);
@@ -200,6 +215,6 @@ int get_block_type(int x, int y, int type)
 	int col = (x-WIDTH)/(BLOCK_SIZE+3);
 	int line = y/(BLOCK_SIZE+3);
 	int new_type = line*5 + col;
-	if(new_type<NB_BLOCKS) return new_type;
+	if(new_type<NB_WALL_BLOCKS+NB_BONUS_BLOCKS) return new_type;
 	else return type;
 }

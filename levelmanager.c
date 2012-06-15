@@ -74,7 +74,6 @@ void extract_val(char *s, int line)
 		}
 		else i++;
 	}
-	fprintf(stderr, "Nb val lues = %d\n", nb_val);
 	if (nb_val != NB_BLOCKS_LARGEUR)
 	{
 		fprintf(stderr, "Error, file level not correctly formated: Expected %d values, only %d values were read\n", NB_BLOCKS_LARGEUR, nb_val);
@@ -113,10 +112,26 @@ int init_blocks()
 	return 1;
 }
 
+void affiche_une_case(CASE c, SDL_Rect *pos, SDL_Surface *s)
+{
+	if(c.type==MUR) SDL_BlitSurface(BLOCK_MUR[c.elt_type[0]], NULL, s, pos);
+	else if(c.type==BONUS)
+	{
+		int i;
+		for (i=0; i<c.nb_elt; i++)
+		{
+			if(c.position[i]==HAUT) (*pos).y-=BLOCK_SIZE/2;
+			else if(c.position[i]==DROITE) (*pos).x+=BLOCK_SIZE/2;
+			else if(c.position[i]==BAS) (*pos).y+=BLOCK_SIZE/2;
+			else if(c.position[i]==GAUCHE) (*pos).x-=BLOCK_SIZE/2;
+			SDL_BlitSurface(BLOCK_BONUS[c.elt_type[i]], NULL, s, pos);
+		}
+	}
+}
+
 /*Dessine le niveau à l'écran*/
 void draw_level()
 {
-	fprintf(stderr, "On dessine!\n");
 	int i,j;
 	SDL_Rect position;
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
@@ -125,11 +140,7 @@ void draw_level()
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 		{
 			position.x=j*BLOCK_SIZE;
-			if(LEVEL[i][j].type == MUR)
-			{
-				fprintf(stderr, "La case[%d][%d] est un MUR de type %d\n", i, j, LEVEL[i][j].elt_type[0]);
-				SDL_BlitSurface(BLOCK_MUR[LEVEL[i][j].elt_type[0]], NULL, screen, &position); // Collage de la surface sur l'écran
-			}
+			affiche_une_case(LEVEL[i][j], &position, screen);
 		}
 	}
 }
@@ -151,7 +162,6 @@ void load_level()
 			extract_val(chaine, line); //Recupere les valeurs dans la ligne
 			line++;
 		}
-		fprintf(stderr, "Fichier lu correctement\n");
 		fclose(level_file);
 	}
 	else
