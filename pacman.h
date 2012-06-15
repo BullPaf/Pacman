@@ -1,8 +1,7 @@
 #ifndef H_PACMAN
 #define H_PACMAN
 #include "graphics.h"
-
-#define PAC_SIZE 19
+#include "constantes.h"
 
 typedef struct Pacman
 {
@@ -19,7 +18,7 @@ int can_go(Pacman*, int);
 int isAlive(Pacman*);
 void getPixelColor(int, int, SDL_Surface*, Uint8*, Uint8*, Uint8*);
 Uint32 getpixel(SDL_Surface*, int, int);
-void test_color();
+//void test_color();
 
 
 #endif
