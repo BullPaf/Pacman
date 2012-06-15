@@ -2,6 +2,7 @@
 #include "pacman.h"
 #include "levelmanager.h"
 #include "editeur.h"
+#include "jeu.h"
 #include <stdio.h>
 
 /*Affiche le menu
@@ -34,8 +35,8 @@ int main(int argc, char** argv)
 				break;
 			case SDL_KEYDOWN:
 				if(event.key.keysym.sym==SDLK_ESCAPE) continuer=0;
-				else if (event.key.keysym.sym==SDLK_KP1) fprintf(stdout, "On Joue!\n");//jouer();
-				else if (event.key.keysym.sym==SDLK_KP2) editer();
+				else if (event.key.keysym.sym==SDLK_KP1) jouer(); //fprintf(stdout, "On Joue!\n");
+				else if (event.key.keysym.sym==SDLK_KP2) editer(); //fprintf(stdout, "On Edite!\n");
 				break;
 		}
 		// Effacement de l'écran

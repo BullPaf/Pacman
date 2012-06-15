@@ -6,47 +6,40 @@
 int editer()
 {
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Editeur Pacman");
-	POINT click, info;
-	SDL_Rect position;
-	SDL_Event event;
-	position.x=position.y=0;
-	int type=0, ok=1, save=0, load=0, delete=0;
-	int tempsPrecedent=0, tempsActuel=0;
 	SDL_ShowCursor(SDL_ENABLE);
-	SDL_EnableKeyRepeat(0, 10);
+	//POINT info;
+	//info.x=WIDTH+10;
+	//info.y=HEIGHT-100;
+	//SDL_Rect position;
+	SDL_Event event;
+	//position.x=position.y=0;
+	int type=0, ok=1, message=AUCUN;
+	//int tempsPrecedent=0;
 	init_blocks();
 	init_level();
-	load_gui();
-	SDL_Flip(screen);
-	info.x=WIDTH+10;
-	info.y=HEIGHT-100;
 	while(ok)
 	{
 		while(SDL_PollEvent(&event))
 		{
 			switch(event.type)
 			{
-				case SDL_QUIT : exit(0);
+				case SDL_QUIT : exit(EXIT_SUCCESS);
 				case SDL_MOUSEBUTTONDOWN :
 					if (event.button.button == SDL_BUTTON_LEFT) //Click gauche
 					{
-						click.x = event.button.x;
-						click.y = event.button.y;
-						if( (click.x >= WIDTH) && (click.x < EDIT_WIDTH-1) ) //On click dans le menu de droite
+						if( (event.button.x >= WIDTH) && (event.button.x < EDIT_WIDTH-1) ) //On click dans le menu de droite
 						{
-							type = get_block_type(click, type); //Recupère l'élément choisi
-							position.x = click.x-BLOCK_SIZE/2; //Centre la texture sur le pointeur
-							position.y = click.y-BLOCK_SIZE/2;
+							type = get_block_type(event.button.x, event.button.y, type); //Recupère l'élément choisi
+							position.x = event.button.x-BLOCK_SIZE/2; //Centre la texture sur le pointeur
+							position.y = event.button.y-BLOCK_SIZE/2;
 						}
-						else if ( (click.x < WIDTH) && (click.x >= 0) ) //On veut placer l'objet
-							LEVEL[click.y/BLOCK_SIZE][click.x/BLOCK_SIZE].block_type = type;
+						/*else if ( (event.button.x < WIDTH) && (event.button.x >= 0) ) //On veut placer l'objet
+							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].block_type = type;
 					}
 					else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
 					{
-						click.x = event.button.x;
-						click.y = event.button.y;
-						if( (click.x < WIDTH) && (click.x >= 0) )
-							LEVEL[click.y/BLOCK_SIZE][click.x/BLOCK_SIZE].block_type = -1; //On efface la texture
+						if( (event.button.x < WIDTH) && (event.button.x >= 0) )
+							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].block_type = -1; //On efface la texture
 					}
 					//Change d'élément avec le scroll de la souris
 					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%NB_BLOCKS;
@@ -54,21 +47,21 @@ int editer()
 					{
 						type = (type-1)%NB_BLOCKS;
 						if (type < 0) type = NB_BLOCKS-1;
-					}
+					}*/
 					break;
-				case SDL_MOUSEMOTION : //On déplace la souris
+				/*case SDL_MOUSEMOTION : //On déplace la souris
 					if(type >= 0) //Si un élément est séléctionné
 					{
 						position.x = (event.motion.x/BLOCK_SIZE)*BLOCK_SIZE;
 						position.y = (event.motion.y/BLOCK_SIZE)*BLOCK_SIZE;
 					}
-					break;
+					break;*/
 				case SDL_KEYDOWN :
-					if (event.key.keysym.sym == SDLK_ESCAPE) exit(0);
-					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
+					if (event.key.keysym.sym == SDLK_ESCAPE) ok=0;
+					/*else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
 						save_level();
-						save=1; load=0; delete=0;
+						message=SAVE;
 						tempsPrecedent = SDL_GetTicks();
 					}
 					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
@@ -77,7 +70,7 @@ int editer()
 						SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 						load_gui();
 						draw_level();
-						load=1; save=0; delete=0;
+						message=LOAD;
 						tempsPrecedent = SDL_GetTicks();
 					}
 					else if (event.key.keysym.sym == SDLK_r) //'r' --> supprime tout
@@ -86,43 +79,48 @@ int editer()
 						init_level();
 						load_gui();
 						draw_level();
-						delete=1; save=0; load=0;
+						message=DELETE;
 						tempsPrecedent = SDL_GetTicks();
-					}
-					else if (event.key.keysym.sym == SDLK_p) //'p' --> quitte et joue
-					{
-						return 1;
-					}
+					}*/
 					break;
 				default : break;
 			}
 		}
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		load_gui(); //Affiche l'interface
-		highlight_block(type); //Encadre l'élément actif
-		draw_level(); //Dessine le niveau
-		SDL_BlitSurface(block[type], NULL, screen, &position); //Dessine l'élément actif au niveau de la souris
-		if(save)
-		{
-			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", 25, info, blanc);
-			else save = 0;
-		}
-		else if(load)
-		{
-			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", 25, info, blanc);
-			else load = 0;
-		}
-		else if(delete)
-		{
-			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level destroyed !", 25, info, blanc);
-			else delete = 0;
-		}
+		//highlight_block(type); //Encadre l'élément actif
+		//draw_level(); //Dessine le niveau
+		//SDL_BlitSurface(block[type], NULL, screen, &position); //Dessine l'élément actif au niveau de la souris
+		//print_info(&message, tempsPrecedent, info); //Affiche un message d'info s'il y en a
 		SDL_Flip(screen);
 	}
 	return 0;
+}
+
+void print_info(int *message, int tempsPrecedent, POINT p)
+{
+	int tempsActuel;
+	switch(*message)
+	{
+		case AUCUN:
+			break;
+		case SAVE:
+			tempsActuel = SDL_GetTicks();
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", 25, p, blanc);
+			else *message=AUCUN;
+			break;
+		case LOAD:
+			tempsActuel = SDL_GetTicks();
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", 25, p, blanc);
+			else *message=AUCUN;
+			break;
+		case DELETE:
+			tempsActuel = SDL_GetTicks();
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level destroyed !", 25, p, blanc);
+			else *message=AUCUN;
+			break;
+		default : break;
+	}
 }
 
 /*
@@ -130,18 +128,16 @@ int editer()
  * en gros trace des carrée et affiche les
  * textures à l'interieur
 */
+
+/*En version définitive juste créer une texture correspondante*/
 void load_gui()
 {
 	POINT p1, p2;
 	SDL_Rect position;
-	int i;
-	p1.x=p2.x=WIDTH;
-	p1.y=HEIGHT-1;
-	p2.y=0;
+	int i, j, nb_col = 5, nb_ligne=(NB_WALL_BLOCKS+NB_BONUS_BLOCKS-1)/nb_col + 1;
+	p1.x=p2.x=WIDTH; p1.y=HEIGHT-1; p2.y=0;
 	draw_line(p1, p2, blanc, screen);
 	p2.x=EDIT_WIDTH-1;
-	int nb_ligne=(NB_BLOCKS-1)/5 + 1;
-	int nb_col = 5;
 	for(i=0; i<=nb_ligne; i++)
 	{
 		p1.y=p2.y=HEIGHT-(1+i*(BLOCK_SIZE+3));
@@ -153,14 +149,20 @@ void load_gui()
 		p1.x=p2.x=WIDTH+i*(BLOCK_SIZE+3);
 		draw_line(p1, p2, blanc, screen);
 	}
-	for (i=0; i<NB_BLOCKS; i++)
+	for (i=0; i<NB_WALL_BLOCKS; i++)
 	{
 		position.x=2+WIDTH+((i%5)*(BLOCK_SIZE+3));
 		position.y=2+(BLOCK_SIZE+3)*(i/5);
-		SDL_BlitSurface(block[i], NULL, screen, &position);
+		SDL_BlitSurface(BLOCK_MUR[i], NULL, screen, &position);
 	}
-	p1.x=WIDTH+10;
-	p1.y=position.y + 50;
+	for (j=0; j<NB_BONUS_BLOCKS; j++)
+	{
+		position.x=2+WIDTH+((i%5)*(BLOCK_SIZE+3));
+		position.y=2+(BLOCK_SIZE+3)*(i/5);
+		SDL_BlitSurface(BLOCK_BONUS[j], NULL, screen, &position);
+		i++;
+	}
+	/*p1.x=WIDTH+10; p1.y=position.y + 200;
 	aff_pol("Sauvegarder : s", 25, p1, blanc);
 	p1.y=p1.y+50;
 	aff_pol("Charger : l", 25, p1, blanc);
@@ -169,9 +171,7 @@ void load_gui()
 	p1.y=p1.y+50;
 	aff_pol("Tout effacer : r", 25, p1, blanc);
 	p1.y=p1.y+50;
-	aff_pol("Jouer : p", 25, p1, blanc);
-	p1.y=p1.y+50;
-	aff_pol("Quitter : Echap", 25, p1, blanc);
+	aff_pol("Menu Principal : Echap", 25, p1, blanc);*/
 }
 
 /*
@@ -195,10 +195,10 @@ void highlight_block(int type)
  * Si la zone cliqué ne correspond à aucun élément
  * l'ancien type est retourné
 */
-int get_block_type(POINT p, int type)
+int get_block_type(int x, int y, int type)
 {
-	int col = (p.x-WIDTH)/(BLOCK_SIZE+3);
-	int line = p.y/(BLOCK_SIZE+3);
+	int col = (x-WIDTH)/(BLOCK_SIZE+3);
+	int line = y/(BLOCK_SIZE+3);
 	int new_type = line*5 + col;
 	if(new_type<NB_BLOCKS) return new_type;
 	else return type;
