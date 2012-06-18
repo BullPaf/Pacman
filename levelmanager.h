@@ -6,13 +6,14 @@
 #define LINE_SIZE 2048
 
 //typedef enum Block_type;
-typedef enum Block_type {RIEN, MUR, BONUS}Block_type;
+typedef enum Block_type {RIEN, MUR, BONUS, PACMAN, GHOST}Block_type;
 //typedef enum Position;
 typedef enum Position {CENTRE, HAUT, DROITE, BAS, GAUCHE}Position;
 
 /*Les surface qui contiennent toutes les textures du jeu*/
 SDL_Surface *BLOCK_MUR[NB_WALL_BLOCKS]; //Les différents type de murs
 SDL_Surface *BLOCK_BONUS[NB_BONUS_BLOCKS]; //Les différents type de bonus
+SDL_Surface *BLOCK_PACMAN[4];
 
 /*Une CASE contient le type correspondant au tableau des textures*/
 typedef struct CASE

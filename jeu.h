@@ -4,6 +4,6 @@
 #include "levelmanager.h"
 
 void jouer();
-
+void mange(Pacman*);
 
 #endif

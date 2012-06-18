@@ -4,7 +4,7 @@
 
 enum {AUCUN, SAVE, LOAD, DELETE}; //Pour les messages de l'editeur
 
-CASE editor[NB_WALL_BLOCKS+NB_BONUS_BLOCKS];
+CASE editor[NB_WALL_BLOCKS+NB_BONUS_BLOCKS+4];
 
 int editer();
 void load_gui();

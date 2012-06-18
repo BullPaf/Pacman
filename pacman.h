@@ -2,11 +2,13 @@
 #define H_PACMAN
 #include "graphics.h"
 #include "constantes.h"
+#include "levelmanager.h"
 
 typedef struct Pacman
 {
 	int cur_direction;
-	int direction_locked;
+	int nb_lives;
+	int score;
 	SDL_Rect position;
 	SDL_Surface* image[5];
 }Pacman;
@@ -14,11 +16,6 @@ typedef struct Pacman
 void init_pacman(Pacman*);
 void affiche_pacman(Pacman*, int);
 void deplace_pacman(Pacman*, int);
-int can_go(Pacman*, int);
-int isAlive(Pacman*);
-void getPixelColor(int, int, SDL_Surface*, Uint8*, Uint8*, Uint8*);
-Uint32 getpixel(SDL_Surface*, int, int);
-//void test_color();
-
+int dans_case(Pacman*);
 
 #endif

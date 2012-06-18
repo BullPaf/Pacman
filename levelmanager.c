@@ -40,7 +40,6 @@ void extract_val(char *s, int line)
 			}
 			else if(type=='2') //BONUS
 			{
-				fprintf(stderr, "Je vois un bonus block\n");
 				LEVEL[line][nb_val].type = BONUS;
 				i+=2; //On saute les ':'
 				while(s[i] != ':') //Délimiteur type de bonus
@@ -55,11 +54,9 @@ void extract_val(char *s, int line)
 						nb[1]=nb[0];
 						nb[0]='0';
 					}
-					fprintf(stderr, "... Et l'élément %d est un %d...", nb_elt, atoi(nb));
 					LEVEL[line][nb_val].elt_type[nb_elt]=atoi(nb);
 					nb_elt++; j=0;
 				}
-				fprintf(stderr, "Fin lecture position\n");
 				i++; nb_elt=0;
 				while(s[i] != ' ') //tant qu'on a pas de virgule on lit une valeur
 				{
@@ -72,7 +69,6 @@ void extract_val(char *s, int line)
 					i++; nb_elt++;
 				}
 				LEVEL[line][nb_val].nb_elt=nb_elt;
-				fprintf(stderr, "Fin du bonus block\n");
 			}
 			else if(type=='3') //pac start
 			{
@@ -114,11 +110,19 @@ int init_blocks()
 	{
 		sprintf(img, "image/level/%d.png", i);
 		BLOCK_MUR[i] = IMG_Load(img);
+		//SDL_SetColorKey(BLOCK_MUR[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
 	for (i=0; i<NB_BONUS_BLOCKS; i++)
 	{
 		sprintf(img, "image/bonus/%d.png", i);
 		BLOCK_BONUS[i] = IMG_Load(img);
+		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
+	}
+	for (i=1; i<5; i++)
+	{
+		sprintf(img, "image/pacman/%d.png", i);
+		BLOCK_PACMAN[i-1] = IMG_Load(img);
+		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
 	return 1;
 }
@@ -137,6 +141,10 @@ void affiche_une_case(CASE c, SDL_Rect *pos, SDL_Surface *s)
 			else if(c.position[i]==GAUCHE) (*pos).x-=BLOCK_SIZE/2;
 			SDL_BlitSurface(BLOCK_BONUS[c.elt_type[i]], NULL, s, pos);
 		}
+	}
+	else if(c.type==PACMAN)
+	{
+		SDL_BlitSurface(BLOCK_PACMAN[c.elt_type[0]], NULL, s, pos);
 	}
 }
 

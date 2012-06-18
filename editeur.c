@@ -46,11 +46,11 @@ int editer()
 							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN; //On efface la texture
 					}
 					//Change d'élément avec le scroll de la souris
-					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS);
+					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS+4);
 					else if (event.button.button == SDL_BUTTON_WHEELUP)
 					{
-						type = (type-1)%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS);
-						if (type < 0) type = NB_WALL_BLOCKS+NB_BONUS_BLOCKS-1;
+						type = (type-1)%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS+4);
+						if (type < 0) type = NB_WALL_BLOCKS+NB_BONUS_BLOCKS+4-1;
 					}
 					break;
 				case SDL_MOUSEBUTTONUP: // On désactive le booléen qui disait qu'un bouton était enfoncé
@@ -103,7 +103,8 @@ int editer()
 		highlight_block(type); //Encadre l'élément actif
 		draw_level(); //Dessine le niveau
 		if(type<NB_WALL_BLOCKS) SDL_BlitSurface(BLOCK_MUR[type], NULL, screen, &position);
-		else SDL_BlitSurface(BLOCK_BONUS[type%NB_WALL_BLOCKS], NULL, screen, &position);
+		else if(type<NB_BONUS_BLOCKS) SDL_BlitSurface(BLOCK_BONUS[type%NB_WALL_BLOCKS], NULL, screen, &position);
+		else SDL_BlitSurface(BLOCK_PACMAN[type%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS)], NULL, screen, &position);
 		print_info(&message, tempsPrecedent, info); //Affiche un message d'info s'il y en a
 		SDL_Flip(screen);
 	}
@@ -123,6 +124,14 @@ void init_editor()
 	for(j=0; j<NB_BONUS_BLOCKS; j++)
 	{
 		editor[i].type=BONUS;
+		editor[i].nb_elt=1;
+		editor[i].position[0]=CENTRE;
+		editor[i].elt_type[0]=j;
+		i++;
+	}
+	for(j=0; j<4; j++)
+	{
+		editor[i].type=PACMAN;
 		editor[i].nb_elt=1;
 		editor[i].position[0]=CENTRE;
 		editor[i].elt_type[0]=j;
@@ -167,7 +176,7 @@ void load_gui()
 {
 	POINT p1, p2;
 	SDL_Rect position;
-	int i, j, nb_col = 5, nb_ligne=(NB_WALL_BLOCKS+NB_BONUS_BLOCKS-1)/nb_col + 1;
+	int i, j, nb_col = 5, nb_ligne=(NB_WALL_BLOCKS+NB_BONUS_BLOCKS+4-1)/nb_col + 1;
 	p1.x=p2.x=WIDTH; p1.y=HEIGHT-1; p2.y=0;
 	draw_line(p1, p2, blanc, screen);
 	p2.x=EDIT_WIDTH-1;
@@ -182,7 +191,7 @@ void load_gui()
 		p1.x=p2.x=WIDTH+i*(BLOCK_SIZE+3);
 		draw_line(p1, p2, blanc, screen);
 	}
-	for (i=0; i<NB_WALL_BLOCKS+NB_BONUS_BLOCKS; i++)
+	for (i=0; i<NB_WALL_BLOCKS+NB_BONUS_BLOCKS+4; i++)
 	{
 		position.x=2+WIDTH+((i%5)*(BLOCK_SIZE+3));
 		position.y=2+(BLOCK_SIZE+3)*(i/5);
@@ -226,6 +235,6 @@ int get_block_type(int x, int y, int type)
 	int col = (x-WIDTH)/(BLOCK_SIZE+3);
 	int line = y/(BLOCK_SIZE+3);
 	int new_type = line*5 + col;
-	if(new_type<NB_WALL_BLOCKS+NB_BONUS_BLOCKS) return new_type;
+	if(new_type<NB_WALL_BLOCKS+NB_BONUS_BLOCKS+4) return new_type;
 	else return type;
 }

@@ -2,55 +2,19 @@
 #include <stdlib.h>
 #include "pacman.h"
 
-/*
- * Return the pixel value at (x, y)
- * NOTE: The surface must be locked before calling this!
- */
-Uint32 getpixel(SDL_Surface *surface, int x, int y)
-{
-	int bpp = surface->format->BytesPerPixel;
-	/* Here p is the address to the pixel we want to retrieve */
-	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
-
-	switch(bpp)
-	{
-		case 1:
-			return *p;
-		case 2:
-			return *(Uint16 *)p;
-		case 3:
-			if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
-				return p[0] << 16 | p[1] << 8 | p[2];
-			else
-				return p[0] | p[1] << 8 | p[2] << 16;
-		case 4:
-			return *(Uint32 *)p;
-		default:
-			return 0;
-	}
-}
-
-void getPixelColor(int x, int y, SDL_Surface *map, Uint8 *r, Uint8 *g, Uint8 *b)
-{
-	if(x>=0 && y>=0 && x<WIDTH && y<HEIGHT)
-		SDL_GetRGB(getpixel(map, x, y), map->format, r, g, b);
-	else // sinon on renvoie noir, pour éviter de planter dans certains cas
-		r=g=b=0;
-}
-
 void init_pacman(Pacman *pac)
 {
-	pac->image[1] = SDL_LoadBMP("image/pacman/pacman_g.png");
-	pac->image[2] = SDL_LoadBMP("image/pacman/pacman_h.png");
-	pac->image[3] = SDL_LoadBMP("image/pacman/pacman_d.png");
-	pac->image[4] = SDL_LoadBMP("image/pacman/pacman_b.png");
+	int i;
+	pac->image[GAUCHE] = IMG_Load("./image/pacman/1.png");
+	pac->image[HAUT] = IMG_Load("./image/pacman/2.png");
+	pac->image[DROITE] = IMG_Load("./image/pacman/3.png");
+	pac->image[BAS] = IMG_Load("image/pacman/4.png");
+	//for(i=1; i<5; i++) SDL_SetColorKey(pac->image[i], SDL_SRCCOLORKEY, SDL_MapRGB(pac->image[i]->format, 0, 0, 0));
 	pac->position.x = 1*BLOCK_SIZE;
 	pac->position.y = 1*BLOCK_SIZE;
-	//pac->position.w = 19;
-	//pac->position.h = 19;
 	pac->cur_direction = 3;
-	pac->direction_locked = 0;
-	pac->image[0]=pac->image[pac->cur_direction];
+	pac->nb_lives = 2;
+	pac->score=0;
 }
 
 //Pour afficher Pacman
@@ -60,102 +24,108 @@ void affiche_pacman(Pacman *pac, int visible)
 	else SDL_BlitSurface(pac->image[0], NULL, screen, &pac->position); //SDL_FillRect(screen, &pac->position, rouge);
 }
 
-int can_go(Pacman *pac, int new_direction)
+int dans_case(Pacman *pac)
 {
-	Uint8 r1,g1,b1,r2,g2,b2;
-	switch (new_direction)
-	{
-		case 3: //Vers la droite
-			getPixelColor(pac->position.x+pac->position.w+6, pac->position.y-4, screen, &r1, &g1, &b1);
-			getPixelColor(pac->position.x+pac->position.w+6, pac->position.y+pac->position.h+4, screen, &r2, &g2, &b2);
-			if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) return 1;
-			else return 0;
-			break;
-		case 1: //Vers la gauche
-			getPixelColor(pac->position.x-6, pac->position.y-5, screen, &r1, &g1, &b1);
-			getPixelColor(pac->position.x-6, pac->position.y+pac->position.h+5, screen, &r2, &g2, &b2);
-			if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) return 1;
-			else return 0;
-			break;
-		case 2: //Vers le haut
-			getPixelColor(pac->position.x-5, pac->position.y-6, screen, &r1, &g1, &b1);
-			getPixelColor(pac->position.x+pac->position.w+5, pac->position.y-6, screen, &r2, &g2, &b2);
-			if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) return 1;
-			else return 0;
-			break;
-		case 4: //Vers le bas
-			getPixelColor(pac->position.x-4, pac->position.y+pac->position.h+6, screen, &r1, &g1, &b1);
-			getPixelColor(pac->position.x+pac->position.w+4, pac->position.y+pac->position.h+6, screen, &r2, &g2, &b2);
-			if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) return 1;
-			else return 0;
-			break;
-		default: break;
-	}
-	return 0;
+	if( (pac->position.x % BLOCK_SIZE==0) && (pac->position.y % BLOCK_SIZE==0) ) return 1;
+	else return 0;
 }
-
-/*void test_color()
-{
-	Uint8 r1,g1,b1;
-	POINT click;
-	click = wait_clic();
-	if (click.x >= 0 && click.y >= 0)
-	{
-		getPixelColor(click.x, click.y, screen, &r1, &g1, &b1);
-		fprintf(stderr, "r=%x, g=%x & b=%x\n", r1, g1, b1);
-	}
-}*/
 
 void deplace_pacman(Pacman *pac, int new_direction)
 {
 	//Si on a rien récupéré
 	if (new_direction == 0) new_direction = pac->cur_direction;
-	else if (new_direction!=pac->cur_direction) //Si on a pas changé de direction inutile de recharger l'image
+	int case_x = pac->position.x / BLOCK_SIZE, case_y = pac->position.y / BLOCK_SIZE, can_move=0;
+	switch (new_direction)
 	{
-		if(can_go(pac, new_direction))
-		{
-			pac->image[0]=pac->image[new_direction];
-			pac->cur_direction = new_direction;
-		}
-		else new_direction = pac->cur_direction;
+		case DROITE: //Vers la droite
+			if (!dans_case(pac)) //Si on est entre deux cases
+			{
+				if( (pac->cur_direction==GAUCHE) || (pac->cur_direction==DROITE) )
+				{
+					pac->position.x += STEP;
+					can_move=1;
+				}
+			}
+			else if(LEVEL[case_y][case_x+1].type != MUR)
+			{
+				pac->position.x += STEP;
+				can_move=1;
+			}
+			break;
+		case GAUCHE: //Vers la gauche
+			if(!dans_case(pac))
+			{
+				if( (pac->cur_direction==GAUCHE) || (pac->cur_direction==DROITE) )
+				{
+					pac->position.x -= STEP;
+					can_move=1;
+				}
+			}
+			else if(LEVEL[case_y][case_x-1].type != MUR)
+			{
+				pac->position.x -= STEP;
+				can_move=1;
+			}
+			break;
+		case HAUT: //Vers le haut
+			if(!dans_case(pac))
+			{
+				if( (pac->cur_direction==HAUT) || (pac->cur_direction==BAS) )
+				{
+					pac->position.y -= STEP;
+					can_move=1;
+				}
+			}
+			else if(LEVEL[case_y-1][case_x].type != MUR)
+			{
+				pac->position.y -= STEP;
+				can_move=1;
+			}
+			break;
+		case BAS: //Vers le bas
+			if(!dans_case(pac))
+			{
+				if( (pac->cur_direction==HAUT) || (pac->cur_direction==BAS) )
+				{
+					pac->position.y += STEP;
+					can_move=1;
+				}
+			}
+			else if(LEVEL[case_y+1][case_x].type != MUR)
+			{
+				pac->position.y += STEP;
+				can_move=1;
+			}
+			break;
+		default: break;
 	}
-	if(new_direction!=pac->direction_locked) //Si la direction n'est pas vérouillée suite à une collision
+	if(!can_move) //Si on ne peut pas changer de direction
 	{
-		Uint8 r1,g1,b1,r2,g2,b2;
-		//pac->direction_locked=0; //On débloque l'ancienne direction vérouillée
-		switch (new_direction)
+		if(pac->cur_direction==GAUCHE)
 		{
-			case 3: //Vers la droite
-				getPixelColor(pac->position.x+pac->position.w+6, pac->position.y-4, screen, &r1, &g1, &b1);
-				getPixelColor(pac->position.x+pac->position.w+6, pac->position.y+pac->position.h+4, screen, &r2, &g2, &b2);
-				if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) pac->position.x += STEP;
-				//else pac->direction_locked=direction;
-				break;
-			case 1: //Vers la gauche
-				getPixelColor(pac->position.x-6, pac->position.y-5, screen, &r1, &g1, &b1);
-				getPixelColor(pac->position.x-6, pac->position.y+pac->position.h+5, screen, &r2, &g2, &b2);
-				if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) pac->position.x -= STEP;
-				//if (r1!=0x00 || g1!=0x4 || b1!=0xff) pac->position.x -= STEP;
-				//else pac->direction_locked=direction;
-				break;
-			case 2: //Vers le haut
-				getPixelColor(pac->position.x-5, pac->position.y-6, screen, &r1, &g1, &b1);
-				getPixelColor(pac->position.x+pac->position.w+5, pac->position.y-6, screen, &r2, &g2, &b2);
-				if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) pac->position.y -= STEP;
-				//else pac->direction_locked=direction;
-				break;
-			case 4: //Vers le bas
-				getPixelColor(pac->position.x-4, pac->position.y+pac->position.h+6, screen, &r1, &g1, &b1);
-				getPixelColor(pac->position.x+pac->position.w+4, pac->position.y+pac->position.h+6, screen, &r2, &g2, &b2);
-				if( (r1!=0x00 || g1!=0x00 || b1!=0xff) && (r2!=0x00 || g2!=0x00 || b2!=0xff) ) pac->position.y += STEP;
-				//else pac->direction_locked=direction;
-				break;
-			default: break;
+			if(LEVEL[case_y][case_x-1].type != MUR) pac->position.x -= STEP;
+			else if(!dans_case(pac)) pac->position.x -= STEP;
 		}
+		else if(pac->cur_direction==DROITE)
+		{
+			if(LEVEL[case_y][case_x+1].type != MUR) pac->position.x += STEP;
+			else if(!dans_case(pac)) pac->position.x += STEP;
+		}
+		else if(pac->cur_direction==HAUT)
+		{
+			if(LEVEL[case_y-1][case_x].type != MUR) pac->position.y -= STEP;
+			else if(!dans_case(pac)) pac->position.y -= STEP;
+		}
+		else if(pac->cur_direction==BAS)
+		{
+			if(LEVEL[case_y+1][case_x].type != MUR) pac->position.y += STEP;
+			else if(!dans_case(pac)) pac->position.y += STEP;
+		}
+	}
+	else
+	{
+		pac->cur_direction = new_direction;
+		pac->image[0]=pac->image[pac->cur_direction];
 	}
 }
 
-int isAlive(Pacman *pac)
-{
-	return 1;
-}
