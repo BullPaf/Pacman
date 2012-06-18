@@ -29,7 +29,7 @@ CASE LEVEL[NB_BLOCKS_HAUTEUR][NB_BLOCKS_LARGEUR];
 int init_blocks(); //Ok
 void init_level(); //Ok
 void load_level(); //Ok
-//void save_level(); //NO
+void save_level(); //NO
 void extract_val(char *s, int line); //OK
 void draw_level(); //NO
 void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);

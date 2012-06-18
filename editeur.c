@@ -7,14 +7,14 @@ int editer()
 {
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Editeur Pacman");
 	SDL_ShowCursor(SDL_ENABLE);
-	//POINT info;
-	//info.x=WIDTH+10;
-	//info.y=HEIGHT-100;
+	POINT info;
+	info.x=WIDTH+10;
+	info.y=HEIGHT-100;
 	SDL_Rect position;
 	SDL_Event event;
 	position.x=position.y=0;
-	int type=0, ok=1, message=AUCUN;
-	//int tempsPrecedent=0;
+	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0;
+	int tempsPrecedent=0;
 	init_blocks();
 	init_editor();
 	init_level();
@@ -28,6 +28,7 @@ int editer()
 				case SDL_MOUSEBUTTONDOWN :
 					if (event.button.button == SDL_BUTTON_LEFT) //Click gauche
 					{
+						clicGaucheEnCours=1;
 						if( (event.button.x >= WIDTH) && (event.button.x < EDIT_WIDTH-1) ) //On click dans le menu de droite
 						{
 							type = get_block_type(event.button.x, event.button.y, type); //Recupère l'élément choisi
@@ -38,29 +39,38 @@ int editer()
 						else if ( (event.button.x < WIDTH) && (event.button.x >= 0) ) //On veut placer l'objet
 							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE] = editor[type];
 					}
-					/*else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
+					else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
 					{
+						clicDroitEnCours=1;
 						if( (event.button.x < WIDTH) && (event.button.x >= 0) )
-							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].block_type = -1; //On efface la texture
+							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN; //On efface la texture
 					}
 					//Change d'élément avec le scroll de la souris
-					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%NB_BLOCKS;
+					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS);
 					else if (event.button.button == SDL_BUTTON_WHEELUP)
 					{
-						type = (type-1)%NB_BLOCKS;
-						if (type < 0) type = NB_BLOCKS-1;
-					}*/
+						type = (type-1)%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS);
+						if (type < 0) type = NB_WALL_BLOCKS+NB_BONUS_BLOCKS-1;
+					}
 					break;
-				/*case SDL_MOUSEMOTION : //On déplace la souris
+				case SDL_MOUSEBUTTONUP: // On désactive le booléen qui disait qu'un bouton était enfoncé
+					if (event.button.button == SDL_BUTTON_LEFT)
+						clicGaucheEnCours = 0;
+					else if (event.button.button == SDL_BUTTON_RIGHT)
+						clicDroitEnCours = 0;
+					break;
+				case SDL_MOUSEMOTION : //On déplace la souris
 					if(type >= 0) //Si un élément est séléctionné
 					{
+						if(clicGaucheEnCours) LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE] = editor[type];
 						position.x = (event.motion.x/BLOCK_SIZE)*BLOCK_SIZE;
 						position.y = (event.motion.y/BLOCK_SIZE)*BLOCK_SIZE;
 					}
-					break;*/
+					if(clicDroitEnCours) LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN;
+					break;
 				case SDL_KEYDOWN :
 					if (event.key.keysym.sym == SDLK_ESCAPE) ok=0;
-					/*else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
+					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
 						save_level();
 						message=SAVE;
@@ -83,17 +93,18 @@ int editer()
 						draw_level();
 						message=DELETE;
 						tempsPrecedent = SDL_GetTicks();
-					}*/
+					}
 					break;
 				default : break;
 			}
 		}
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		load_gui(); //Affiche l'interface
-		//highlight_block(type); //Encadre l'élément actif
+		highlight_block(type); //Encadre l'élément actif
 		draw_level(); //Dessine le niveau
-		//SDL_BlitSurface(block[type], NULL, screen, &position); //Dessine l'élément actif au niveau de la souris
-		//print_info(&message, tempsPrecedent, info); //Affiche un message d'info s'il y en a
+		if(type<NB_WALL_BLOCKS) SDL_BlitSurface(BLOCK_MUR[type], NULL, screen, &position);
+		else SDL_BlitSurface(BLOCK_BONUS[type%NB_WALL_BLOCKS], NULL, screen, &position);
+		print_info(&message, tempsPrecedent, info); //Affiche un message d'info s'il y en a
 		SDL_Flip(screen);
 	}
 	return 0;
@@ -128,17 +139,17 @@ void print_info(int *message, int tempsPrecedent, POINT p)
 			break;
 		case SAVE:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", 25, p, blanc);
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", 20, p, blanc);
 			else *message=AUCUN;
 			break;
 		case LOAD:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", 25, p, blanc);
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", 20, p, blanc);
 			else *message=AUCUN;
 			break;
 		case DELETE:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level destroyed !", 25, p, blanc);
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level destroyed !", 20, p, blanc);
 			else *message=AUCUN;
 			break;
 		default : break;

@@ -2,19 +2,17 @@
 
 void jouer()
 {
+	Pacman pac;
+	Pacman *ptr=&pac;
 	SDL_Event event;
 	int ok=1;
 	init_level();
-	fprintf(stderr, "Level initialized successfully!\n");
 	init_blocks();
-	fprintf(stderr, "Blocks loaded successfully!\n");
 	load_level();
-	fprintf(stderr, "Level loaded successfully!\n");
-	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-	fprintf(stderr, "Dessin start!\n");
-	draw_level();
-	fprintf(stderr, "Level draw successfully!\n");
-	SDL_Flip(screen);
+	init_pacman(ptr);
+	//SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+	//draw_level();
+	//SDL_Flip(screen);
 	while(ok)
 	{
 		while(SDL_PollEvent(&event))
@@ -27,5 +25,10 @@ void jouer()
 					break;
 			}
 		}
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		draw_level();
+		affiche_pacman(ptr, 0);
+		affiche_pacman(ptr, 1);
+		SDL_Flip(screen);
 	}
 }

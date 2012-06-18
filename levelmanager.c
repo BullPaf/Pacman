@@ -40,11 +40,12 @@ void extract_val(char *s, int line)
 			}
 			else if(type=='2') //BONUS
 			{
+				fprintf(stderr, "Je vois un bonus block\n");
 				LEVEL[line][nb_val].type = BONUS;
 				i+=2; //On saute les ':'
-				while(s[i] != ':') //Délimiteur type de bonus et position
+				while(s[i] != ':') //Délimiteur type de bonus
 				{
-					while(s[i] != ',') //tant qu'on a pas de virgule on lit une valeur
+					while( (s[i] != ',') && (s[i] != ':') ) //tant qu'on a pas de virgule on lit une valeur
 					{
 						nb[j]=s[i];
 						j++; i++;
@@ -54,14 +55,16 @@ void extract_val(char *s, int line)
 						nb[1]=nb[0];
 						nb[0]='0';
 					}
+					fprintf(stderr, "... Et l'élément %d est un %d...", nb_elt, atoi(nb));
 					LEVEL[line][nb_val].elt_type[nb_elt]=atoi(nb);
-					nb_elt++; i++; j=0;
+					nb_elt++; j=0;
 				}
+				fprintf(stderr, "Fin lecture position\n");
 				i++; nb_elt=0;
 				while(s[i] != ' ') //tant qu'on a pas de virgule on lit une valeur
 				{
-					if(s[i]==',') i++;
-					else if(s[i]=='0') LEVEL[line][nb_val].position[nb_elt] = CENTRE;
+					//if(s[i]==',') i++;
+					if(s[i]=='0') LEVEL[line][nb_val].position[nb_elt] = CENTRE;
 					else if(s[i]=='1') LEVEL[line][nb_val].position[nb_elt] = HAUT;
 					else if(s[i]=='2') LEVEL[line][nb_val].position[nb_elt] = DROITE;
 					else if(s[i]=='3') LEVEL[line][nb_val].position[nb_elt] = BAS;
@@ -69,6 +72,14 @@ void extract_val(char *s, int line)
 					i++; nb_elt++;
 				}
 				LEVEL[line][nb_val].nb_elt=nb_elt;
+				fprintf(stderr, "Fin du bonus block\n");
+			}
+			else if(type=='3') //pac start
+			{
+				LEVEL[line][nb_val].type = RIEN;
+				//PAC_START_X=nb_val;
+				//PAC_START_Y=line;
+				i++;
 			}
 			nb_val ++;
 		}
@@ -162,6 +173,7 @@ void load_level()
 			extract_val(chaine, line); //Recupere les valeurs dans la ligne
 			line++;
 		}
+		fprintf(stderr, "Fin chargement fichier\n");
 		fclose(level_file);
 	}
 	else
@@ -175,17 +187,26 @@ void load_level()
  * Lit le tableau LEVEL est sauvegarde
  * le niveau dans un fichier
 */
-/*void save_level()
+void save_level()
 {
-	int i,j;
+	int i,j,k;
 	FILE *level_file = fopen("level.txt", "w+");
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 		{
-			fprintf(level_file, "%d ", LEVEL[i][j].block_type);
+			if(LEVEL[i][j].type==MUR) fprintf(level_file, "1:%d ", LEVEL[i][j].elt_type[0]);
+			else if(LEVEL[i][j].type==BONUS)
+			{
+				fprintf(level_file, "2:%d", LEVEL[i][j].elt_type[0]);
+				for(k=1; k<LEVEL[i][j].nb_elt; k++) fprintf(level_file, ",%d", LEVEL[i][j].elt_type[k]);
+				fprintf(level_file, ":%d", LEVEL[i][j].position[0]);
+				for(k=1; k<LEVEL[i][j].nb_elt; k++) fprintf(level_file, ":%d", LEVEL[i][j].position[k]);
+				fputc(' ', level_file);
+			}
+			else fputs("0 ", level_file);
 		}
 		fputc('\n', level_file);
 	}
 	fclose(level_file);
-}*/
+}

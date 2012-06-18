@@ -40,14 +40,14 @@ void getPixelColor(int x, int y, SDL_Surface *map, Uint8 *r, Uint8 *g, Uint8 *b)
 
 void init_pacman(Pacman *pac)
 {
-	pac->image[1] = SDL_LoadBMP("Pacman_g.bmp");
-	pac->image[2] = SDL_LoadBMP("Pacman_h.bmp");
-	pac->image[3] = SDL_LoadBMP("Pacman_d.bmp");
-	pac->image[4] = SDL_LoadBMP("Pacman_b.bmp");
-	pac->position.x = 10;
-	pac->position.y = 10;
-	pac->position.w = 19;
-	pac->position.h = 19;
+	pac->image[1] = SDL_LoadBMP("image/pacman/pacman_g.png");
+	pac->image[2] = SDL_LoadBMP("image/pacman/pacman_h.png");
+	pac->image[3] = SDL_LoadBMP("image/pacman/pacman_d.png");
+	pac->image[4] = SDL_LoadBMP("image/pacman/pacman_b.png");
+	pac->position.x = 1*BLOCK_SIZE;
+	pac->position.y = 1*BLOCK_SIZE;
+	//pac->position.w = 19;
+	//pac->position.h = 19;
 	pac->cur_direction = 3;
 	pac->direction_locked = 0;
 	pac->image[0]=pac->image[pac->cur_direction];
