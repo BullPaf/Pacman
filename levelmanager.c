@@ -10,7 +10,7 @@ void extract_val(char *s, int line)
 	if(line>=NB_BLOCKS_HAUTEUR) return;
 	char nb[3], type;
 	nb[0]='0'; nb[1]='0'; nb[2]='\0';
-	int nb_val=0,nb_elt=0,i=0,j=0,nb_ghost=0;
+	int nb_val=0,nb_elt=0,i=0,j=0,ghost=0;
 	while(nb_val < NB_BLOCKS_LARGEUR) //Tant qu'on a pas lu autant de valeur qu'il n'y a de case pour le niveau
 	{
 		if(s[i] != ' ') //Si ce n'est pas espace on conserve le caractere lu
@@ -89,14 +89,14 @@ void extract_val(char *s, int line)
 				i+=2;
 				LEVEL[line][nb_val].type = GHOST;
 				LEVEL[line][nb_val].position[0]=CENTRE;
-				GHOST_START_X[nb_ghost]=nb_val;
-				GHOST_START_Y[nb_ghost]=line;
-				if(s[i]=='0') GHOST_COULEUR[nb_ghost]=ROUGE;
-				else if(s[i]=='1') GHOST_COULEUR[nb_ghost]=VIOLET;
-				else if(s[i]=='2') GHOST_COULEUR[nb_ghost]=BLEU;
-				else if(s[i]=='3') GHOST_COULEUR[nb_ghost]=JAUNE;
-				LEVEL[line][nb_val].elt_type[0]=GHOST_COULEUR[nb_ghost];
-				i++; nb_ghost++;
+				if(s[i]=='0') ghost=ROUGE;
+				else if(s[i]=='1') ghost=VIOLET;
+				else if(s[i]=='2') ghost=BLEU;
+				else if(s[i]=='3') ghost=JAUNE;
+				GHOST_START_X[ghost]=nb_val;
+				GHOST_START_Y[ghost]=line;
+				LEVEL[line][nb_val].elt_type[0]=ghost;
+				i++; 
 			}
 			nb_val ++;
 		}
