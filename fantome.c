@@ -8,12 +8,12 @@ void init_ghosts(Fantome *ftm)
 	{
 		for(j=0; j<8; j++)
 		{
-			sprintf(img, "image/ghosts/%d.png", i*j);
+			sprintf(img, "image/ghosts/%d.png", i*8+j);
 			ftm[i].image[j] = IMG_Load(img);
 		}
-		ftm[i].position.x = (GHOST_START_X[i]+1)*BLOCK_SIZE;
-		ftm[i].position.y = (GHOST_START_Y[i]+1)*BLOCK_SIZE;
-		ftm[i].cur_direction = HAUT_1;
+		ftm[i].position.x = (GHOST_START_X[i])*BLOCK_SIZE;
+		ftm[i].position.y = (GHOST_START_Y[i])*BLOCK_SIZE;
+		ftm[i].cur_direction = 0;
 	}
 }
 
