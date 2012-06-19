@@ -209,7 +209,7 @@ void load_gui()
 {
 	POINT p1, p2;
 	SDL_Rect position;
-	int i, j, nb_col = 5, nb_ligne=(NB_ALL_BLOCKS-1)/nb_col + 1;
+	int i, nb_col = 5, nb_ligne=(NB_ALL_BLOCKS-1)/nb_col + 1;
 	p1.x=p2.x=WIDTH; p1.y=HEIGHT-1; p2.y=0;
 	draw_line(p1, p2, blanc, screen);
 	p2.x=EDIT_WIDTH-1;

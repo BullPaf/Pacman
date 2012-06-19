@@ -3,13 +3,14 @@
 void jouer()
 {
 	Pacman pac;
-	Pacman *ptr=&pac;
+	Fantome ftm[NB_GHOST_BLOCKS];
 	SDL_Event event;
 	int ok=1, direction=0;
 	init_level();
 	init_blocks();
 	load_level();
-	init_pacman(ptr);
+	init_pacman(&pac);
+	init_ghosts(ftm);
 	while(ok)
 	{
 		SDL_Delay(50);
@@ -32,10 +33,12 @@ void jouer()
 		}
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		draw_level();
-		affiche_pacman(ptr, 0);
-		deplace_pacman(ptr, direction);
-		mange(ptr);
-		affiche_pacman(ptr, 1);
+		affiche_pacman(&pac, 0);
+		affiche_fantome(ftm, 0);
+		deplace_pacman(&pac, direction);
+		mange(&pac);
+		affiche_pacman(&pac, 1);
+		affiche_fantome(ftm, 1);
 		SDL_Flip(screen);
 	}
 }
