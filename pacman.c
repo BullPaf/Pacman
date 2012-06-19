@@ -4,15 +4,17 @@
 
 void init_pacman(Pacman *pac)
 {
-	int i;
-	pac->image[GAUCHE] = IMG_Load("./image/pacman/1.png");
-	pac->image[HAUT] = IMG_Load("./image/pacman/2.png");
-	pac->image[DROITE] = IMG_Load("./image/pacman/3.png");
-	pac->image[BAS] = IMG_Load("image/pacman/4.png");
+	//int i;
+	pac->image[GAUCHE] = IMG_Load("./image/pacman/4.png");
+	pac->image[HAUT] = IMG_Load("./image/pacman/1.png");
+	pac->image[DROITE] = IMG_Load("./image/pacman/2.png");
+	pac->image[BAS] = IMG_Load("image/pacman/3.png");
 	//for(i=1; i<5; i++) SDL_SetColorKey(pac->image[i], SDL_SRCCOLORKEY, SDL_MapRGB(pac->image[i]->format, 0, 0, 0));
-	pac->position.x = 1*BLOCK_SIZE;
-	pac->position.y = 1*BLOCK_SIZE;
-	pac->cur_direction = 3;
+	pac->position.x = PAC_START_X*BLOCK_SIZE;
+	pac->position.y = PAC_START_Y*BLOCK_SIZE;
+	pac->cur_direction = PAC_START_DIRECTION;
+	pac->image[0]=pac->image[pac->cur_direction];
+	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 	pac->nb_lives = 2;
 	pac->score=0;
 }

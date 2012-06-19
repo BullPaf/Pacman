@@ -10,7 +10,7 @@ void extract_val(char *s, int line)
 	if(line>=NB_BLOCKS_HAUTEUR) return;
 	char nb[3], type;
 	nb[0]='0'; nb[1]='0'; nb[2]='\0';
-	int nb_val=0,nb_elt=0,i=0,j=0;
+	int nb_val=0,nb_elt=0,i=0,j=0,nb_ghost=0;
 	while(nb_val < NB_BLOCKS_LARGEUR) //Tant qu'on a pas lu autant de valeur qu'il n'y a de case pour le niveau
 	{
 		if(s[i] != ' ') //Si ce n'est pas espace on conserve le caractere lu
@@ -72,10 +72,31 @@ void extract_val(char *s, int line)
 			}
 			else if(type=='3') //pac start
 			{
-				LEVEL[line][nb_val].type = RIEN;
-				//PAC_START_X=nb_val;
-				//PAC_START_Y=line;
+				i+=2;
+				LEVEL[line][nb_val].type = PACMAN;
+				LEVEL[line][nb_val].position[0]=CENTRE;
+				PAC_START_X=nb_val;
+				PAC_START_Y=line;
+				if(s[i]=='1')PAC_START_DIRECTION = HAUT;
+				else if(s[i]=='2') PAC_START_DIRECTION = DROITE;
+				else if(s[i]=='3') PAC_START_DIRECTION = BAS;
+				else if(s[i]=='4') PAC_START_DIRECTION = GAUCHE;
+				LEVEL[line][nb_val].elt_type[0]=PAC_START_DIRECTION;
 				i++;
+			}
+			else if(type=='4') //pac start
+			{
+				i+=2;
+				LEVEL[line][nb_val].type = GHOST;
+				LEVEL[line][nb_val].position[0]=CENTRE;
+				GHOST_START_X[nb_ghost]=nb_val;
+				GHOST_START_Y[nb_ghost]=line;
+				if(s[i]=='0') GHOST_COULEUR[nb_ghost]=ROUGE;
+				else if(s[i]=='1') GHOST_COULEUR[nb_ghost]=VIOLET;
+				else if(s[i]=='2') GHOST_COULEUR[nb_ghost]=BLEU;
+				else if(s[i]=='3') GHOST_COULEUR[nb_ghost]=JAUNE;
+				LEVEL[line][nb_val].elt_type[0]=GHOST_COULEUR[nb_ghost];
+				i++; nb_ghost++;
 			}
 			nb_val ++;
 		}
@@ -118,12 +139,18 @@ int init_blocks()
 		BLOCK_BONUS[i] = IMG_Load(img);
 		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
-	for (i=1; i<5; i++)
+	for (i=1; i<NB_PACMAN_BLOCK+1; i++)
 	{
 		sprintf(img, "image/pacman/%d.png", i);
 		BLOCK_PACMAN[i-1] = IMG_Load(img);
 		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
+	//sprintf(img, "image/ghosts/%d.png", i);
+	BLOCK_GHOST[0] = IMG_Load("image/ghosts/0.png");
+	BLOCK_GHOST[1] = IMG_Load("image/ghosts/8.png");
+	BLOCK_GHOST[2] = IMG_Load("image/ghosts/16.png");
+	BLOCK_GHOST[3] = IMG_Load("image/ghosts/24.png");
+		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	return 1;
 }
 
@@ -142,10 +169,8 @@ void affiche_une_case(CASE c, SDL_Rect *pos, SDL_Surface *s)
 			SDL_BlitSurface(BLOCK_BONUS[c.elt_type[i]], NULL, s, pos);
 		}
 	}
-	else if(c.type==PACMAN)
-	{
-		SDL_BlitSurface(BLOCK_PACMAN[c.elt_type[0]], NULL, s, pos);
-	}
+	else if(c.type==PACMAN) SDL_BlitSurface(BLOCK_PACMAN[c.elt_type[0]-1], NULL, s, pos);
+	else if(c.type==GHOST) SDL_BlitSurface(BLOCK_GHOST[c.elt_type[0]], NULL, s, pos);
 }
 
 /*Dessine le niveau à l'écran*/
@@ -204,6 +229,8 @@ void save_level()
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 		{
 			if(LEVEL[i][j].type==MUR) fprintf(level_file, "1:%d ", LEVEL[i][j].elt_type[0]);
+			else if(LEVEL[i][j].type==PACMAN) fprintf(level_file, "3:%d ", LEVEL[i][j].elt_type[0]);
+			else if(LEVEL[i][j].type==GHOST) fprintf(level_file, "4:%d ", LEVEL[i][j].elt_type[0]);
 			else if(LEVEL[i][j].type==BONUS)
 			{
 				fprintf(level_file, "2:%d", LEVEL[i][j].elt_type[0]);
