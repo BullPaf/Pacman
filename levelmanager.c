@@ -188,6 +188,66 @@ void draw_level()
 	}
 }
 
+int dans_case(SDL_Rect pos)
+{
+	if( (pos.x % BLOCK_SIZE==0) && (pos.y % BLOCK_SIZE==0) ) return 1;
+	else return 0;
+}
+
+int can_move(SDL_Rect pos, int new_direction, int cur_direction)
+{
+	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
+	switch (new_direction)
+	{
+		case DROITE: //Vers la droite
+			if (!dans_case(pos)) {//Si on est entre deux cases
+				if( (cur_direction==GAUCHE) || (cur_direction==DROITE) ) return 1;
+			}
+			else if(LEVEL[case_y][case_x+1].type != MUR) return 1;
+			break;
+		case GAUCHE: //Vers la gauche
+			if(!dans_case(pos)) {
+				if( (cur_direction==GAUCHE) || (cur_direction==DROITE) ) return 1;
+			}
+			else if(LEVEL[case_y][case_x-1].type != MUR) return 1;
+			break;
+		case HAUT: //Vers le haut
+			if(!dans_case(pos)) {
+				if( (cur_direction==HAUT) || (cur_direction==BAS) ) return 1;
+			}
+			else if(LEVEL[case_y-1][case_x].type != MUR) return 1;
+			break;
+		case BAS: //Vers le bas
+			if(!dans_case(pos)) {
+				if( (cur_direction==HAUT) || (cur_direction==BAS) ) return 1;
+			}
+			else if(LEVEL[case_y+1][case_x].type != MUR) return 1;
+			break;
+		default: break;
+	}
+	return 0;
+}
+
+void move(SDL_Rect *pos, int direction)
+{
+	switch (direction)
+	{
+		case DROITE:
+			pos->x += STEP;
+			break;
+		case GAUCHE:
+			pos->x -= STEP;
+			break;
+		case HAUT:
+			pos->y -= STEP;
+			break;
+		case BAS:
+			pos->y += STEP;
+			break;
+		default: break;
+	}
+}
+
 /*
  * Lit un fichier et extrait les valeurs
  * pour affecter le tableau LEVEL

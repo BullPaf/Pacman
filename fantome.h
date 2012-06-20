@@ -15,11 +15,8 @@ typedef struct Fantome
 }Fantome;
 
 void init_ghosts(Fantome*);
-int f_dans_case(Fantome);
 void affiche_fantomes(Fantome*, int);
 int find_direction(Fantome);
-void move(Fantome*, int);
 void deplace_fantomes(Fantome*, int*);
-int can_move(Fantome, int);
 
 #endif

@@ -26,108 +26,18 @@ void affiche_pacman(Pacman *pac, int visible)
 	else SDL_BlitSurface(pac->image[0], NULL, screen, &pac->position); //SDL_FillRect(screen, &pac->position, rouge);
 }
 
-int dans_case(Pacman *pac)
-{
-	if( (pac->position.x % BLOCK_SIZE==0) && (pac->position.y % BLOCK_SIZE==0) ) return 1;
-	else return 0;
-}
-
 void deplace_pacman(Pacman *pac, int new_direction)
 {
-	//Si on a rien récupéré
 	if (new_direction == 0) new_direction = pac->cur_direction;
-	int case_x = pac->position.x / BLOCK_SIZE, case_y = pac->position.y / BLOCK_SIZE, can_move=0;
-	switch (new_direction)
+	//Si on peut se deplacer dans la nouvelle direction
+	if(can_move(pac->position, new_direction, pac->cur_direction))
 	{
-		case DROITE: //Vers la droite
-			if (!dans_case(pac)) //Si on est entre deux cases
-			{
-				if( (pac->cur_direction==GAUCHE) || (pac->cur_direction==DROITE) )
-				{
-					pac->position.x += STEP;
-					can_move=1;
-				}
-			}
-			else if(LEVEL[case_y][case_x+1].type != MUR)
-			{
-				pac->position.x += STEP;
-				can_move=1;
-			}
-			break;
-		case GAUCHE: //Vers la gauche
-			if(!dans_case(pac))
-			{
-				if( (pac->cur_direction==GAUCHE) || (pac->cur_direction==DROITE) )
-				{
-					pac->position.x -= STEP;
-					can_move=1;
-				}
-			}
-			else if(LEVEL[case_y][case_x-1].type != MUR)
-			{
-				pac->position.x -= STEP;
-				can_move=1;
-			}
-			break;
-		case HAUT: //Vers le haut
-			if(!dans_case(pac))
-			{
-				if( (pac->cur_direction==HAUT) || (pac->cur_direction==BAS) )
-				{
-					pac->position.y -= STEP;
-					can_move=1;
-				}
-			}
-			else if(LEVEL[case_y-1][case_x].type != MUR)
-			{
-				pac->position.y -= STEP;
-				can_move=1;
-			}
-			break;
-		case BAS: //Vers le bas
-			if(!dans_case(pac))
-			{
-				if( (pac->cur_direction==HAUT) || (pac->cur_direction==BAS) )
-				{
-					pac->position.y += STEP;
-					can_move=1;
-				}
-			}
-			else if(LEVEL[case_y+1][case_x].type != MUR)
-			{
-				pac->position.y += STEP;
-				can_move=1;
-			}
-			break;
-		default: break;
-	}
-	if(!can_move) //Si on ne peut pas changer de direction
-	{
-		if(pac->cur_direction==GAUCHE)
-		{
-			if(LEVEL[case_y][case_x-1].type != MUR) pac->position.x -= STEP;
-			else if(!dans_case(pac)) pac->position.x -= STEP;
-		}
-		else if(pac->cur_direction==DROITE)
-		{
-			if(LEVEL[case_y][case_x+1].type != MUR) pac->position.x += STEP;
-			else if(!dans_case(pac)) pac->position.x += STEP;
-		}
-		else if(pac->cur_direction==HAUT)
-		{
-			if(LEVEL[case_y-1][case_x].type != MUR) pac->position.y -= STEP;
-			else if(!dans_case(pac)) pac->position.y -= STEP;
-		}
-		else if(pac->cur_direction==BAS)
-		{
-			if(LEVEL[case_y+1][case_x].type != MUR) pac->position.y += STEP;
-			else if(!dans_case(pac)) pac->position.y += STEP;
-		}
-	}
-	else
-	{
+		move(&(pac->position), new_direction);
 		pac->cur_direction = new_direction;
 		pac->image[0]=pac->image[pac->cur_direction];
 	}
+	//Sinon si on peut continuer dans l'ancienne direction
+	else if(can_move(pac->position, pac->cur_direction, pac->cur_direction))
+		move(&(pac->position), pac->cur_direction);
 }
 

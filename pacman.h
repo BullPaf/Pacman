@@ -16,6 +16,5 @@ typedef struct Pacman
 void init_pacman(Pacman*);
 void affiche_pacman(Pacman*, int);
 void deplace_pacman(Pacman*, int);
-int dans_case(Pacman*);
 
 #endif
