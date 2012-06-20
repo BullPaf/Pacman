@@ -48,15 +48,24 @@ void jouer()
 
 void action(Pacman *pac, Fantome *ftm)
 {
-	int case_x,case_y, tempsActuel, i;
-	for(i=0; i<NB_GHOST_BLOCKS; i++)
+	int case_x,case_y, tempsEcoule, i;
+	/*for(i=0; i<NB_GHOST_BLOCKS; i++)
 	{
 		if(!(ftm[i].invinsible))
 		{
-			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - ftm[i].counter >= 5000) ftm[i].invinsible=1;
+			tempsEcoule = SDL_GetTicks()-ftm[i].counter;
+			if(tempsEcoule < 5000 && tempsEcoule > 3000)
+			{
+				ftm[i].num_image=10;
+			}
+			if (tempsEcoule >= 5000) //Fantome redevient invulnérable
+			{
+				ftm[i].invinsible=1;
+				//On charge l'image correspondante à la direction en cours
+				ftm[i].num_image=(ftm[i].cur_direction-1)*2;
+			}
 		}
-	}
+	}*/
 	switch(pac->cur_direction)
 	{
 		case DROITE: //Vers la droite
@@ -87,5 +96,7 @@ void set_ghosts_eatable(Fantome *ftm)
 	{
 		ftm[i].invinsible = 0;
 		ftm[i].counter = SDL_GetTicks();
+		//On charge l'image du fantome vulnérable
+		ftm[i].num_image = 8;
 	}
 }

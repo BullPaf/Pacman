@@ -58,13 +58,25 @@ void deplace_fantomes(Fantome *ftm, int *new_directions)
 			while( !can_move(ftm[i].position, new_directions[i], ftm[i].cur_direction) ) new_directions[i] = find_direction(ftm[i]);
 			move(&(ftm[i].position), new_directions[i]);
 			ftm[i].cur_direction = new_directions[i];
-			ftm[i].num_image=(ftm[i].cur_direction-1)*2;
+			//Si le fantome est invincible, on charge l'image correspondante à la nouvelle direction
+			if(ftm[i].invinsible) ftm[i].num_image=(ftm[i].cur_direction-1)*2;
 		}
-		if( !(ftm[i].invinsible) && ftm[i].num_image!=8 && ftm[i].num_image!=9 ) //Passage en mode mortelle
-			ftm[i].num_image=8;
-		else if(ftm[i].invinsible && (ftm[i].num_image==8 || ftm[i].num_image==9) ) //Passage en mode immortelle
-			ftm[i].num_image=(ftm[i].cur_direction-1)*2;
-		ftm[i].image[0]=ftm[i].image[ftm[i].num_image];
+		if(!(ftm[i].invinsible))
+		{
+			int tempsEcoule = SDL_GetTicks()-ftm[i].counter;
+			if(tempsEcoule < 5000 && tempsEcoule > 3000) //Fantome bientot invulnerable
+			{
+				if(ftm[i].num_image==10) ftm[i].num_image=9;
+				else ftm[i].num_image=10;
+				continue;
+			}
+			else if (tempsEcoule >= 5000) //Fantome redevient invulnérable
+			{
+				ftm[i].invinsible=1;
+				//On charge l'image correspondante à la direction en cours
+				ftm[i].num_image=(ftm[i].cur_direction-1)*2;
+			}
+		}
 		//Permutation des images pour effets de mouvements
 		if(ftm[i].num_image%2==0) ftm[i].num_image+=1;
 		else ftm[i].num_image-=1;
