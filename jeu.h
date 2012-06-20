@@ -7,5 +7,6 @@
 void jouer();
 void action(Pacman*, Fantome*);
 void set_ghosts_eatable(Fantome *ftm);
+int check_colision(Pacman*, Fantome);
 
 #endif

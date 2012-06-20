@@ -48,24 +48,7 @@ void jouer()
 
 void action(Pacman *pac, Fantome *ftm)
 {
-	int case_x,case_y, tempsEcoule, i;
-	/*for(i=0; i<NB_GHOST_BLOCKS; i++)
-	{
-		if(!(ftm[i].invinsible))
-		{
-			tempsEcoule = SDL_GetTicks()-ftm[i].counter;
-			if(tempsEcoule < 5000 && tempsEcoule > 3000)
-			{
-				ftm[i].num_image=10;
-			}
-			if (tempsEcoule >= 5000) //Fantome redevient invulnérable
-			{
-				ftm[i].invinsible=1;
-				//On charge l'image correspondante à la direction en cours
-				ftm[i].num_image=(ftm[i].cur_direction-1)*2;
-			}
-		}
-	}*/
+	int case_x,case_y, i;
 	switch(pac->cur_direction)
 	{
 		case DROITE: //Vers la droite
@@ -81,12 +64,22 @@ void action(Pacman *pac, Fantome *ftm)
 			case_y = pac->position.y/BLOCK_SIZE;
 			break;
 	}
+	for(i=0; i<NB_GHOST_BLOCKS; i++) check_colision(pac, ftm[i]);
 	if(LEVEL[case_y][case_x].type == BONUS)
 	{
 		if(LEVEL[case_y][case_x].elt_type[0]==0) pac->score+=100;
 		else if(LEVEL[case_y][case_x].elt_type[0]==1) set_ghosts_eatable(ftm);//pac->nb_lives++;
 		LEVEL[case_y][case_x].type=RIEN;
 	}
+}
+
+int check_colision(Pacman *pac, Fantome f)
+{
+	if(pac->cur_direction != f.cur_direction)
+	{
+		return 1;
+	}
+	else return 0;
 }
 
 void set_ghosts_eatable(Fantome *ftm)
