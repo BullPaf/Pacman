@@ -10,7 +10,6 @@ void init_ghosts(Fantome *ftm)
 		{
 			sprintf(img, "image/ghosts/%d.png", i*8+j);
 			ftm[i].image[j] = IMG_Load(img);
-			SDL_SetColorKey(ftm[i].image[j], SDL_SRCCOLORKEY, SDL_MapRGB(ftm[i].image[j]->format, 0, 0, 0));
 		}
 		ftm[i].image[j] = IMG_Load("image/ghosts/32.png");
 		j++;

@@ -4,12 +4,10 @@
 
 void init_pacman(Pacman *pac)
 {
-	int i;
 	pac->image[GAUCHE] = IMG_Load("./image/pacman/4.png");
 	pac->image[HAUT] = IMG_Load("./image/pacman/1.png");
 	pac->image[DROITE] = IMG_Load("./image/pacman/2.png");
 	pac->image[BAS] = IMG_Load("image/pacman/3.png");
-	for(i=1; i<5; i++) SDL_SetColorKey(pac->image[i], SDL_SRCCOLORKEY, SDL_MapRGB(pac->image[i]->format, 0, 0, 0));
 	pac->position.x = PAC_START_X*BLOCK_SIZE;
 	pac->position.y = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;

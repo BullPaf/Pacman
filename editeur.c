@@ -132,6 +132,8 @@ void plot_object(int x, int y, int type)
 			}
 		}
 	}
+	//Rajouter qu'on ne peut placer 2 fois le meme fantome
+	//Rajouter aussi que si le bloc est de type bonus[0] incrementer le compteur de points
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
 
