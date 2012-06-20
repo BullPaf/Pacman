@@ -39,16 +39,24 @@ void jouer()
 		affiche_fantomes(ftm, 0);
 		deplace_pacman(&pac, pac_new_direction);
 		deplace_fantomes(ftm, ghosts_new_directions);
-		mange(&pac);
+		action(&pac, ftm);
 		affiche_pacman(&pac, 1);
 		affiche_fantomes(ftm, 1);
 		SDL_Flip(screen);
 	}
 }
 
-void mange(Pacman *pac)
+void action(Pacman *pac, Fantome *ftm)
 {
-	int case_x,case_y;
+	int case_x,case_y, tempsActuel, i;
+	for(i=0; i<NB_GHOST_BLOCKS; i++)
+	{
+		if(!(ftm[i].invinsible))
+		{
+			tempsActuel = SDL_GetTicks();
+			if (tempsActuel - ftm[i].counter >= 5000) ftm[i].invinsible=1;
+		}
+	}
 	switch(pac->cur_direction)
 	{
 		case DROITE: //Vers la droite
@@ -67,7 +75,17 @@ void mange(Pacman *pac)
 	if(LEVEL[case_y][case_x].type == BONUS)
 	{
 		if(LEVEL[case_y][case_x].elt_type[0]==0) pac->score+=100;
-		else if(LEVEL[case_y][case_x].elt_type[0]==1)pac->nb_lives++;
+		else if(LEVEL[case_y][case_x].elt_type[0]==1) set_ghosts_eatable(ftm);//pac->nb_lives++;
 		LEVEL[case_y][case_x].type=RIEN;
+	}
+}
+
+void set_ghosts_eatable(Fantome *ftm)
+{
+	int i;
+	for(i=0; i<NB_GHOST_BLOCKS; i++)
+	{
+		ftm[i].invinsible = 0;
+		ftm[i].counter = SDL_GetTicks();
 	}
 }

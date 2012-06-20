@@ -10,8 +10,10 @@ typedef struct Fantome
 {
 	int cur_direction;
 	int num_image;
+	int invinsible;
+	int counter;
 	SDL_Rect position;
-	SDL_Surface* image[8];
+	SDL_Surface* image[12];
 }Fantome;
 
 void init_ghosts(Fantome*);

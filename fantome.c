@@ -11,10 +11,19 @@ void init_ghosts(Fantome *ftm)
 			sprintf(img, "image/ghosts/%d.png", i*8+j);
 			ftm[i].image[j] = IMG_Load(img);
 		}
-		ftm[i].position.x = (GHOST_START_X[i])*BLOCK_SIZE;
-		ftm[i].position.y = (GHOST_START_Y[i])*BLOCK_SIZE;
+		ftm[i].image[j] = IMG_Load("image/ghosts/32.png");
+		j++;
+		ftm[i].image[j] = IMG_Load("image/ghosts/33.png");
+		j++;
+		ftm[i].image[j] = IMG_Load("image/ghosts/34.png");
+		j++;
+		ftm[i].image[j] = IMG_Load("image/ghosts/35.png");
+		ftm[i].position.x    = (GHOST_START_X[i])*BLOCK_SIZE;
+		ftm[i].position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
 		ftm[i].cur_direction = 1;
-		ftm[i].num_image=(ftm[i].cur_direction-1)*2;
+		ftm[i].num_image     = (ftm[i].cur_direction-1)*2;
+		ftm[i].invinsible    = 1;
+		ftm[i].counter       = 0;
 		LEVEL[GHOST_START_Y[i]][GHOST_START_X[i]].type=RIEN;
 	}
 }
@@ -51,7 +60,12 @@ void deplace_fantomes(Fantome *ftm, int *new_directions)
 			ftm[i].cur_direction = new_directions[i];
 			ftm[i].num_image=(ftm[i].cur_direction-1)*2;
 		}
+		if( !(ftm[i].invinsible) && ftm[i].num_image!=8 && ftm[i].num_image!=9 ) //Passage en mode mortelle
+			ftm[i].num_image=8;
+		else if(ftm[i].invinsible && (ftm[i].num_image==8 || ftm[i].num_image==9) ) //Passage en mode immortelle
+			ftm[i].num_image=(ftm[i].cur_direction-1)*2;
 		ftm[i].image[0]=ftm[i].image[ftm[i].num_image];
+		//Permutation des images pour effets de mouvements
 		if(ftm[i].num_image%2==0) ftm[i].num_image+=1;
 		else ftm[i].num_image-=1;
 	}
