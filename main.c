@@ -45,36 +45,5 @@ int main(int argc, char** argv)
 		SDL_Flip(screen);
 	}
 	SDL_Quit();
-	/*Pacman pac;
-	Pacman *ptr=&pac;
-	int direction;
-
-	if(argc == 2)
-	{
-		if(!strcmp(argv[1], "edit"))
-			fprintf(stdout, "Entering Edit Mode!\n");
-			init_graphics(EDIT_WIDTH, EDIT_HEIGHT);
-			if(enter_edit_mode());
-			else return 0;
-	}
-
-	init_pacman(ptr);
-	init_graphics(WIDTH, HEIGHT);
-	init_blocks();
-	load_level();
-	draw_level();
-	while (isAlive(ptr))
-	{
-		SDL_Delay(20);
-		direction = wait_fleche();
-		affiche_pacman(ptr, 0);
-		deplace_pacman(ptr, direction);
-		affiche_pacman(ptr, 1);
-		SDL_Flip(screen);
-	}
-	fill_screen(noir);
-	SDL_Flip(screen);
-	wait_escape();*/
-
 	return EXIT_SUCCESS;
 }

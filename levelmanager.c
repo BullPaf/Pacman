@@ -145,12 +145,11 @@ int init_blocks()
 		BLOCK_PACMAN[i-1] = IMG_Load(img);
 		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
-	//sprintf(img, "image/ghosts/%d.png", i);
 	BLOCK_GHOST[0] = IMG_Load("image/ghosts/0.png");
 	BLOCK_GHOST[1] = IMG_Load("image/ghosts/8.png");
 	BLOCK_GHOST[2] = IMG_Load("image/ghosts/16.png");
 	BLOCK_GHOST[3] = IMG_Load("image/ghosts/24.png");
-		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
+	//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	return 1;
 }
 
@@ -206,7 +205,6 @@ void load_level()
 			extract_val(chaine, line); //Recupere les valeurs dans la ligne
 			line++;
 		}
-		fprintf(stderr, "Fin chargement fichier\n");
 		fclose(level_file);
 	}
 	else

@@ -32,7 +32,6 @@ int editer()
 						if( (event.button.x >= WIDTH) && (event.button.x < EDIT_WIDTH-1) ) //On click dans le menu de droite
 						{
 							type = get_block_type(event.button.x, event.button.y, type); //Recupère l'élément choisi
-							//fprintf(stderr, "Type = %d\n", type);
 							position.x = event.button.x-BLOCK_SIZE/2; //Centre la texture sur le pointeur
 							position.y = event.button.y-BLOCK_SIZE/2;
 						}

@@ -17,7 +17,4 @@
 #define EDIT_WIDTH WIDTH+116 //Largeur en mode edition
 #define EDIT_HEIGHT HEIGHT //Hauteur en mode edition
 
-//Case de départ de pacman
-//int PAC_START_X=1;
-//int PAC_START_Y=1;
 #endif

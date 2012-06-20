@@ -1,20 +1,25 @@
 #ifndef H_FANTOME
 #define H_FANTOME
+#include <time.h>
 #include "levelmanager.h"
 #include "constantes.h"
 
-typedef enum Deplacement {HAUT_1, HAUT_2, BAS_1, BAS_2, GAUCHE_1, GAUCHE_2, DROITE_1, DROITE_2}Deplacement;
+typedef enum Deplacement {HAUT_1, HAUT_2, DROITE_1, DROITE_2, BAS_1, BAS_2, GAUCHE_1, GAUCHE_2}Deplacement;
 
 typedef struct Fantome
 {
 	int cur_direction;
+	int num_image;
 	SDL_Rect position;
 	SDL_Surface* image[8];
 }Fantome;
 
-//Fantome ftm[NB_GHOST_BLOCKS];
-
 void init_ghosts(Fantome*);
-void affiche_fantome(Fantome*, int);
+int f_dans_case(Fantome);
+void affiche_fantomes(Fantome*, int);
+int find_direction(Fantome);
+void move(Fantome*, int);
+void deplace_fantomes(Fantome*, int*);
+int can_move(Fantome, int);
 
 #endif
