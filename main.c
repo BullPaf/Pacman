@@ -1,6 +1,3 @@
-//#include "graphics.h"
-#include "pacman.h"
-#include "levelmanager.h"
 #include "editeur.h"
 #include "jeu.h"
 #include <stdio.h>

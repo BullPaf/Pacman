@@ -7,6 +7,7 @@ int editer()
 {
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Editeur Pacman");
 	SDL_ShowCursor(SDL_ENABLE);
+	SDL_WarpMouse(WIDTH / 2, EDIT_HEIGHT / 2);
 	POINT info;
 	info.x=WIDTH+10;
 	info.y=HEIGHT-100;
@@ -131,7 +132,22 @@ void plot_object(int x, int y, int type)
 			}
 		}
 	}
-	//Rajouter qu'on ne peut placer 2 fois le meme fantome
+	else if(editor[type].type==GHOST)
+	{
+		int i,j;
+		//Si un le meme fantome existe déja on doit le supprimer
+		for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
+		{
+			for(j=0; j<NB_BLOCKS_LARGEUR; j++)
+			{
+				if(LEVEL[i][j].type==GHOST && LEVEL[i][j].elt_type[0]==editor[type].elt_type[0])
+				{
+					LEVEL[i][j].type=RIEN;
+					break;
+				}
+			}
+		}
+	}
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
 
