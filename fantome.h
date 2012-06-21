@@ -13,12 +13,14 @@ typedef struct Fantome
 	int invinsible;
 	int counter;
 	SDL_Rect position;
-	SDL_Surface* image[12];
+	SDL_Surface* image[16];
 }Fantome;
 
 void init_ghosts(Fantome*);
 void affiche_fantomes(Fantome*);
 int find_direction(Fantome);
 void deplace_fantomes(Fantome*, int*);
+void ghost_death(Fantome*, int);
+void ghost_restart(Fantome*, int);
 
 #endif

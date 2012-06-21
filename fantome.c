@@ -22,6 +22,14 @@ void init_ghosts(Fantome *ftm)
 		ftm[i].image[j] = IMG_Load("image/ghosts/34.png");
 		j++;
 		ftm[i].image[j] = IMG_Load("image/ghosts/35.png");
+		j++;
+		ftm[i].image[j] = IMG_Load("image/ghosts/36.png");
+		j++;
+		ftm[i].image[j] = IMG_Load("image/ghosts/37.png");
+		j++;
+		ftm[i].image[j] = IMG_Load("image/ghosts/38.png");
+		j++;
+		ftm[i].image[j] = IMG_Load("image/ghosts/39.png");
 		ftm[i].position.x    = (GHOST_START_X[i])*BLOCK_SIZE;
 		ftm[i].position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
 		ftm[i].cur_direction = 1;
@@ -30,6 +38,16 @@ void init_ghosts(Fantome *ftm)
 		ftm[i].counter       = 0;
 		LEVEL[GHOST_START_Y[i]][GHOST_START_X[i]].type=RIEN;
 	}
+}
+
+void ghost_restart(Fantome *ftm, int i)
+{
+	ftm->position.x    = (GHOST_START_X[i])*BLOCK_SIZE;
+	ftm->position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
+	ftm->cur_direction = 1;
+	ftm->num_image     = (ftm->cur_direction-1)*2;
+	ftm->invinsible    = 1;
+	ftm->counter       = 0;
 }
 
 //Pour afficher Pacman
@@ -80,4 +98,9 @@ void deplace_fantomes(Fantome *ftm, int *new_directions)
 		if(ftm[i].num_image%2==0) ftm[i].num_image+=1;
 		else ftm[i].num_image-=1;
 	}
+}
+
+void ghost_death(Fantome* ftm, int i)
+{
+	ghost_restart(ftm, i);
 }

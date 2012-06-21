@@ -51,11 +51,16 @@ int jouer()
 
 void action(Pacman *pac, Fantome *ftm)
 {
-	int i;
+	int i, col;
 	SDL_Rect pos;
 	for(i=0; i<NB_GHOST_BLOCKS; i++) {
-		if(check_colision(pac, ftm[i])) {
+		col=check_colision(pac, ftm[i]);
+		if(col==1) {
 			pac_death(pac);
+			return;
+		}
+		if(col==2) {
+			ghost_death(&ftm[i], i);
 			return;
 		}
 	}
@@ -67,8 +72,9 @@ void action(Pacman *pac, Fantome *ftm)
 			POINTS--;
 		}
 		else if(LEVEL[pos.y][pos.x].elt_type[0]==1) {
-			if(pac->nb_lives<5) pac->nb_lives++;
-			else SCORE+=1000;
+			//if(pac->nb_lives<5) pac->nb_lives++;
+			//else SCORE+=1000;
+			set_ghosts_eatable(ftm);
 		}
 		LEVEL[pos.y][pos.x].type=RIEN;
 	}
@@ -95,11 +101,18 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 	return pos;
 }
 
+/*Detecteur de colision a améliorer!!*/
 int check_colision(Pacman *pac, Fantome f)
 {
 	SDL_Rect pac_case = get_case(pac->position, pac->cur_direction);
 	SDL_Rect ftm_case = get_case(f.position, f.cur_direction);
-	if(pac_case.x == ftm_case.x && pac_case.y == ftm_case.y) return 1;
+	//S'ils sont sur la meme case alors colision /!\ En cas de changement de case entre 2 deplacements
+	//pas de colision détécté.
+	if(pac_case.x == ftm_case.x && pac_case.y == ftm_case.y)
+	{
+		if(f.invinsible) return 1; //Pacman se fait manger
+		else return 2; //Fantome se fait manger
+	}
 	else return 0;
 }
 
