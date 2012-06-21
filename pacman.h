@@ -13,7 +13,7 @@ typedef struct Pacman
 }Pacman;
 
 void init_pacman(Pacman*);
-void affiche_pacman(Pacman*, int);
+void affiche_pacman(Pacman*);
 void deplace_pacman(Pacman*, int);
 void pac_death(Pacman*);
 void pac_restart(Pacman*);

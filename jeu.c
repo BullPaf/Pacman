@@ -40,8 +40,8 @@ int jouer()
 		draw_score();
 		deplace_pacman(&pac, pac_new_direction);
 		deplace_fantomes(ftm, ghosts_new_directions);
-		affiche_pacman(&pac, 1);
-		affiche_fantomes(ftm, 1);
+		affiche_pacman(&pac);
+		affiche_fantomes(ftm);
 		action(&pac, ftm);
 		if(!pac.nb_lives) return 0;
 		SDL_Flip(screen);

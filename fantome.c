@@ -33,14 +33,10 @@ void init_ghosts(Fantome *ftm)
 }
 
 //Pour afficher Pacman
-void affiche_fantomes(Fantome *ftm, int visible)
+void affiche_fantomes(Fantome *ftm)
 {
 	int i;
-	for(i=0; i<NB_GHOST_BLOCKS; i++)
-	{
-		if (!visible) SDL_FillRect(screen, &(ftm[i].position), noir);
-		else SDL_BlitSurface(ftm[i].image[ftm[i].num_image], NULL, screen, &(ftm[i].position));
-	}
+	for(i=0; i<NB_GHOST_BLOCKS; i++) SDL_BlitSurface(ftm[i].image[ftm[i].num_image], NULL, screen, &(ftm[i].position));
 }
 
 int find_direction(Fantome f)
