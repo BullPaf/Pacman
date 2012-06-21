@@ -14,7 +14,7 @@
 
 #define WIDTH BLOCK_SIZE * NB_BLOCKS_LARGEUR //Largeur d'ecran
 #define HEIGHT BLOCK_SIZE * NB_BLOCKS_HAUTEUR //Hauteur d'ecran
-#define EDIT_WIDTH WIDTH+116 //Largeur en mode edition
+#define EDIT_WIDTH WIDTH+200 //Largeur en mode edition
 #define EDIT_HEIGHT HEIGHT //Hauteur en mode edition
 
 #endif

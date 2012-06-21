@@ -13,8 +13,7 @@ int editer()
 	SDL_Rect position;
 	SDL_Event event;
 	position.x=position.y=0;
-	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0;
-	int tempsPrecedent=0;
+	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0, tempsPrecedent=0;
 	init_blocks();
 	init_editor();
 	init_level();
@@ -132,8 +131,11 @@ void plot_object(int x, int y, int type)
 			}
 		}
 	}
+	/*else if(editor[type].type==BONUS && editor[type].elt_type[0]==0) //Si on place un point
+	{
+		POINTS++;
+	}*/
 	//Rajouter qu'on ne peut placer 2 fois le meme fantome
-	//Rajouter aussi que si le bloc est de type bonus[0] incrementer le compteur de points
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
 
@@ -171,6 +173,7 @@ void init_editor()
 		editor[i].elt_type[0]=j;
 		i++;
 	}
+	POINTS=0;
 }
 
 void print_info(int *message, int tempsPrecedent, POINT p)

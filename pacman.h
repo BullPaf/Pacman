@@ -8,7 +8,6 @@ typedef struct Pacman
 {
 	int cur_direction;
 	int nb_lives;
-	int score;
 	SDL_Rect position;
 	SDL_Surface* image[5];
 }Pacman;

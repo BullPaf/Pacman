@@ -7,10 +7,15 @@
 */
 void extract_val(char *s, int line)
 {
-	if(line>=NB_BLOCKS_HAUTEUR) return;
 	char nb[3], type;
 	nb[0]='0'; nb[1]='0'; nb[2]='\0';
 	int nb_val=0,nb_elt=0,i=0,j=0,ghost=0;
+	/*if(line==0) //On lit le nombre de point à manger
+	{
+		POINTS=atoi(s);
+		return;
+	}
+	else line-=1;*/
 	while(nb_val < NB_BLOCKS_LARGEUR) //Tant qu'on a pas lu autant de valeur qu'il n'y a de case pour le niveau
 	{
 		if(s[i] != ' ') //Si ce n'est pas espace on conserve le caractere lu
@@ -55,12 +60,12 @@ void extract_val(char *s, int line)
 						nb[0]='0';
 					}
 					LEVEL[line][nb_val].elt_type[nb_elt]=atoi(nb);
+					if(atoi(nb) == 0) POINTS++;
 					nb_elt++; j=0;
 				}
 				i++; nb_elt=0;
 				while(s[i] != ' ') //tant qu'on a pas de virgule on lit une valeur
 				{
-					//if(s[i]==',') i++;
 					if(s[i]=='0') LEVEL[line][nb_val].position[nb_elt] = CENTRE;
 					else if(s[i]=='1') LEVEL[line][nb_val].position[nb_elt] = HAUT;
 					else if(s[i]=='2') LEVEL[line][nb_val].position[nb_elt] = DROITE;
@@ -282,6 +287,7 @@ void save_level()
 {
 	int i,j,k;
 	FILE *level_file = fopen("level.txt", "w+");
+	//fprintf(level_file, "%d\n", SCORE);
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)

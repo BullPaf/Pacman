@@ -14,7 +14,6 @@ void init_pacman(Pacman *pac)
 	pac->image[0]=pac->image[pac->cur_direction];
 	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 	pac->nb_lives = 2;
-	pac->score=0;
 }
 
 //Pour afficher Pacman
