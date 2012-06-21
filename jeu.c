@@ -1,6 +1,6 @@
 #include "jeu.h"
 
-void jouer()
+int jouer()
 {
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	Pacman pac;
@@ -44,6 +44,7 @@ void jouer()
 		action(&pac, ftm);
 		SDL_Flip(screen);
 	}
+	return 1;
 }
 
 void action(Pacman *pac, Fantome *ftm)

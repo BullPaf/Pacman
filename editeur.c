@@ -131,10 +131,6 @@ void plot_object(int x, int y, int type)
 			}
 		}
 	}
-	/*else if(editor[type].type==BONUS && editor[type].elt_type[0]==0) //Si on place un point
-	{
-		POINTS++;
-	}*/
 	//Rajouter qu'on ne peut placer 2 fois le meme fantome
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
@@ -173,7 +169,6 @@ void init_editor()
 		editor[i].elt_type[0]=j;
 		i++;
 	}
-	POINTS=0;
 }
 
 void print_info(int *message, int tempsPrecedent, POINT p)
@@ -216,7 +211,7 @@ void load_gui()
 	int i, nb_col = 5, nb_ligne=(NB_ALL_BLOCKS-1)/nb_col + 1;
 	p1.x=p2.x=WIDTH; p1.y=HEIGHT-1; p2.y=0;
 	draw_line(p1, p2, blanc, screen);
-	p2.x=EDIT_WIDTH-1;
+	p2.x=WIDTH+nb_col*(BLOCK_SIZE+3);
 	for(i=0; i<=nb_ligne; i++)
 	{
 		p1.y=p2.y=HEIGHT-(1+i*(BLOCK_SIZE+3));

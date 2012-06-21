@@ -10,12 +10,6 @@ void extract_val(char *s, int line)
 	char nb[3], type;
 	nb[0]='0'; nb[1]='0'; nb[2]='\0';
 	int nb_val=0,nb_elt=0,i=0,j=0,ghost=0;
-	/*if(line==0) //On lit le nombre de point à manger
-	{
-		POINTS=atoi(s);
-		return;
-	}
-	else line-=1;*/
 	while(nb_val < NB_BLOCKS_LARGEUR) //Tant qu'on a pas lu autant de valeur qu'il n'y a de case pour le niveau
 	{
 		if(s[i] != ' ') //Si ce n'est pas espace on conserve le caractere lu
@@ -60,7 +54,7 @@ void extract_val(char *s, int line)
 						nb[0]='0';
 					}
 					LEVEL[line][nb_val].elt_type[nb_elt]=atoi(nb);
-					if(atoi(nb) == 0) POINTS++;
+					if(atoi(nb) == 0) POINTS++; //Si c'est un point on incremente le nombre de POINTS
 					nb_elt++; j=0;
 				}
 				i++; nb_elt=0;
@@ -125,6 +119,7 @@ void init_level()
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 			LEVEL[i][j].type = RIEN;
 	}
+	POINTS=0;
 }
 
 /*Affecte à chaque block une texture*/
@@ -136,25 +131,21 @@ int init_blocks()
 	{
 		sprintf(img, "image/level/%d.png", i);
 		BLOCK_MUR[i] = IMG_Load(img);
-		//SDL_SetColorKey(BLOCK_MUR[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
 	for (i=0; i<NB_BONUS_BLOCKS; i++)
 	{
 		sprintf(img, "image/bonus/%d.png", i);
 		BLOCK_BONUS[i] = IMG_Load(img);
-		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
 	for (i=1; i<NB_PACMAN_BLOCK+1; i++)
 	{
 		sprintf(img, "image/pacman/%d.png", i);
 		BLOCK_PACMAN[i-1] = IMG_Load(img);
-		//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	}
 	BLOCK_GHOST[0] = IMG_Load("image/ghosts/0.png");
 	BLOCK_GHOST[1] = IMG_Load("image/ghosts/8.png");
 	BLOCK_GHOST[2] = IMG_Load("image/ghosts/16.png");
 	BLOCK_GHOST[3] = IMG_Load("image/ghosts/24.png");
-	//SDL_SetColorKey(BLOCK_BONUS[i], SDL_SRCCOLORKEY, SDL_MapRGB(BLOCK_MUR[i]->format, 0, 0, 0));
 	return 1;
 }
 
@@ -287,7 +278,6 @@ void save_level()
 {
 	int i,j,k;
 	FILE *level_file = fopen("level.txt", "w+");
-	//fprintf(level_file, "%d\n", SCORE);
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)

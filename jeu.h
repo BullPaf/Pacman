@@ -4,7 +4,7 @@
 #include "fantome.h"
 #include "levelmanager.h"
 
-void jouer();
+int jouer();
 void action(Pacman*, Fantome*);
 void set_ghosts_eatable(Fantome *ftm);
 void draw_lives(Pacman*);
