@@ -172,6 +172,7 @@ void affiche_une_case(CASE c, SDL_Rect *pos, SDL_Surface *s)
 void draw_level()
 {
 	int i,j;
+	POINT p1, p2;
 	SDL_Rect position;
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
@@ -182,6 +183,8 @@ void draw_level()
 			affiche_une_case(LEVEL[i][j], &position, screen);
 		}
 	}
+	p1.x=p2.x=WIDTH; p1.y=HEIGHT-1; p2.y=0;
+	draw_line(p1, p2, blanc, screen);
 }
 
 int dans_case(SDL_Rect pos)

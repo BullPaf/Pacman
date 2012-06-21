@@ -12,6 +12,7 @@ int jouer()
 	load_level();
 	init_pacman(&pac);
 	init_ghosts(ftm);
+	srand(time(NULL));
 	for(i=0; i<NB_GHOST_BLOCKS; i++) ghosts_new_directions[i]=0;
 	while(POINTS)
 	{
@@ -42,6 +43,7 @@ int jouer()
 		affiche_pacman(&pac, 1);
 		affiche_fantomes(ftm, 1);
 		action(&pac, ftm);
+		if(!pac.nb_lives) return 0;
 		SDL_Flip(screen);
 	}
 	return 1;
@@ -49,43 +51,55 @@ int jouer()
 
 void action(Pacman *pac, Fantome *ftm)
 {
-	int case_x,case_y, i;
-	switch(pac->cur_direction)
-	{
-		case DROITE: //Vers la droite
-			case_x = (pac->position.x+BLOCK_SIZE-1)/BLOCK_SIZE;
-			case_y = pac->position.y/BLOCK_SIZE;
-			break;
-		case BAS:
-			case_x = pac->position.x/BLOCK_SIZE;
-			case_y = (pac->position.y+BLOCK_SIZE-1)/BLOCK_SIZE;
-			break;
-		default:
-			case_x = pac->position.x/BLOCK_SIZE;
-			case_y = pac->position.y/BLOCK_SIZE;
-			break;
+	int i;
+	SDL_Rect pos;
+	for(i=0; i<NB_GHOST_BLOCKS; i++) {
+		if(check_colision(pac, ftm[i])) {
+			pac_death(pac);
+			return;
+		}
 	}
-	for(i=0; i<NB_GHOST_BLOCKS; i++) check_colision(pac, ftm[i]);
-	if(LEVEL[case_y][case_x].type == BONUS)
+	pos=get_case(pac->position, pac->cur_direction);
+	if(LEVEL[pos.y][pos.x].type == BONUS)
 	{
-		if(LEVEL[case_y][case_x].elt_type[0]==0) {
+		if(LEVEL[pos.y][pos.x].elt_type[0]==0) {
 			SCORE+=100;
 			POINTS--;
 		}
-		else if(LEVEL[case_y][case_x].elt_type[0]==1) {
+		else if(LEVEL[pos.y][pos.x].elt_type[0]==1) {
 			if(pac->nb_lives<5) pac->nb_lives++;
 			else SCORE+=1000;
 		}
-		LEVEL[case_y][case_x].type=RIEN;
+		LEVEL[pos.y][pos.x].type=RIEN;
 	}
+}
+
+SDL_Rect get_case(SDL_Rect position, int direction)
+{
+	SDL_Rect pos;
+	switch(direction)
+	{
+		case DROITE: //Vers la droite
+			pos.x = (position.x+BLOCK_SIZE-1)/BLOCK_SIZE;
+			pos.y = position.y/BLOCK_SIZE;
+			break;
+		case BAS:
+			pos.x = position.x/BLOCK_SIZE;
+			pos.y = (position.y+BLOCK_SIZE-1)/BLOCK_SIZE;
+			break;
+		default:
+			pos.x = position.x/BLOCK_SIZE;
+			pos.y = position.y/BLOCK_SIZE;
+			break;
+	}
+	return pos;
 }
 
 int check_colision(Pacman *pac, Fantome f)
 {
-	if(pac->cur_direction != f.cur_direction)
-	{
-		return 1;
-	}
+	SDL_Rect pac_case = get_case(pac->position, pac->cur_direction);
+	SDL_Rect ftm_case = get_case(f.position, f.cur_direction);
+	if(pac_case.x == ftm_case.x && pac_case.y == ftm_case.y) return 1;
 	else return 0;
 }
 
@@ -108,7 +122,7 @@ void draw_lives(Pacman *pac)
 	SDL_Rect position;
 	int i;
 	p1.x=WIDTH+10; p1.y=10;
-	aff_pol("Lives :", 22, p1, blanc);
+	aff_pol("Lives :", FONT_SIZE, p1, blanc);
 	position.y=p1.y+30;
 	for(i=0; i<pac->nb_lives; i++)
 	{
@@ -123,8 +137,8 @@ void draw_score()
 	char score[50];
 	sprintf(score, "Score : %d", SCORE);
 	p1.x=WIDTH+10; p1.y=100;
-	aff_pol(score, 22, p1, blanc);
+	aff_pol(score, FONT_SIZE, p1, blanc);
 	sprintf(score, "Restant : %d", POINTS);
 	p1.x=WIDTH+10; p1.y=150;
-	aff_pol(score, 22, p1, blanc);
+	aff_pol(score, FONT_SIZE, p1, blanc);
 }

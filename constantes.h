@@ -17,4 +17,6 @@
 #define EDIT_WIDTH WIDTH+200 //Largeur en mode edition
 #define EDIT_HEIGHT HEIGHT //Hauteur en mode edition
 
+#define FONT_SIZE 22
+
 #endif

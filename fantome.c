@@ -9,7 +9,11 @@ void init_ghosts(Fantome *ftm)
 		for(j=0; j<8; j++)
 		{
 			sprintf(img, "image/ghosts/%d.png", i*8+j);
-			ftm[i].image[j] = IMG_Load(img);
+			if( (ftm[i].image[j] = IMG_Load(img)) == NULL )
+			{
+				fprintf(stderr, "Erreur chargement texture n°%d de Pacman\n", i);
+				exit(EXIT_FAILURE);
+			}
 		}
 		ftm[i].image[j] = IMG_Load("image/ghosts/32.png");
 		j++;
@@ -41,7 +45,6 @@ void affiche_fantomes(Fantome *ftm, int visible)
 
 int find_direction(Fantome f)
 {
-	//srand(time(NULL));
 	return rand()%4+1;
 }
 

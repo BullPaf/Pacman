@@ -196,17 +196,17 @@ void print_info(int *message, int tempsPrecedent, POINT p)
 			break;
 		case SAVE:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", 20, p, blanc);
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", FONT_SIZE, p, blanc);
 			else *message=AUCUN;
 			break;
 		case LOAD:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", 20, p, blanc);
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", FONT_SIZE, p, blanc);
 			else *message=AUCUN;
 			break;
 		case DELETE:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level destroyed !", 20, p, blanc);
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level destroyed !", FONT_SIZE, p, blanc);
 			else *message=AUCUN;
 			break;
 		default : break;
@@ -246,15 +246,15 @@ void load_gui()
 		affiche_une_case(editor[i], &position, screen);
 	}
 	/*p1.x=WIDTH+10; p1.y=position.y + 200;
-	aff_pol("Sauvegarder : s", 25, p1, blanc);
+	aff_pol("Sauvegarder : s", FONT_SIZE, p1, blanc);
 	p1.y=p1.y+50;
 	aff_pol("Charger : l", 25, p1, blanc);
 	p1.y=p1.y+50;
-	aff_pol("Effacer : Clic droit", 25, p1, blanc);
+	aff_pol("Effacer : Clic droit", FONT_SIZE, p1, blanc);
 	p1.y=p1.y+50;
 	aff_pol("Tout effacer : r", 25, p1, blanc);
 	p1.y=p1.y+50;
-	aff_pol("Menu Principal : Echap", 25, p1, blanc);*/
+	aff_pol("Menu Principal : Echap", FONT_SIZE, p1, blanc);*/
 }
 
 /*

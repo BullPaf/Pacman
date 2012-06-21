@@ -4,10 +4,17 @@
 
 void init_pacman(Pacman *pac)
 {
-	pac->image[GAUCHE] = IMG_Load("./image/pacman/4.png");
-	pac->image[HAUT] = IMG_Load("./image/pacman/1.png");
-	pac->image[DROITE] = IMG_Load("./image/pacman/2.png");
-	pac->image[BAS] = IMG_Load("image/pacman/3.png");
+	char img[32];
+	int i;
+	for(i=1; i<16; i++)
+	{
+		sprintf(img, "image/pacman/%d.png", i);
+		if( (pac->image[i] = IMG_Load(img)) == NULL )
+		{
+			fprintf(stderr, "Erreur chargement texture n°%d de Pacman\n", i);
+			exit(EXIT_FAILURE);
+		}
+	}
 	pac->position.x = PAC_START_X*BLOCK_SIZE;
 	pac->position.y = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;
@@ -16,11 +23,20 @@ void init_pacman(Pacman *pac)
 	pac->nb_lives = 2;
 }
 
+void pac_restart(Pacman *pac)
+{
+	pac->nb_lives--;
+	pac->position.x = PAC_START_X*BLOCK_SIZE;
+	pac->position.y = PAC_START_Y*BLOCK_SIZE;
+	pac->cur_direction = PAC_START_DIRECTION;
+	pac->image[0]=pac->image[pac->cur_direction];
+}
+
 //Pour afficher Pacman
 void affiche_pacman(Pacman *pac, int visible)
 {
 	if (!visible) SDL_FillRect(screen, &pac->position, noir);
-	else SDL_BlitSurface(pac->image[0], NULL, screen, &pac->position); //SDL_FillRect(screen, &pac->position, rouge);
+	else SDL_BlitSurface(pac->image[0], NULL, screen, &pac->position);
 }
 
 void deplace_pacman(Pacman *pac, int new_direction)
@@ -38,3 +54,15 @@ void deplace_pacman(Pacman *pac, int new_direction)
 		move(&(pac->position), pac->cur_direction);
 }
 
+void pac_death(Pacman *pac)
+{
+	int i;
+	for(i=5; i<16; i++)
+	{
+		SDL_Delay(40);
+		SDL_FillRect(screen, &pac->position, noir);
+		SDL_BlitSurface(pac->image[i], NULL, screen, &pac->position);
+		SDL_Flip(screen);
+	}
+	pac_restart(pac);
+}
