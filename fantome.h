@@ -18,7 +18,7 @@ typedef struct Fantome
 
 void init_ghosts(Fantome*);
 void affiche_fantomes(Fantome*);
-int find_direction(Fantome);
+int find_direction(Fantome, SDL_Rect);
 void deplace_fantomes(Fantome*, int*);
 void ghost_death(Fantome*, int);
 void ghost_restart(Fantome*, int);

@@ -39,7 +39,7 @@ int jouer()
 		draw_lives(&pac);
 		draw_score();
 		deplace_pacman(&pac, pac_new_direction);
-		deplace_fantomes(ftm, ghosts_new_directions);
+		for(i=0; i<NB_GHOST_BLOCKS; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i);
 		affiche_pacman(&pac);
 		affiche_fantomes(ftm);
 		action(&pac, ftm);
