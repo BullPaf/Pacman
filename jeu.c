@@ -1,6 +1,6 @@
 #include "jeu.h"
 
-int jouer()
+int jouer(int level)
 {
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	Pacman pac;
@@ -9,7 +9,7 @@ int jouer()
 	int i, pac_new_direction=0, ghosts_new_directions[NB_GHOST_BLOCKS];
 	init_level();
 	init_blocks();
-	load_level();
+	load_level(LEVEL_FILE[level]);
 	init_pacman(&pac);
 	init_ghosts(ftm);
 	srand(time(NULL));
@@ -28,6 +28,8 @@ int jouer()
 					else if (event.key.keysym.sym == SDLK_DOWN) pac_new_direction=BAS;
 					else if (event.key.keysym.sym == SDLK_LEFT) pac_new_direction=GAUCHE;
 					else if (event.key.keysym.sym == SDLK_RIGHT) pac_new_direction=DROITE;
+					else if (event.key.keysym.sym == SDLK_w) return 1; //cheat code for winning!!
+					else if (event.key.keysym.sym == SDLK_l) return 0; //cheat code for loosing!!
 					break;
 				default:
 					pac_new_direction=0;

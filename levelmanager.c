@@ -115,10 +115,16 @@ void extract_val(char *s, int line)
 void init_level()
 {
 	int i,j;
+	char level[32];
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 			LEVEL[i][j].type = RIEN;
+	}
+	for(i=0; i<NB_LEVEL; i++)
+	{
+		sprintf(level, "level/level_%d.txt", i+1);
+		strcpy(LEVEL_FILE[i], level);
 	}
 	POINTS=0;
 }
@@ -269,13 +275,45 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 	return pos;
 }
 
+char* select_file()
+{
+	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+	SDL_Event event;
+	POINT p1;
+	p1.x=50;
+	char level[128];
+	int i, ok=1;
+	for(i=0; i<NB_LEVEL; i++)
+	{
+		p1.y = i*100+100;
+		sprintf(level, "%d : level %d", i+1, i+1);
+		aff_pol(level, FONT_SIZE, p1, blanc);
+	}
+	SDL_Flip(screen);
+	while(ok)
+	{
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_QUIT : exit(EXIT_SUCCESS);
+			case SDL_KEYDOWN:
+				if(event.key.keysym.sym==SDLK_ESCAPE) return NULL;
+				else if (event.key.keysym.sym==SDLK_KP1) return LEVEL_FILE[0];
+				else if (event.key.keysym.sym==SDLK_KP2) return LEVEL_FILE[1];
+				break;
+			default: break;
+		}
+	}
+	return NULL;
+}
+
 /*
  * Lit un fichier et extrait les valeurs
  * pour affecter le tableau LEVEL
 */
-void load_level()
+void load_level(char *level)
 {
-	FILE *level_file = fopen("level.txt", "r");
+	FILE *level_file = fopen(level, "r");
 	char chaine[LINE_SIZE];
 	int line=0;
 	if (level_file != NULL)
@@ -299,10 +337,10 @@ void load_level()
  * Lit le tableau LEVEL est sauvegarde
  * le niveau dans un fichier
 */
-void save_level()
+void save_level(char *level)
 {
 	int i,j,k;
-	FILE *level_file = fopen("level.txt", "w+");
+	FILE *level_file = fopen(level, "w+");
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)

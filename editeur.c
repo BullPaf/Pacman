@@ -71,18 +71,26 @@ int editer()
 					if (event.key.keysym.sym == SDLK_ESCAPE) ok=0;
 					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
-						save_level();
-						message=SAVE;
-						tempsPrecedent = SDL_GetTicks();
+						char* level = select_file();
+						if(level != NULL)
+						{
+							save_level(level);
+							message=SAVE;
+							tempsPrecedent = SDL_GetTicks();
+						}
 					}
 					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
 					{
-						load_level();
-						SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-						load_gui();
-						draw_level();
-						message=LOAD;
-						tempsPrecedent = SDL_GetTicks();
+						char* level = select_file();
+						if(level != NULL)
+						{
+							load_level(level);
+							SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+							load_gui();
+							draw_level();
+							message=LOAD;
+							tempsPrecedent = SDL_GetTicks();
+						}
 					}
 					else if (event.key.keysym.sym == SDLK_r) //'r' --> supprime tout
 					{
@@ -245,16 +253,16 @@ void load_gui()
 		position.y=2+(BLOCK_SIZE+3)*(i/5);
 		affiche_une_case(editor[i], &position, screen);
 	}
-	/*p1.x=WIDTH+10; p1.y=position.y + 200;
+	p1.x=WIDTH+10; p1.y=position.y + 200;
 	aff_pol("Sauvegarder : s", FONT_SIZE, p1, blanc);
 	p1.y=p1.y+50;
-	aff_pol("Charger : l", 25, p1, blanc);
+	aff_pol("Charger : l", FONT_SIZE, p1, blanc);
 	p1.y=p1.y+50;
 	aff_pol("Effacer : Clic droit", FONT_SIZE, p1, blanc);
 	p1.y=p1.y+50;
-	aff_pol("Tout effacer : r", 25, p1, blanc);
+	aff_pol("Tout effacer : r", FONT_SIZE, p1, blanc);
 	p1.y=p1.y+50;
-	aff_pol("Menu Principal : Echap", FONT_SIZE, p1, blanc);*/
+	aff_pol("Menu Principal : Echap", FONT_SIZE, p1, blanc);
 }
 
 /*

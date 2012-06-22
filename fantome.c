@@ -15,21 +15,15 @@ void init_ghosts(Fantome *ftm)
 				exit(EXIT_FAILURE);
 			}
 		}
-		ftm[i].image[j] = IMG_Load("image/ghosts/32.png");
-		j++;
-		ftm[i].image[j] = IMG_Load("image/ghosts/33.png");
-		j++;
-		ftm[i].image[j] = IMG_Load("image/ghosts/34.png");
-		j++;
-		ftm[i].image[j] = IMG_Load("image/ghosts/35.png");
-		j++;
-		ftm[i].image[j] = IMG_Load("image/ghosts/36.png");
-		j++;
-		ftm[i].image[j] = IMG_Load("image/ghosts/37.png");
-		j++;
-		ftm[i].image[j] = IMG_Load("image/ghosts/38.png");
-		j++;
-		ftm[i].image[j] = IMG_Load("image/ghosts/39.png");
+		for(j=8; j<16; j++)
+		{
+			sprintf(img, "image/ghosts/%d.png", 24+j);
+			if( (ftm[i].image[j] = IMG_Load(img)) == NULL )
+			{
+				fprintf(stderr, "Erreur chargement texture n°%d de Pacman\n", i);
+				exit(EXIT_FAILURE);
+			}
+		}
 		ftm[i].position.x    = (GHOST_START_X[i])*BLOCK_SIZE;
 		ftm[i].position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
 		ftm[i].cur_direction = 1;
@@ -58,6 +52,8 @@ void affiche_fantomes(Fantome *ftm)
 	for(i=0; i<NB_GHOST_BLOCKS; i++) SDL_BlitSurface(ftm[i].image[ftm[i].num_image], NULL, screen, &(ftm[i].position));
 }
 
+/*Fonction assez naïve qui cherche la meilleur direction à prendre
+ * en fonction de l'objectif*/
 int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 {
 	SDL_Rect ftm_case, target_case;
@@ -118,6 +114,8 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 	else ftm->num_image -= 1;
 }
 
+/*Comment faire pour ne pas avoir besoin de pacman
+ * et de tout redessiner? Deplacer cette fonction dans jeu.c?*/
 void ghost_death(Fantome* ftm, int i, Pacman *pac)
 {
 	SDL_Rect start;

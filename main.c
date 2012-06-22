@@ -19,7 +19,7 @@ void affiche_menu()
 
 int main(int argc, char** argv)
 {
-	int continuer=1;
+	int continuer=1, level=0;
 	SDL_Event event;
 	init_graphics(WIDTH, HEIGHT, "Pacman");
 	while (continuer)
@@ -32,7 +32,10 @@ int main(int argc, char** argv)
 				break;
 			case SDL_KEYDOWN:
 				if(event.key.keysym.sym==SDLK_ESCAPE) continuer=0;
-				else if (event.key.keysym.sym==SDLK_KP1) jouer(); //fprintf(stdout, "On Joue!\n");
+				else if (event.key.keysym.sym==SDLK_KP1)
+				{
+					while(jouer(level) && level<NB_LEVEL) level++; //fprintf(stdout, "On Joue!\n");
+				}
 				else if (event.key.keysym.sym==SDLK_KP2) editer(); //fprintf(stdout, "On Edite!\n");
 				break;
 		}

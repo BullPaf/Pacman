@@ -2,6 +2,7 @@
 #define H_LEVEL
 #include "graphics.h"
 #include "constantes.h"
+#include "filemanager.h"
 #include <string.h>
 #define LINE_SIZE 2048
 
@@ -37,14 +38,16 @@ Couleur GHOST_COULEUR[NB_GHOST_BLOCKS];
 
 //Un niveau est un ensemble de CASE
 CASE LEVEL[NB_BLOCKS_HAUTEUR][NB_BLOCKS_LARGEUR];
+char LEVEL_FILE[NB_LEVEL][128];
 
 int init_blocks(); //Ok
 void init_level(); //Ok
-void load_level(); //Ok
-void save_level(); //ok
+void load_level(char*); //Ok
+void save_level(char*); //ok
 void extract_val(char *s, int line); //OK
 void draw_level(); //ok
 void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);
+char* select_file();
 
 int dans_case(SDL_Rect);
 int can_move(SDL_Rect, int, int);
