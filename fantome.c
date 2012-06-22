@@ -44,7 +44,7 @@ void ghost_restart(Fantome *ftm, int i)
 {
 	ftm->position.x    = (GHOST_START_X[i])*BLOCK_SIZE;
 	ftm->position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
-	ftm->cur_direction = 1;
+	ftm->cur_direction = rand()%4+1;;
 	ftm->num_image     = (ftm->cur_direction-1)*2;
 	ftm->invinsible    = 1;
 	ftm->counter       = 0;
@@ -71,7 +71,7 @@ void deplace_fantomes(Fantome *ftm, int *new_directions)
 {
 	SDL_Rect fake_target;
 	fake_target.x=fake_target.y=0;
-	if (*new_directions == 0) *new_directions = ftm->cur_direction;
+	if (*new_directions != ftm->cur_direction) *new_directions = ftm->cur_direction;
 	if(can_move(ftm->position, *new_directions, ftm->cur_direction)) move(&(ftm->position), *new_directions);
 	else
 	{
@@ -84,13 +84,13 @@ void deplace_fantomes(Fantome *ftm, int *new_directions)
 	if(!(ftm->invinsible))
 	{
 		int tempsEcoule = SDL_GetTicks()-ftm->counter;
-		if(tempsEcoule < 5000 && tempsEcoule > 3000) //Fantome bientot invulnerable
+		if(tempsEcoule < 7000 && tempsEcoule > 5000) //Fantome bientot invulnerable
 		{
 			if(ftm->num_image==10) ftm->num_image=9;
 			else ftm->num_image=10;
 			return;
 		}
-		else if (tempsEcoule >= 5000) //Fantome redevient invulnérable
+		else if (tempsEcoule >= 7000) //Fantome redevient invulnérable
 		{
 			ftm->invinsible=1;
 			//On charge l'image correspondante à la direction en cours

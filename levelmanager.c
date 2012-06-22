@@ -43,7 +43,7 @@ void extract_val(char *s, int line)
 				i+=2; //On saute les ':'
 				while(s[i] != ':') //Délimiteur type de bonus
 				{
-					while( (s[i] != ',') && (s[i] != ':') ) //tant qu'on a pas de virgule on lit une valeur
+					while( (s[i] != ',') && (s[i] != ':') ) //tant qu'on a pas de virgule ou de deux points on lit une valeur
 					{
 						nb[j]=s[i];
 						j++; i++;
@@ -58,7 +58,7 @@ void extract_val(char *s, int line)
 					nb_elt++; j=0;
 				}
 				i++; nb_elt=0;
-				while(s[i] != ' ') //tant qu'on a pas de virgule on lit une valeur
+				while(s[i] != ' ') //tant qu'on ai pas arrivé à la fin on lit les positions
 				{
 					if(s[i]=='0') LEVEL[line][nb_val].position[nb_elt] = CENTRE;
 					else if(s[i]=='1') LEVEL[line][nb_val].position[nb_elt] = HAUT;
@@ -68,6 +68,7 @@ void extract_val(char *s, int line)
 					i++; nb_elt++;
 				}
 				LEVEL[line][nb_val].nb_elt=nb_elt;
+				nb_elt=0;
 			}
 			else if(type=='3') //pac start
 			{
@@ -76,14 +77,14 @@ void extract_val(char *s, int line)
 				LEVEL[line][nb_val].position[0]=CENTRE;
 				PAC_START_X=nb_val;
 				PAC_START_Y=line;
-				if(s[i]=='1')PAC_START_DIRECTION = HAUT;
+				if(s[i]=='1') PAC_START_DIRECTION = HAUT;
 				else if(s[i]=='2') PAC_START_DIRECTION = DROITE;
 				else if(s[i]=='3') PAC_START_DIRECTION = BAS;
 				else if(s[i]=='4') PAC_START_DIRECTION = GAUCHE;
 				LEVEL[line][nb_val].elt_type[0]=PAC_START_DIRECTION;
 				i++;
 			}
-			else if(type=='4') //pac start
+			else if(type=='4') //fantome start
 			{
 				i+=2;
 				LEVEL[line][nb_val].type = GHOST;

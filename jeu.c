@@ -13,10 +13,10 @@ int jouer()
 	init_pacman(&pac);
 	init_ghosts(ftm);
 	srand(time(NULL));
-	for(i=0; i<NB_GHOST_BLOCKS; i++) ghosts_new_directions[i]=0;
+	for(i=0; i<NB_GHOST_BLOCKS; i++) ghosts_new_directions[i]=1;
 	while(POINTS)
 	{
-		SDL_Delay(40);
+		SDL_Delay(DELAY);
 		while(SDL_PollEvent(&event))
 		{
 			switch(event.type)
@@ -60,7 +60,7 @@ void action(Pacman *pac, Fantome *ftm)
 			return;
 		}
 		if(col==2) {
-			ghost_death(&ftm[i], i);
+			ghost_death(ftm+i, i);
 			return;
 		}
 	}
