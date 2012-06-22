@@ -39,7 +39,7 @@ int jouer()
 		draw_lives(&pac);
 		draw_score();
 		deplace_pacman(&pac, pac_new_direction);
-		for(i=0; i<NB_GHOST_BLOCKS; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i);
+		for(i=0; i<NB_GHOST_BLOCKS; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i, pac.position, pac.cur_direction);
 		affiche_pacman(&pac);
 		affiche_fantomes(ftm);
 		action(&pac, ftm);
@@ -60,7 +60,7 @@ void action(Pacman *pac, Fantome *ftm)
 			return;
 		}
 		if(col==2) {
-			ghost_death(ftm+i, i);
+			ghost_death(ftm, i, pac);
 			return;
 		}
 	}
@@ -72,33 +72,14 @@ void action(Pacman *pac, Fantome *ftm)
 			POINTS--;
 		}
 		else if(LEVEL[pos.y][pos.x].elt_type[0]==1) {
-			//if(pac->nb_lives<5) pac->nb_lives++;
-			//else SCORE+=1000;
 			set_ghosts_eatable(ftm);
+		}
+		else if(LEVEL[pos.y][pos.x].elt_type[0]==2) {
+			if(pac->nb_lives<5) pac->nb_lives++;
+			else SCORE+=1000;
 		}
 		LEVEL[pos.y][pos.x].type=RIEN;
 	}
-}
-
-SDL_Rect get_case(SDL_Rect position, int direction)
-{
-	SDL_Rect pos;
-	switch(direction)
-	{
-		case DROITE: //Vers la droite
-			pos.x = (position.x+BLOCK_SIZE-1)/BLOCK_SIZE;
-			pos.y = position.y/BLOCK_SIZE;
-			break;
-		case BAS:
-			pos.x = position.x/BLOCK_SIZE;
-			pos.y = (position.y+BLOCK_SIZE-1)/BLOCK_SIZE;
-			break;
-		default:
-			pos.x = position.x/BLOCK_SIZE;
-			pos.y = position.y/BLOCK_SIZE;
-			break;
-	}
-	return pos;
 }
 
 /*Detecteur de colision a améliorer!!*/

@@ -35,6 +35,7 @@ void init_ghosts(Fantome *ftm)
 		ftm[i].cur_direction = 1;
 		ftm[i].num_image     = (ftm[i].cur_direction-1)*2;
 		ftm[i].invinsible    = 1;
+		ftm[i].dead          = 0;
 		ftm[i].counter       = 0;
 		LEVEL[GHOST_START_Y[i]][GHOST_START_X[i]].type=RIEN;
 	}
@@ -46,7 +47,7 @@ void ghost_restart(Fantome *ftm, int i)
 	ftm->position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
 	ftm->cur_direction = rand()%4+1;;
 	ftm->num_image     = (ftm->cur_direction-1)*2;
-	ftm->invinsible    = 1;
+	ftm->dead          = 0;
 	ftm->counter       = 0;
 }
 
@@ -57,28 +58,42 @@ void affiche_fantomes(Fantome *ftm)
 	for(i=0; i<NB_GHOST_BLOCKS; i++) SDL_BlitSurface(ftm[i].image[ftm[i].num_image], NULL, screen, &(ftm[i].position));
 }
 
-int find_direction(Fantome f, SDL_Rect target)
+int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 {
-	if(target.x != 0 && target.y != 0)
+	SDL_Rect ftm_case, target_case;
+	ftm_case = get_case(f.position, f.cur_direction);
+	target_case = get_case(target_pos, target_dir);
+	if(ftm_case.x > target_case.x)
 	{
-		return rand()%4+1;
+		if(can_move(f.position, GAUCHE, f.cur_direction)) return GAUCHE;
 	}
-	else return rand()%4+1;
+	else if(ftm_case.x < target_case.x)
+	{
+		if(can_move(f.position, DROITE, f.cur_direction)) return DROITE;
+	}
+	if(ftm_case.y > target_case.y)
+	{
+		if(can_move(f.position, HAUT, f.cur_direction)) return HAUT;
+	}
+	else if(ftm_case.y < target_case.y)
+	{
+		if(can_move(f.position, BAS, f.cur_direction)) return BAS;
+	}
+	int rand_dir = rand()%4+1;
+	while( !can_move(f.position, rand_dir, f.cur_direction) ) rand_dir = rand()%4+1;
+	return rand_dir;
 }
 
 /*Deplacements aléatoires*/
-void deplace_fantomes(Fantome *ftm, int *new_directions)
+void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int target_dir)
 {
-	SDL_Rect fake_target;
-	fake_target.x=fake_target.y=0;
-	if (*new_directions != ftm->cur_direction) *new_directions = ftm->cur_direction;
+	if (*new_directions != ftm->cur_direction && !ftm->dead) *new_directions = ftm->cur_direction;
 	if(can_move(ftm->position, *new_directions, ftm->cur_direction)) move(&(ftm->position), *new_directions);
 	else
 	{
-		while( !can_move(ftm->position, *new_directions, ftm->cur_direction) ) *new_directions = find_direction(*ftm, fake_target);
+		*new_directions = find_direction(*ftm, target, target_dir);
 		move(&(ftm->position), *new_directions);
 		ftm->cur_direction = *new_directions;
-		//Si le fantome est invincible, on charge l'image correspondante à la nouvelle direction
 		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
 	}
 	if(!(ftm->invinsible))
@@ -97,12 +112,34 @@ void deplace_fantomes(Fantome *ftm, int *new_directions)
 			ftm->num_image=(ftm->cur_direction-1)*2;
 		}
 	}
+	if(ftm->dead) ftm->num_image=11+ftm->cur_direction;
 	//Permutation des images pour effets de mouvements
-	if(ftm->num_image%2==0) ftm->num_image+=1;
-	else ftm->num_image-=1;
+	else if(ftm->num_image%2==0) ftm->num_image+=1;
+	else ftm->num_image -= 1;
 }
 
-void ghost_death(Fantome* ftm, int i)
+void ghost_death(Fantome* ftm, int i, Pacman *pac)
 {
-	ghost_restart(ftm, i);
+	SDL_Rect start;
+	start.x = (GHOST_START_X[i])*BLOCK_SIZE;
+	start.y = (GHOST_START_Y[i])*BLOCK_SIZE;
+	ftm[i].dead=1;
+	ftm[i].invinsible=1;
+	int dir=find_direction(ftm[i], start, 0);
+	ftm[i].cur_direction = dir;
+	int timer=SDL_GetTicks(), time_elapsed=0;
+	while ( (ftm[i].position.x != start.x || ftm[i].position.y != start.y) && time_elapsed < 7500)
+	{
+		SDL_Delay(5);
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		draw_level();
+		draw_lives(pac);
+		draw_score();
+		deplace_fantomes(ftm+i, &dir, start, 0);
+		affiche_pacman(pac);
+		affiche_fantomes(ftm);
+		SDL_Flip(screen);
+		time_elapsed = SDL_GetTicks()-timer;
+	}
+	ghost_restart(ftm+i, i);
 }

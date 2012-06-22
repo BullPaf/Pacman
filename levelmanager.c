@@ -248,6 +248,27 @@ void move(SDL_Rect *pos, int direction)
 	}
 }
 
+SDL_Rect get_case(SDL_Rect position, int direction)
+{
+	SDL_Rect pos;
+	switch(direction)
+	{
+		case DROITE: //Vers la droite
+			pos.x = (position.x+BLOCK_SIZE-1)/BLOCK_SIZE;
+			pos.y = position.y/BLOCK_SIZE;
+			break;
+		case BAS:
+			pos.x = position.x/BLOCK_SIZE;
+			pos.y = (position.y+BLOCK_SIZE-1)/BLOCK_SIZE;
+			break;
+		default:
+			pos.x = position.x/BLOCK_SIZE;
+			pos.y = position.y/BLOCK_SIZE;
+			break;
+	}
+	return pos;
+}
+
 /*
  * Lit un fichier et extrait les valeurs
  * pour affecter le tableau LEVEL
