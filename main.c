@@ -34,7 +34,7 @@ int main(int argc, char** argv)
 				if(event.key.keysym.sym==SDLK_ESCAPE) continuer=0;
 				else if (event.key.keysym.sym==SDLK_KP1)
 				{
-					while(jouer(level) && level<NB_LEVEL) level++; //fprintf(stdout, "On Joue!\n");
+					while(level<NB_LEVEL && jouer(level)) level++; //fprintf(stdout, "On Joue!\n");
 				}
 				else if (event.key.keysym.sym==SDLK_KP2) editer(); //fprintf(stdout, "On Edite!\n");
 				break;

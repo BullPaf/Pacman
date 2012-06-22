@@ -15,6 +15,7 @@ int editer()
 	SDL_Event event;
 	position.x=position.y=0;
 	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0, tempsPrecedent=0;
+	char level[128];
 	init_blocks();
 	init_editor();
 	init_level();
@@ -71,7 +72,7 @@ int editer()
 					if (event.key.keysym.sym == SDLK_ESCAPE) ok=0;
 					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
-						char* level = select_file();
+						strcpy(level, select_file());
 						if(level != NULL)
 						{
 							save_level(level);
@@ -81,7 +82,7 @@ int editer()
 					}
 					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
 					{
-						char* level = select_file();
+						strcpy(level, select_file());
 						if(level != NULL)
 						{
 							load_level(level);
@@ -115,7 +116,7 @@ int editer()
 		else if(type<NB_BONUS_BLOCKS+NB_WALL_BLOCKS+NB_PACMAN_BLOCK)
 			SDL_BlitSurface(BLOCK_PACMAN[type%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS)], NULL, screen, &position);
 		else SDL_BlitSurface(BLOCK_GHOST[type%(NB_WALL_BLOCKS+NB_BONUS_BLOCKS+NB_PACMAN_BLOCK)], NULL, screen, &position);
-		print_info(&message, tempsPrecedent, info); //Affiche un message d'info s'il y en a
+		print_info(&message, tempsPrecedent, info, level); //Affiche un message d'info s'il y en a
 		SDL_Flip(screen);
 	}
 	return 0;
@@ -195,21 +196,25 @@ void init_editor()
 	}
 }
 
-void print_info(int *message, int tempsPrecedent, POINT p)
+void print_info(int *message, int tempsPrecedent, POINT p, char* level)
 {
 	int tempsActuel;
+	char tmp[128];
+	strcpy(tmp, level);
 	switch(*message)
 	{
 		case AUCUN:
 			break;
 		case SAVE:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Level saved !", FONT_SIZE, p, blanc);
+			strcat(tmp, "saved !");
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol(tmp, FONT_SIZE, p, blanc);
 			else *message=AUCUN;
 			break;
 		case LOAD:
 			tempsActuel = SDL_GetTicks();
-			if (tempsActuel - tempsPrecedent < 5000) aff_pol("Last level loaded !", FONT_SIZE, p, blanc);
+			strcat(tmp, "loaded !");
+			if (tempsActuel - tempsPrecedent < 5000) aff_pol(tmp, FONT_SIZE, p, blanc);
 			else *message=AUCUN;
 			break;
 		case DELETE:
@@ -253,7 +258,7 @@ void load_gui()
 		position.y=2+(BLOCK_SIZE+3)*(i/5);
 		affiche_une_case(editor[i], &position, screen);
 	}
-	p1.x=WIDTH+10; p1.y=position.y + 200;
+	p1.x=WIDTH+10; p1.y=position.y + 50;
 	aff_pol("Sauvegarder : s", FONT_SIZE, p1, blanc);
 	p1.y=p1.y+50;
 	aff_pol("Charger : l", FONT_SIZE, p1, blanc);

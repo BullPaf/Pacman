@@ -2,7 +2,6 @@
 #define H_LEVEL
 #include "graphics.h"
 #include "constantes.h"
-#include "filemanager.h"
 #include <string.h>
 #define LINE_SIZE 2048
 

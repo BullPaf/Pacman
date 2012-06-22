@@ -11,7 +11,7 @@ void load_gui();
 void init_editor();
 void highlight_block(int);
 int get_block_type(int, int, int);
-void print_info(int*, int, POINT);
+void print_info(int*, int, POINT, char*);
 void plot_object(int, int, int);
 
 #endif
