@@ -26,6 +26,7 @@ void init_ghosts(Fantome *ftm)
 		}
 		ftm[i].position.x    = (GHOST_START_X[i])*BLOCK_SIZE;
 		ftm[i].position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
+		ftm[i].speed         = 4;
 		ftm[i].cur_direction = 1;
 		ftm[i].num_image     = (ftm[i].cur_direction-1)*2;
 		ftm[i].invinsible    = 1;
@@ -41,6 +42,7 @@ void ghost_restart(Fantome *ftm, int i)
 	ftm->position.y    = (GHOST_START_Y[i])*BLOCK_SIZE;
 	ftm->cur_direction = rand()%4+1;;
 	ftm->num_image     = (ftm->cur_direction-1)*2;
+	ftm->speed         = 4;
 	ftm->dead          = 0;
 	ftm->counter       = 0;
 }
@@ -56,24 +58,27 @@ void affiche_fantomes(Fantome *ftm)
  * en fonction de l'objectif*/
 int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 {
-	SDL_Rect ftm_case, target_case;
-	ftm_case = get_case(f.position, f.cur_direction);
-	target_case = get_case(target_pos, target_dir);
-	if(ftm_case.x > target_case.x)
+	if(f.dead)
 	{
-		if(can_move(f.position, GAUCHE, f.cur_direction)) return GAUCHE;
-	}
-	else if(ftm_case.x < target_case.x)
-	{
-		if(can_move(f.position, DROITE, f.cur_direction)) return DROITE;
-	}
-	if(ftm_case.y > target_case.y)
-	{
-		if(can_move(f.position, HAUT, f.cur_direction)) return HAUT;
-	}
-	else if(ftm_case.y < target_case.y)
-	{
-		if(can_move(f.position, BAS, f.cur_direction)) return BAS;
+		SDL_Rect ftm_case, target_case;
+		ftm_case = get_case(f.position, f.cur_direction);
+		target_case = get_case(target_pos, target_dir);
+		if(ftm_case.x > target_case.x)
+		{
+			if(can_move(f.position, GAUCHE, f.cur_direction) && f.cur_direction != DROITE) return GAUCHE;
+		}
+		else if(ftm_case.x < target_case.x)
+		{
+			if(can_move(f.position, DROITE, f.cur_direction) && f.cur_direction != GAUCHE) return DROITE;
+		}
+		if(ftm_case.y > target_case.y)
+		{
+			if(can_move(f.position, HAUT, f.cur_direction) && f.cur_direction != BAS) return HAUT;
+		}
+		else if(ftm_case.y < target_case.y)
+		{
+			if(can_move(f.position, BAS, f.cur_direction) && f.cur_direction != HAUT) return BAS;
+		}
 	}
 	int rand_dir = rand()%4+1;
 	while( !can_move(f.position, rand_dir, f.cur_direction) ) rand_dir = rand()%4+1;
@@ -84,11 +89,18 @@ int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int target_dir)
 {
 	if (*new_directions != ftm->cur_direction && !ftm->dead) *new_directions = ftm->cur_direction;
-	if(can_move(ftm->position, *new_directions, ftm->cur_direction)) move(&(ftm->position), *new_directions);
+	if(in_intersection(ftm->position, ftm->cur_direction))
+	{
+		*new_directions = find_direction(*ftm, target, target_dir);
+		move(&(ftm->position), *new_directions, ftm->speed);
+		ftm->cur_direction = *new_directions;
+		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
+	}
+	else if(can_move(ftm->position, *new_directions, ftm->cur_direction)) move(&(ftm->position), *new_directions, ftm->speed);
 	else
 	{
 		*new_directions = find_direction(*ftm, target, target_dir);
-		move(&(ftm->position), *new_directions);
+		move(&(ftm->position), *new_directions, ftm->speed);
 		ftm->cur_direction = *new_directions;
 		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
 	}
@@ -103,7 +115,8 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 		}
 		else if (tempsEcoule >= 7000) //Fantome redevient invulnérable
 		{
-			ftm->invinsible=1;
+			ftm->invinsible = 1;
+			ftm->speed      = 4;
 			//On charge l'image correspondante à la direction en cours
 			ftm->num_image=(ftm->cur_direction-1)*2;
 		}
@@ -112,32 +125,4 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 	//Permutation des images pour effets de mouvements
 	else if(ftm->num_image%2==0) ftm->num_image+=1;
 	else ftm->num_image -= 1;
-}
-
-/*Comment faire pour ne pas avoir besoin de pacman
- * et de tout redessiner? Deplacer cette fonction dans jeu.c?*/
-void ghost_death(Fantome* ftm, int i, Pacman *pac)
-{
-	SDL_Rect start;
-	start.x = (GHOST_START_X[i])*BLOCK_SIZE;
-	start.y = (GHOST_START_Y[i])*BLOCK_SIZE;
-	ftm[i].dead=1;
-	ftm[i].invinsible=1;
-	int dir=find_direction(ftm[i], start, 0);
-	ftm[i].cur_direction = dir;
-	int timer=SDL_GetTicks(), time_elapsed=0;
-	while ( (ftm[i].position.x != start.x || ftm[i].position.y != start.y) && time_elapsed < 7500)
-	{
-		SDL_Delay(5);
-		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		draw_level();
-		draw_lives(pac);
-		draw_score();
-		deplace_fantomes(ftm+i, &dir, start, 0);
-		affiche_pacman(pac);
-		affiche_fantomes(ftm);
-		SDL_Flip(screen);
-		time_elapsed = SDL_GetTicks()-timer;
-	}
-	ghost_restart(ftm+i, i);
 }

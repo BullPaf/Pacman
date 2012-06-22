@@ -10,9 +10,9 @@
 #define NB_GHOST_BLOCKS 4
 #define NB_ALL_BLOCKS NB_BONUS_BLOCKS+NB_WALL_BLOCKS+NB_PACMAN_BLOCK+NB_GHOST_BLOCKS
 #define MAX_ELT_CASE 5 //Nombre d'élément pouvant s'afficher sur une case
-#define STEP 4 //Déplacement en pixel de pacman
-#define DELAY 50
-#define NB_LEVEL 2
+//#define STEP 4 //Déplacement en pixel de pacman
+#define DELAY 40
+#define NB_LEVEL 3
 
 #define WIDTH BLOCK_SIZE * NB_BLOCKS_LARGEUR //Largeur d'ecran
 #define HEIGHT BLOCK_SIZE * NB_BLOCKS_HAUTEUR //Hauteur d'ecran

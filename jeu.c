@@ -39,7 +39,7 @@ int jouer(int level)
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		draw_level();
 		draw_lives(&pac);
-		draw_score();
+		draw_score(level);
 		deplace_pacman(&pac, pac_new_direction);
 		for(i=0; i<NB_GHOST_BLOCKS; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i, pac.position, pac.cur_direction);
 		affiche_pacman(&pac);
@@ -58,7 +58,7 @@ void action(Pacman *pac, Fantome *ftm)
 	for(i=0; i<NB_GHOST_BLOCKS; i++) {
 		col=check_colision(pac, ftm[i]);
 		if(col==1) {
-			pac_death(pac);
+			pac_death(pac, ftm);
 			return;
 		}
 		if(col==2) {
@@ -105,10 +105,11 @@ void set_ghosts_eatable(Fantome *ftm)
 	for(i=0; i<NB_GHOST_BLOCKS; i++)
 	{
 		ftm[i].invinsible = 0;
+		//ftm[i].speed      = 2;
 		//Initialisation du compteur pour compter 5 sec
 		ftm[i].counter = SDL_GetTicks();
 		//On charge l'image du fantome vulnérable
-		ftm[i].num_image = 8;
+		ftm[i].num_image  = 8;
 	}
 }
 
@@ -127,14 +128,59 @@ void draw_lives(Pacman *pac)
 	}
 }
 
-void draw_score()
+void draw_score(int level)
 {
 	POINT p1;
 	char score[50];
 	sprintf(score, "Score : %d", SCORE);
 	p1.x=WIDTH+10; p1.y=100;
 	aff_pol(score, FONT_SIZE, p1, blanc);
-	sprintf(score, "Restant : %d", POINTS);
+	sprintf(score, "Level : %d", level+1);
 	p1.x=WIDTH+10; p1.y=150;
 	aff_pol(score, FONT_SIZE, p1, blanc);
+}
+
+void pac_death(Pacman *pac, Fantome *ftm)
+{
+	int i;
+	for(i=5; i<16; i++)
+	{
+		SDL_Delay(40);
+		SDL_FillRect(screen, &pac->position, noir);
+		SDL_BlitSurface(pac->image[i], NULL, screen, &pac->position);
+		SDL_Flip(screen);
+	}
+	pac_restart(pac);
+	for(i=0; i<NB_GHOST_BLOCKS; i++) ghost_restart(ftm+i, i);
+}
+
+/*Comment faire pour ne pas avoir besoin de pacman
+ * et de tout redessiner? Deplacer cette fonction dans jeu.c?*/
+void ghost_death(Fantome* ftm, int i, Pacman *pac)
+{
+	SDL_Rect start;
+	start.x = (GHOST_START_X[i])*BLOCK_SIZE;
+	start.y = (GHOST_START_Y[i])*BLOCK_SIZE;
+	ftm[i].dead=1;
+	ftm[i].invinsible=1;
+	//ftm[i].speed = 4;
+	//if(ftm[i].position.x % 4 != 0) ftm[i].position.x+=2;
+	//if(ftm[i].position.y % 4 != 0) ftm[i].position.y+=2;
+	int dir=find_direction(ftm[i], start, 0);
+	ftm[i].cur_direction = dir;
+	int timer=SDL_GetTicks(), time_elapsed=0;
+	while ( (ftm[i].position.x != start.x || ftm[i].position.y != start.y) && time_elapsed < 7500)
+	{
+		SDL_Delay(2);
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		draw_level();
+		draw_lives(pac);
+		draw_score(0);
+		deplace_fantomes(ftm+i, &dir, start, 0);
+		affiche_pacman(pac);
+		affiche_fantomes(ftm);
+		SDL_Flip(screen);
+		time_elapsed = SDL_GetTicks()-timer;
+	}
+	ghost_restart(ftm+i, i);
 }

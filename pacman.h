@@ -7,6 +7,7 @@
 typedef struct Pacman
 {
 	int cur_direction;
+	int speed;
 	int nb_lives;
 	SDL_Rect position;
 	SDL_Surface* image[16];
@@ -15,7 +16,6 @@ typedef struct Pacman
 void init_pacman(Pacman*);
 void affiche_pacman(Pacman*);
 void deplace_pacman(Pacman*, int);
-void pac_death(Pacman*);
 void pac_restart(Pacman*);
 
 #endif

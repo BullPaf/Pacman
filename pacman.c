@@ -21,6 +21,7 @@ void init_pacman(Pacman *pac)
 	pac->image[0]=pac->image[pac->cur_direction];
 	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 	pac->nb_lives = 2;
+	pac->speed = 4;
 }
 
 void pac_restart(Pacman *pac)
@@ -44,24 +45,11 @@ void deplace_pacman(Pacman *pac, int new_direction)
 	//Si on peut se deplacer dans la nouvelle direction
 	if(can_move(pac->position, new_direction, pac->cur_direction))
 	{
-		move(&(pac->position), new_direction);
+		move(&(pac->position), new_direction, pac->speed);
 		pac->cur_direction = new_direction;
 		pac->image[0]=pac->image[pac->cur_direction];
 	}
 	//Sinon si on peut continuer dans l'ancienne direction
 	else if(can_move(pac->position, pac->cur_direction, pac->cur_direction))
-		move(&(pac->position), pac->cur_direction);
-}
-
-void pac_death(Pacman *pac)
-{
-	int i;
-	for(i=5; i<16; i++)
-	{
-		SDL_Delay(40);
-		SDL_FillRect(screen, &pac->position, noir);
-		SDL_BlitSurface(pac->image[i], NULL, screen, &pac->position);
-		SDL_Flip(screen);
-	}
-	pac_restart(pac);
+		move(&(pac->position), pac->cur_direction, pac->speed);
 }

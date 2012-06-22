@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL/SDL_ttf.h>
-#define POLICE_NAME "Colleged.ttf"
+#define POLICE_NAME "angelina.ttf"
 // la definition d'un point
 typedef struct point {int x,y;} POINT;
 

@@ -234,21 +234,35 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 	return 0;
 }
 
-void move(SDL_Rect *pos, int direction)
+int in_intersection(SDL_Rect pos, int direction)
+{
+	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
+	if(direction == DROITE || direction == GAUCHE)
+	{
+		if(dans_case(pos) && (LEVEL[case_y-1][case_x].type != MUR || LEVEL[case_y+1][case_x].type != MUR)) return 1;
+	}
+	else
+	{
+		if(dans_case(pos) && (LEVEL[case_y][case_x+1].type != MUR || LEVEL[case_y][case_x-1].type != MUR)) return 1;
+	}
+	return 0;
+}
+
+void move(SDL_Rect *pos, int direction, int speed)
 {
 	switch (direction)
 	{
 		case DROITE:
-			pos->x += STEP;
+			pos->x += speed;
 			break;
 		case GAUCHE:
-			pos->x -= STEP;
+			pos->x -= speed;
 			break;
 		case HAUT:
-			pos->y -= STEP;
+			pos->y -= speed;
 			break;
 		case BAS:
-			pos->y += STEP;
+			pos->y += speed;
 			break;
 		default: break;
 	}
@@ -300,6 +314,7 @@ char* select_file()
 				if(event.key.keysym.sym==SDLK_ESCAPE) return NULL;
 				else if (event.key.keysym.sym==SDLK_KP1) return LEVEL_FILE[0];
 				else if (event.key.keysym.sym==SDLK_KP2) return LEVEL_FILE[1];
+				else if (event.key.keysym.sym==SDLK_KP3) return LEVEL_FILE[2];
 				break;
 			default: break;
 		}

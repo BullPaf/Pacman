@@ -50,7 +50,8 @@ char* select_file();
 
 int dans_case(SDL_Rect);
 int can_move(SDL_Rect, int, int);
-void move(SDL_Rect*, int);
+int in_intersection(SDL_Rect, int);
+void move(SDL_Rect*, int, int);
 SDL_Rect get_case(SDL_Rect, int);
 
 #endif
