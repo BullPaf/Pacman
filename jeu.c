@@ -62,7 +62,7 @@ void action(Pacman *pac, Fantome *ftm)
 			return;
 		}
 		if(col==2) {
-			ghost_death(ftm, i, pac);
+			ghost_death(ftm+i);
 			return;
 		}
 	}
@@ -94,7 +94,8 @@ int check_colision(Pacman *pac, Fantome f)
 	if(pac_case.x == ftm_case.x && pac_case.y == ftm_case.y)
 	{
 		if(f.invinsible) return 1; //Pacman se fait manger
-		else return 2; //Fantome se fait manger
+		else if(!f.dead) return 2; //Fantome se fait manger
+		else return 0;
 	}
 	else return 0;
 }
@@ -104,12 +105,15 @@ void set_ghosts_eatable(Fantome *ftm)
 	int i;
 	for(i=0; i<NB_GHOST_BLOCKS; i++)
 	{
-		ftm[i].invinsible = 0;
-		//ftm[i].speed      = 2;
-		//Initialisation du compteur pour compter 5 sec
-		ftm[i].counter = SDL_GetTicks();
-		//On charge l'image du fantome vulnérable
-		ftm[i].num_image  = 8;
+		if( !(ftm[i].dead) )
+		{
+			ftm[i].invinsible = 0;
+			ftm[i].speed      = 2;
+			//Initialisation du compteur pour compter 5 sec
+			ftm[i].counter = SDL_GetTicks();
+			//On charge l'image du fantome vulnérable
+			ftm[i].num_image  = 8;
+		}
 	}
 }
 
@@ -151,36 +155,5 @@ void pac_death(Pacman *pac, Fantome *ftm)
 		SDL_Flip(screen);
 	}
 	pac_restart(pac);
-	for(i=0; i<NB_GHOST_BLOCKS; i++) ghost_restart(ftm+i, i);
-}
-
-/*Comment faire pour ne pas avoir besoin de pacman
- * et de tout redessiner? Deplacer cette fonction dans jeu.c?*/
-void ghost_death(Fantome* ftm, int i, Pacman *pac)
-{
-	SDL_Rect start;
-	start.x = (GHOST_START_X[i])*BLOCK_SIZE;
-	start.y = (GHOST_START_Y[i])*BLOCK_SIZE;
-	ftm[i].dead=1;
-	ftm[i].invinsible=1;
-	//ftm[i].speed = 4;
-	//if(ftm[i].position.x % 4 != 0) ftm[i].position.x+=2;
-	//if(ftm[i].position.y % 4 != 0) ftm[i].position.y+=2;
-	int dir=find_direction(ftm[i], start, 0);
-	ftm[i].cur_direction = dir;
-	int timer=SDL_GetTicks(), time_elapsed=0;
-	while ( (ftm[i].position.x != start.x || ftm[i].position.y != start.y) && time_elapsed < 7500)
-	{
-		SDL_Delay(2);
-		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		draw_level();
-		draw_lives(pac);
-		draw_score(0);
-		deplace_fantomes(ftm+i, &dir, start, 0);
-		affiche_pacman(pac);
-		affiche_fantomes(ftm);
-		SDL_Flip(screen);
-		time_elapsed = SDL_GetTicks()-timer;
-	}
-	ghost_restart(ftm+i, i);
+	for(i=0; i<NB_GHOST_BLOCKS; i++) ghost_restart(ftm+i);
 }
