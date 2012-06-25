@@ -1,27 +1,13 @@
 #include "editeur.h"
 #include "jeu.h"
+#include "menus.h"
 #include <stdio.h>
-
-/*Affiche le menu
- * Remplacer par qqchose
- * de mieux qd meme */
-void affiche_menu()
-{
-	POINT p1;
-	p1.x=200; p1.y=300;
-	aff_pol("1 ======> JOUER", 25, p1, blanc);
-	p1.y=p1.y+50;
-	aff_pol("2 ======> EDITER", 25, p1, blanc);
-	p1.y=p1.y+50;
-	aff_pol("ECHAP ====> QUITTER", 25, p1, blanc);
-	SDL_Flip(screen);
-}
 
 int main(int argc, char** argv)
 {
-	int continuer=1, level=0;
+	int continuer=1, level=0, selection=0;
 	SDL_Event event;
-	init_graphics(WIDTH, HEIGHT, "Pacman");
+	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	while (continuer)
 	{
 		SDL_WaitEvent(&event);
@@ -32,16 +18,31 @@ int main(int argc, char** argv)
 				break;
 			case SDL_KEYDOWN:
 				if(event.key.keysym.sym==SDLK_ESCAPE) continuer=0;
-				else if (event.key.keysym.sym==SDLK_KP1)
+				else if (event.key.keysym.sym==SDLK_RETURN)
 				{
-					while(level<NB_LEVEL && jouer(level)) level++; //fprintf(stdout, "On Joue!\n");
+					if(selection==0)
+					{
+						while(level<NB_LEVEL && jouer(level))
+						{
+							win_menu();
+							level++;
+						}
+						if(level<NB_LEVEL) lost_menu();
+					}
+					else if(selection==1) editer();
+					else if(selection==2) continuer=0;
 				}
-				else if (event.key.keysym.sym==SDLK_KP2) editer(); //fprintf(stdout, "On Edite!\n");
+				else if(event.key.keysym.sym==SDLK_DOWN) selection=(selection+1)%3;
+				else if(event.key.keysym.sym==SDLK_UP)
+				{
+					if(!selection) selection=2;
+					else selection--;
+				}
 				break;
 		}
 		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		affiche_menu();
+		main_menu(selection);
 		SDL_Flip(screen);
 	}
 	SDL_Quit();

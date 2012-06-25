@@ -142,7 +142,7 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 	/* Chargement de la police */
 	police = TTF_OpenFont(POLICE_NAME, taille);
 	/* Ecriture du texte dans la SDL_Surface "texte" en mode shaded (optimal) */
-	if (police) texte = TTF_RenderUTF8_Shaded(police, a_ecrire, sdl_C, Noire);
+	if (police) texte = TTF_RenderUTF8_Blended(police, a_ecrire, sdl_C);
 
 	position.x = p.x;
 	position.y = p.y;
