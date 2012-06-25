@@ -9,8 +9,9 @@ typedef struct Pacman
 	int cur_direction;
 	int speed;
 	int nb_lives;
+	int num_image;
 	SDL_Rect position;
-	SDL_Surface* image[16];
+	SDL_Surface* image[20];
 }Pacman;
 
 void init_pacman(Pacman*);
