@@ -3,7 +3,7 @@
 int jouer(int level)
 {
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
-	//play_menu(level+1);
+	play_menu(level+1);
 	Pacman pac;
 	Fantome ftm[NB_GHOST_BLOCKS];
 	SDL_Event event;
