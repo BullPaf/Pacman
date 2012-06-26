@@ -2,6 +2,7 @@
 #define H_JEU
 #include "pacman.h"
 #include "fantome.h"
+#include "menus.h"
 #include "levelmanager.h"
 
 int jouer(int);
