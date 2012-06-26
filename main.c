@@ -6,11 +6,29 @@
 int main(int argc, char** argv)
 {
 	int continuer=1, level=0, selection=0;
-	SDL_Event event;
+	//SDL_Event event;
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	while (continuer)
 	{
-		SDL_WaitEvent(&event);
+		selection=main_menu();
+		switch(selection)
+		{
+			case 0:
+				while(level<NB_LEVEL && jouer(level))
+				{
+					win_menu();
+					level++;
+				}
+				if(level<NB_LEVEL) lost_menu();
+				break;
+			case 1: break;
+			case 2: editer();
+				break;
+			case 3: continuer=0;
+				break;
+			default: break;
+		}
+		/*SDL_WaitEvent(&event);
 		switch(event.type)
 		{
 			case SDL_QUIT:
@@ -29,13 +47,17 @@ int main(int argc, char** argv)
 						}
 						if(level<NB_LEVEL) lost_menu();
 					}
-					else if(selection==1) editer();
-					else if(selection==2) continuer=0;
+					else if(selection==2) editer();
+					else if(selection==3) continuer=0;
 				}
-				else if(event.key.keysym.sym==SDLK_DOWN) selection=(selection+1)%3;
+				else if(event.key.keysym.sym==SDLK_DOWN)
+				{
+					if(selection==0) selection++;
+					selection=(selection+1)%4;
+				}
 				else if(event.key.keysym.sym==SDLK_UP)
 				{
-					if(!selection) selection=2;
+					if(!selection) selection=3;
 					else selection--;
 				}
 				break;
@@ -43,7 +65,7 @@ int main(int argc, char** argv)
 		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		main_menu(selection);
-		SDL_Flip(screen);
+		SDL_Flip(screen);*/
 	}
 	SDL_Quit();
 	return EXIT_SUCCESS;

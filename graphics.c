@@ -115,6 +115,7 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 	SDL_Rect position;
 	TTF_Font *police = NULL;
 	SDL_Color Noire   = {  0,   0,   0};
+	SDL_Color Gris   =  {100, 100, 100};
 	SDL_Color Blanche = {255, 255, 255};
 
 	SDL_Color Rouge   = {255,   0,   0};
@@ -128,7 +129,7 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 
 	sdl_C = Noire;
 	if (C == blanc) sdl_C = Blanche;
-
+	if (C == gris) sdl_C = Gris;
 	if (C == rouge) sdl_C = Rouge;
 	if (C == vert)  sdl_C = Verte;
 	if (C == bleu)  sdl_C = Bleue;

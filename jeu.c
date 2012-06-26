@@ -7,7 +7,7 @@ int jouer(int level)
 	Pacman pac;
 	Fantome ftm[NB_GHOST_BLOCKS];
 	SDL_Event event;
-	int i, pac_new_direction=0, ghosts_new_directions[NB_GHOST_BLOCKS];
+	int i, pac_new_direction=0, ghosts_new_directions[NB_GHOST_BLOCKS], selection;
 	init_level();
 	init_blocks();
 	load_level(level);
@@ -24,7 +24,10 @@ int jouer(int level)
 			{
 				case SDL_QUIT : exit(EXIT_SUCCESS);
 				case SDL_KEYDOWN :
-					if (event.key.keysym.sym == SDLK_ESCAPE) return 0;
+					if (event.key.keysym.sym == SDLK_ESCAPE)
+					{
+						game_menu();
+					}
 					else if (event.key.keysym.sym == SDLK_UP) pac_new_direction=HAUT;
 					else if (event.key.keysym.sym == SDLK_DOWN) pac_new_direction=BAS;
 					else if (event.key.keysym.sym == SDLK_LEFT) pac_new_direction=GAUCHE;

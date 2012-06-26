@@ -13,6 +13,7 @@ typedef Uint16 COULEUR;
 // les constantes de couleur
                        //   r     g     b
 #define noir    0x0000 // 0000 000000 000000
+#define gris    0xf3cf // 1111 001111 001111
 #define blanc   0xffff // 1111 111111 111111
 #define rouge   0xf000 // 1111 000000 000000
 #define vert    0xfc0  // 0000 111111 000000
