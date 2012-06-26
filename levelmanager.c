@@ -209,6 +209,7 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 			if (!dans_case(pos)) {//Si on est entre deux cases
 				if( (cur_direction==GAUCHE) || (cur_direction==DROITE) ) return 1;
 			}
+			//else if(LEVEL[case_y][case_x+1].type == MUR && ) return 1;
 			else if(LEVEL[case_y][case_x+1].type != MUR) return 1;
 			break;
 		case GAUCHE: //Vers la gauche
@@ -289,7 +290,7 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 	return pos;
 }
 
-char* select_file()
+int select_file()
 {
 	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 	SDL_Event event;
@@ -311,24 +312,24 @@ char* select_file()
 		{
 			case SDL_QUIT : exit(EXIT_SUCCESS);
 			case SDL_KEYDOWN:
-				if(event.key.keysym.sym==SDLK_ESCAPE) return NULL;
-				else if (event.key.keysym.sym==SDLK_KP1) return LEVEL_FILE[0];
-				else if (event.key.keysym.sym==SDLK_KP2) return LEVEL_FILE[1];
-				else if (event.key.keysym.sym==SDLK_KP3) return LEVEL_FILE[2];
+				if(event.key.keysym.sym==SDLK_ESCAPE) return -1;
+				else if (event.key.keysym.sym==SDLK_KP1) return 0;
+				else if (event.key.keysym.sym==SDLK_KP2) return 1;
+				else if (event.key.keysym.sym==SDLK_KP3) return 2;
 				break;
 			default: break;
 		}
 	}
-	return NULL;
+	return -1;
 }
 
 /*
  * Lit un fichier et extrait les valeurs
  * pour affecter le tableau LEVEL
 */
-void load_level(char *level)
+void load_level(int level)
 {
-	FILE *level_file = fopen(level, "r");
+	FILE *level_file = fopen(LEVEL_FILE[level], "r");
 	char chaine[LINE_SIZE];
 	int line=0;
 	if (level_file != NULL)
@@ -352,10 +353,10 @@ void load_level(char *level)
  * Lit le tableau LEVEL est sauvegarde
  * le niveau dans un fichier
 */
-void save_level(char *level)
+void save_level(int level)
 {
 	int i,j,k;
-	FILE *level_file = fopen(level, "w+");
+	FILE *level_file = fopen(LEVEL_FILE[level], "w+");
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)

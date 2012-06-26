@@ -104,7 +104,8 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 		ftm->cur_direction = *new_directions;
 		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
 	}
-	else if(can_move(ftm->position, *new_directions, ftm->cur_direction)) move(&(ftm->position), *new_directions, ftm->speed);
+	else if(can_move(ftm->position, *new_directions, ftm->cur_direction))
+		move(&(ftm->position), *new_directions, ftm->speed);
 	else
 	{
 		*new_directions = find_direction(*ftm, target, target_dir);
@@ -144,11 +145,11 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 
 void ghost_death(Fantome* ftm)
 {
-	POINT p1;
+	//POINT p1;
 	SDL_Rect ftm_case = get_case(ftm->position, ftm->cur_direction);
-	p1.x=(ftm_case.x+1)*BLOCK_SIZE; p1.y=(ftm_case.y+1)*BLOCK_SIZE;
-	aff_pol("BRAVO BB!", FONT_SIZE, p1, blanc);
-	SDL_Flip(screen);
+	//p1.x=(ftm_case.x+1)*BLOCK_SIZE; p1.y=(ftm_case.y+1)*BLOCK_SIZE;
+	//aff_pol("BRAVO BB!", FONT_SIZE, p1, blanc);
+	//SDL_Flip(screen);
 	SDL_Delay(500);
 	ftm->dead=1;
 	ftm->speed = 10;

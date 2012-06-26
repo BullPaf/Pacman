@@ -9,7 +9,7 @@ int jouer(int level)
 	int i, pac_new_direction=0, ghosts_new_directions[NB_GHOST_BLOCKS];
 	init_level();
 	init_blocks();
-	load_level(LEVEL_FILE[level]);
+	load_level(level);
 	init_pacman(&pac);
 	init_ghosts(ftm);
 	srand(time(NULL));
@@ -58,7 +58,8 @@ void action(Pacman *pac, Fantome *ftm)
 	for(i=0; i<NB_GHOST_BLOCKS; i++) {
 		col=check_colision(pac, ftm[i]);
 		if(col==1) {
-			pac_death(pac, ftm);
+			pac_death(pac);
+			for(i=0; i<NB_GHOST_BLOCKS; i++) ghost_restart(ftm+i);
 			return;
 		}
 		if(col==2) {
@@ -79,6 +80,23 @@ void action(Pacman *pac, Fantome *ftm)
 		else if(LEVEL[pos.y][pos.x].elt_type[0]==2) {
 			if(pac->nb_lives<5) pac->nb_lives++;
 			else SCORE+=1000;
+		}
+		//Pomme-->accélère le pacman
+		else if(LEVEL[pos.y][pos.x].elt_type[0]==4) {
+			fprintf(stderr, "Manger une pomme\n");
+			/*if(pac->speed==4)
+			{
+				if(pac->cur_direction == HAUT) pac->position.y+=pac->speed;
+				else if(pac->cur_direction == BAS) pac->position.y-=pac->speed;
+				else if(pac->cur_direction == GAUCHE) pac->position.x+=pac->speed;
+				else if(pac->cur_direction == DROITE) pac->position.x-=pac->speed;
+				pac->speed++;
+				pac->counter = SDL_GetTicks();
+			}*/
+		}
+		//Clé-->debloque des passages secrets
+		else if(LEVEL[pos.y][pos.x].elt_type[0]==8) {
+			fprintf(stderr, "Manger une clé\n");
 		}
 		LEVEL[pos.y][pos.x].type=RIEN;
 	}
@@ -142,18 +160,4 @@ void draw_score(int level)
 	sprintf(score, "Level : %d", level+1);
 	p1.x=WIDTH+10; p1.y=150;
 	aff_pol(score, FONT_SIZE, p1, blanc);
-}
-
-void pac_death(Pacman *pac, Fantome *ftm)
-{
-	int i;
-	for(i=5; i<16; i++)
-	{
-		SDL_Delay(40);
-		SDL_FillRect(screen, &pac->position, noir);
-		SDL_BlitSurface(pac->image[i], NULL, screen, &pac->position);
-		SDL_Flip(screen);
-	}
-	pac_restart(pac);
-	for(i=0; i<NB_GHOST_BLOCKS; i++) ghost_restart(ftm+i);
 }

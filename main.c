@@ -9,11 +9,11 @@ void affiche_menu()
 {
 	POINT p1;
 	p1.x=200; p1.y=300;
-	aff_pol("1 ======> JOUER", 25, p1, blanc);
+	aff_pol("JOUER", 25, p1, rouge);
 	p1.y=p1.y+50;
-	aff_pol("2 ======> EDITER", 25, p1, blanc);
+	aff_pol("EDITER", 25, p1, blanc);
 	p1.y=p1.y+50;
-	aff_pol("ECHAP ====> QUITTER", 25, p1, blanc);
+	aff_pol("QUITTER", 25, p1, blanc);
 	SDL_Flip(screen);
 }
 

@@ -41,12 +41,12 @@ char LEVEL_FILE[NB_LEVEL][128];
 
 int init_blocks(); //Ok
 void init_level(); //Ok
-void load_level(char*); //Ok
-void save_level(char*); //ok
+void load_level(int); //Ok
+void save_level(int); //ok
 void extract_val(char *s, int line); //OK
 void draw_level(); //ok
 void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);
-char* select_file();
+int select_file();
 
 int dans_case(SDL_Rect);
 int can_move(SDL_Rect, int, int);

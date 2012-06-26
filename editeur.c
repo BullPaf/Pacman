@@ -14,8 +14,7 @@ int editer()
 	SDL_Rect position;
 	SDL_Event event;
 	position.x=position.y=0;
-	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0, tempsPrecedent=0;
-	char level[128];
+	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0, tempsPrecedent=0, level=-1;
 	init_blocks();
 	init_editor();
 	init_level();
@@ -72,8 +71,8 @@ int editer()
 					if (event.key.keysym.sym == SDLK_ESCAPE) ok=0;
 					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
-						strcpy(level, select_file());
-						if(level != NULL)
+						level = select_file();
+						if(level>=0)
 						{
 							save_level(level);
 							message=SAVE;
@@ -82,23 +81,17 @@ int editer()
 					}
 					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
 					{
-						strcpy(level, select_file());
-						if(level != NULL)
+						level = select_file();
+						if(level>=0)
 						{
 							load_level(level);
-							SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-							load_gui();
-							draw_level();
 							message=LOAD;
 							tempsPrecedent = SDL_GetTicks();
 						}
 					}
 					else if (event.key.keysym.sym == SDLK_r) //'r' --> supprime tout
 					{
-						SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 						init_level();
-						load_gui();
-						draw_level();
 						message=DELETE;
 						tempsPrecedent = SDL_GetTicks();
 					}
@@ -196,11 +189,11 @@ void init_editor()
 	}
 }
 
-void print_info(int *message, int tempsPrecedent, POINT p, char* level)
+void print_info(int *message, int tempsPrecedent, POINT p, int level)
 {
 	int tempsActuel;
 	char tmp[128];
-	strcpy(tmp, level);
+	sprintf(tmp, "Level %d ", level);
 	switch(*message)
 	{
 		case AUCUN:
