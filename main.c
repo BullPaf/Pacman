@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-	int continuer=1, level=0, selection=0;
+	int continuer=1, level=0, selection=0, result=1;
 	//SDL_Event event;
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	while (continuer)
@@ -14,12 +14,16 @@ int main(int argc, char** argv)
 		switch(selection)
 		{
 			case 0:
-				while(level<NB_LEVEL && jouer(level))
+				level=0;
+				while(result && level<NB_LEVEL)
 				{
-					win_menu();
+					result=jouer(level);
+					if(result==1) win_menu();
+					else if(result==2) result=0;
+					else if(!result) lost_menu();
 					level++;
 				}
-				if(level<NB_LEVEL) lost_menu();
+				//if(level==NB_LEVEL)
 				break;
 			case 1: break;
 			case 2: editer();
