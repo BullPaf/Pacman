@@ -2,19 +2,19 @@
 
 int jouer(int level)
 {
-	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	play_menu(level+1);
-	Pacman pac;
-	Fantome ftm[NB_GHOST_BLOCKS];
-	SDL_Event event;
-	int i, pac_new_direction=0, ghosts_new_directions[NB_GHOST_BLOCKS], selection=0;
 	init_level();
 	init_blocks();
 	load_level(level);
+	Pacman pac;
+	fprintf(stderr, "%d GHOST in activity!\n", NB_GHOST);
+	Fantome ftm[NB_GHOST];
+	SDL_Event event;
+	int i, pac_new_direction=0, ghosts_new_directions[NB_GHOST], selection=0;
 	init_pacman(&pac);
 	init_ghosts(ftm);
 	srand(time(NULL));
-	for(i=0; i<NB_GHOST_BLOCKS; i++) ghosts_new_directions[i]=1;
+	for(i=0; i<NB_GHOST; i++) ghosts_new_directions[i]=1;
 	while(POINTS)
 	{
 		SDL_Delay(DELAY);
@@ -45,7 +45,7 @@ int jouer(int level)
 		draw_lives(&pac);
 		draw_score(level);
 		deplace_pacman(&pac, pac_new_direction);
-		for(i=0; i<NB_GHOST_BLOCKS; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i, pac.position, pac.cur_direction);
+		for(i=0; i<NB_GHOST; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i, pac.position, pac.cur_direction);
 		affiche_pacman(&pac);
 		affiche_fantomes(ftm);
 		action(&pac, ftm);
@@ -60,11 +60,11 @@ void action(Pacman *pac, Fantome *ftm)
 {
 	int i, col;
 	SDL_Rect pos;
-	for(i=0; i<NB_GHOST_BLOCKS; i++) {
+	for(i=0; i<NB_GHOST; i++) {
 		col=check_colision(pac, ftm[i]);
 		if(col==1) {
 			pac_death(pac);
-			for(i=0; i<NB_GHOST_BLOCKS; i++) ghost_restart(ftm+i);
+			for(i=0; i<NB_GHOST; i++) ghost_restart(ftm+i);
 			return;
 		}
 		if(col==2) {
@@ -126,7 +126,7 @@ int check_colision(Pacman *pac, Fantome f)
 void set_ghosts_eatable(Fantome *ftm)
 {
 	int i;
-	for(i=0; i<NB_GHOST_BLOCKS; i++)
+	for(i=0; i<NB_GHOST; i++)
 	{
 		if( !(ftm[i].dead) )
 		{

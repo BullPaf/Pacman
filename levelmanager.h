@@ -33,6 +33,7 @@ int GHOST_START_X[NB_GHOST_BLOCKS];
 int GHOST_START_Y[NB_GHOST_BLOCKS];
 int SCORE;
 int POINTS;
+int NB_GHOST;
 Couleur GHOST_COULEUR[NB_GHOST_BLOCKS];
 
 //Un niveau est un ensemble de CASE

@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "pacman.h"
 
 void init_pacman(Pacman *pac)

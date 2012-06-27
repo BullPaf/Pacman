@@ -87,6 +87,7 @@ void extract_val(char *s, int line)
 			else if(type=='4') //fantome start
 			{
 				i+=2;
+				NB_GHOST++;
 				LEVEL[line][nb_val].type = GHOST;
 				LEVEL[line][nb_val].position[0]=CENTRE;
 				if(s[i]=='0') ghost=ROUGE;
@@ -127,6 +128,7 @@ void init_level()
 		strcpy(LEVEL_FILE[i], level);
 	}
 	POINTS=0;
+	NB_GHOST=0;
 }
 
 /*Affecte à chaque block une texture*/
@@ -316,6 +318,7 @@ int select_file()
 				else if (event.key.keysym.sym==SDLK_KP1) return 0;
 				else if (event.key.keysym.sym==SDLK_KP2) return 1;
 				else if (event.key.keysym.sym==SDLK_KP3) return 2;
+				else if (event.key.keysym.sym==SDLK_KP4) return 3;
 				break;
 			default: break;
 		}
