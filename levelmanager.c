@@ -87,7 +87,12 @@ void extract_val(char *s, int line)
 			else if(type=='4') //fantome start
 			{
 				i+=2;
-				NB_GHOST++;
+				if(NB_GHOST < NB_MAX_GHOSTS) NB_GHOST++;
+				else
+				{
+					fprintf(stderr, "Fatal Error: Too much ghosts!\n");
+					exit(EXIT_FAILURE);
+				}
 				LEVEL[line][nb_val].type = GHOST;
 				LEVEL[line][nb_val].position[0]=CENTRE;
 				if(s[i]=='0') ghost=ROUGE;
@@ -97,6 +102,9 @@ void extract_val(char *s, int line)
 				GHOST_START_X[ghost]=nb_val;
 				GHOST_START_Y[ghost]=line;
 				LEVEL[line][nb_val].elt_type[0]=ghost;
+				//Pour avoir + de 4 fantomes
+				//GHOST_START_X[NB_GHOST-1]=nb_val;
+				//GHOST_START_Y[NB_GHOST-1]=line;
 				i++; 
 			}
 			nb_val ++;
@@ -127,6 +135,7 @@ void init_level()
 		sprintf(level, "level/level_%d.txt", i+1);
 		strcpy(LEVEL_FILE[i], level);
 	}
+	for(i=0; i<NB_MAX_GHOSTS; i++) GHOST_START_Y[i]=GHOST_START_X[i]=-1;
 	POINTS=0;
 	NB_GHOST=0;
 }

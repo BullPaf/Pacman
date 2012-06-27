@@ -134,7 +134,7 @@ void plot_object(int x, int y, int type)
 			}
 		}
 	}
-	else if(editor[type].type==GHOST)
+	/*else if(editor[type].type==GHOST)
 	{
 		int i,j;
 		//Si un le meme fantome existe déja on doit le supprimer
@@ -149,7 +149,7 @@ void plot_object(int x, int y, int type)
 				}
 			}
 		}
-	}
+	}*/
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
 
