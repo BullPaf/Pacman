@@ -1,6 +1,7 @@
 #ifndef H_EDITEUR
 #define H_EDITEUR
 #include "levelmanager.h"
+#include "menus.h"
 
 enum {AUCUN, SAVE, LOAD, DELETE}; //Pour les messages de l'editeur
 

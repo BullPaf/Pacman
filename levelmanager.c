@@ -292,7 +292,7 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 	return pos;
 }
 
-int select_file()
+/*int select_file()
 {
 	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 	SDL_Event event;
@@ -324,7 +324,7 @@ int select_file()
 		}
 	}
 	return -1;
-}
+}*/
 
 /*
  * Lit un fichier et extrait les valeurs

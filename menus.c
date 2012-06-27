@@ -158,3 +158,56 @@ int game_menu()
 	}
 	return 0;
 }
+
+int select_file_menu()
+{
+	POINT p1;
+	SDL_Event event;
+	SDL_Surface* pacman=NULL;
+	SDL_Rect pos;
+	char level[32];
+	int selection=0, continuer=1, i, couleur[NB_LEVEL];
+	for(i=0; i<NB_LEVEL; i++) couleur[i]=blanc;
+	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
+	while(continuer)
+	{
+		couleur[selection]=blanc;
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_QUIT:
+				exit(EXIT_SUCCESS);
+				break;
+			case SDL_KEYDOWN:
+				if (event.key.keysym.sym==SDLK_RETURN)
+				{
+					free(pacman);
+					return selection;
+				}
+				else if(event.key.keysym.sym==SDLK_DOWN) selection=(selection+1)%NB_LEVEL;
+				else if(event.key.keysym.sym==SDLK_UP)
+				{
+					if(!selection) selection=NB_LEVEL-1;
+					else selection--;
+				}
+				break;
+		}
+		// Effacement de l'écran
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		couleur[selection]=jaune;
+		p1.x=100; p1.y=75;
+		aff_pol("Choississez un niveau", 50, p1, jaune);
+		p1.x=300; p1.y=200;
+		pos.x=p1.x-60;
+		pos.y=p1.y+(selection*45);
+		SDL_BlitSurface(pacman, NULL, screen, &pos);
+		for(i=0; i<NB_LEVEL; i++)
+		{
+			sprintf(level, "Level %d", i+1);
+			aff_pol(level, 30, p1, couleur[i]);
+			p1.y+=50;
+		}
+		SDL_Flip(screen);
+	}
+	return 0;
+}

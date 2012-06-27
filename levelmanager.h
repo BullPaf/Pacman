@@ -47,7 +47,7 @@ void save_level(int); //ok
 void extract_val(char *s, int line); //OK
 void draw_level(); //ok
 void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);
-int select_file();
+//int select_file();
 
 int dans_case(SDL_Rect);
 int can_move(SDL_Rect, int, int);

@@ -71,7 +71,7 @@ int editer()
 					if (event.key.keysym.sym == SDLK_ESCAPE) ok=0;
 					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
 					{
-						level = select_file();
+						level = select_file_menu();
 						if(level>=0)
 						{
 							save_level(level);
@@ -81,7 +81,7 @@ int editer()
 					}
 					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
 					{
-						level = select_file();
+						level = select_file_menu();
 						if(level>=0)
 						{
 							load_level(level);
