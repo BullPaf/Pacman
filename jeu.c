@@ -69,11 +69,12 @@ void action(Pacman *pac, Fantome *ftm)
 		}
 		if(col==2) {
 			ghost_death(ftm+i);
+			SCORE+=1000;
 			return;
 		}
 	}
 	pos=get_case(pac->position, pac->cur_direction);
-	if(LEVEL[pos.y][pos.x].type == BONUS)
+	if( LEVEL[pos.y][pos.x].type == BONUS && dans_case(pac->position) )
 	{
 		if(LEVEL[pos.y][pos.x].elt_type[0]==0) {
 			SCORE+=100;
@@ -89,15 +90,6 @@ void action(Pacman *pac, Fantome *ftm)
 		//Pomme-->accélère le pacman
 		else if(LEVEL[pos.y][pos.x].elt_type[0]==4) {
 			fprintf(stderr, "Manger une pomme\n");
-			/*if(pac->speed==4)
-			{
-				if(pac->cur_direction == HAUT) pac->position.y+=pac->speed;
-				else if(pac->cur_direction == BAS) pac->position.y-=pac->speed;
-				else if(pac->cur_direction == GAUCHE) pac->position.x+=pac->speed;
-				else if(pac->cur_direction == DROITE) pac->position.x-=pac->speed;
-				pac->speed++;
-				pac->counter = SDL_GetTicks();
-			}*/
 		}
 		//Clé-->debloque des passages secrets
 		else if(LEVEL[pos.y][pos.x].elt_type[0]==8) {
@@ -123,6 +115,7 @@ int check_colision(Pacman *pac, Fantome f)
 	else return 0;
 }
 
+//A deplacer
 void set_ghosts_eatable(Fantome *ftm)
 {
 	int i;
@@ -140,6 +133,7 @@ void set_ghosts_eatable(Fantome *ftm)
 	}
 }
 
+//A deplacer
 void draw_lives(Pacman *pac)
 {
 	POINT p1;
@@ -155,6 +149,7 @@ void draw_lives(Pacman *pac)
 	}
 }
 
+//A deplacer
 void draw_score(int level)
 {
 	POINT p1;

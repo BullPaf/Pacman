@@ -6,13 +6,13 @@
 
 typedef struct Pacman
 {
-	int cur_direction;
-	int speed;
-	int nb_lives;
-	int num_image;
-	int counter;
-	SDL_Rect position;
-	SDL_Surface* image[19];
+	int cur_direction; //Direction en cours
+	int speed; //Deplacement en pixel à chaque coup
+	int nb_lives; //Nombre de vie(s)
+	int num_image; //L'image à afficher
+	int counter; //Permet de mesurer le temps
+	SDL_Rect position; //Position actuelle
+	SDL_Surface* image[19]; //Les différentes images de pacman
 }Pacman;
 
 void init_pacman(Pacman*);

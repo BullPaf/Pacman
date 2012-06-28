@@ -1,5 +1,7 @@
 #include "menus.h"
 
+/*FACTORISER TOUT CE CODE MERDIQUE*/
+
 /*Affiche le menu
  * Remplacer par qqchose
  * de mieux qd meme */
@@ -51,7 +53,7 @@ int main_menu()
 		SDL_BlitSurface(pacman, NULL, screen, &pos);
 		aff_pol("JOUER", 50, p1, couleur[0]);
 		p1.y=p1.y+80;
-		aff_pol("CONTINUER", 50, p1, couleur[1]);
+		aff_pol("CHARGER", 50, p1, couleur[1]);
 		p1.y=p1.y+80;
 		aff_pol("EDITER", 50, p1, couleur[2]);
 		p1.y=p1.y+80;

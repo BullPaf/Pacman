@@ -25,7 +25,6 @@ void init_pacman(Pacman *pac)
 
 void pac_restart(Pacman *pac)
 {
-	pac->nb_lives--;
 	pac->position.x = PAC_START_X*BLOCK_SIZE;
 	pac->position.y = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;
@@ -66,18 +65,9 @@ void deplace_pacman(Pacman *pac, int new_direction)
 		if( (pac->num_image)%2==0 ) pac->num_image+=1;
 		else pac->num_image -= 1;
 	}
-	/*if(pac->speed != 4)
-	{
-		int tempsEcoule = SDL_GetTicks()-pac->counter;
-		if (tempsEcoule >= 5000) //Fantome redevient invulnérable
-		{
-			pac->speed      = 4;
-			if(pac->position.x % 4 != 0) pac->position.x+=2;
-			if(pac->position.y % 4 != 0) pac->position.y+=2;
-		}
-	}*/
 }
 
+//Animation de mort
 void pac_death(Pacman *pac)
 {
 	int i;
@@ -88,5 +78,6 @@ void pac_death(Pacman *pac)
 		SDL_BlitSurface(pac->image[i], NULL, screen, &pac->position);
 		SDL_Flip(screen);
 	}
+	pac->nb_lives--;
 	pac_restart(pac);
 }

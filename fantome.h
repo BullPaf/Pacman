@@ -5,18 +5,16 @@
 #include "constantes.h"
 #include "pacman.h"
 
-typedef enum Deplacement {HAUT_1, HAUT_2, DROITE_1, DROITE_2, BAS_1, BAS_2, GAUCHE_1, GAUCHE_2}Deplacement;
-
 typedef struct Fantome
 {
-	int cur_direction;
-	int speed;
-	int num_image;
-	int invinsible;
-	int dead;
-	int counter;
-	SDL_Rect position, start;
-	SDL_Surface* image[16];
+	int cur_direction; //Direction en cours
+	int speed; //Deplacement en pixel à chaque coup
+	int num_image; //L'image à afficher
+	int invinsible; //S'il est invinsible
+	int dead; //S'il est mort
+	int counter; //Permet de mesurer le temps
+	SDL_Rect position, start; //Position actuelle et position de départ
+	SDL_Surface* image[16]; //Les différentes images des fantomes
 }Fantome;
 
 void init_ghosts(Fantome*);

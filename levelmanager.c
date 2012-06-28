@@ -4,6 +4,7 @@
  * séparées par des espaces dans le string s
  * et affecte cette valeur à la case du niveau
  * correspondante
+ * Tres moche mais ca marche alors pas touche!
 */
 void extract_val(char *s, int line)
 {
@@ -118,9 +119,8 @@ void extract_val(char *s, int line)
 	}
 }
 
-/*
- * Initialize le tableau du niveau
-*/
+/*Initialize le tableau du niveau
+ * et les différentes variables*/
 void init_level()
 {
 	int i,j;
@@ -167,6 +167,7 @@ int init_blocks()
 	return 1;
 }
 
+//Affiche une case... ^^
 void affiche_une_case(CASE c, SDL_Rect *pos, SDL_Surface *s)
 {
 	if(c.type==MUR) SDL_BlitSurface(BLOCK_MUR[c.elt_type[0]], NULL, s, pos);
@@ -205,43 +206,46 @@ void draw_level()
 	draw_line(p1, p2, blanc, screen);
 }
 
+//Si on est pile dans une case
 int dans_case(SDL_Rect pos)
 {
 	if( (pos.x % BLOCK_SIZE==0) && (pos.y % BLOCK_SIZE==0) ) return 1;
 	else return 0;
 }
 
+//Si on peut bouger
 int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
+	//fprintf(stderr, "Case x = %d && Case y = %d\n", case_x, case_y);
 	switch (new_direction)
 	{
 		case DROITE: //Vers la droite
 			if (!dans_case(pos)) {//Si on est entre deux cases
 				if( (cur_direction==GAUCHE) || (cur_direction==DROITE) ) return 1;
 			}
-			else if(case_x == NB_BLOCKS_LARGEUR-1) return 1;
+			else if(case_x == NB_BLOCKS_LARGEUR-1) return 1; //Si on on est contre le bord droit
 			else if(LEVEL[case_y][case_x+1].type != MUR) return 1;
 			break;
 		case GAUCHE: //Vers la gauche
 			if(!dans_case(pos)) {
 				if( (cur_direction==GAUCHE) || (cur_direction==DROITE) ) return 1;
 			}
-			else if(case_x == 0) return 1;
+			else if(case_x == 0) return 1; //Si on on est contre le bord gauche
 			else if(LEVEL[case_y][case_x-1].type != MUR) return 1;
 			break;
 		case HAUT: //Vers le haut
 			if(!dans_case(pos)) {
 				if( (cur_direction==HAUT) || (cur_direction==BAS) ) return 1;
 			}
-			else if(case_y == 0) return 1;
+			else if(case_y == 0) return 1; //Si on on est contre le bord haut
 			else if(LEVEL[case_y-1][case_x].type != MUR) return 1;
 			break;
 		case BAS: //Vers le bas
 			if(!dans_case(pos)) {
 				if( (cur_direction==HAUT) || (cur_direction==BAS) ) return 1;
 			}
-			else if(case_y == NB_BLOCKS_HAUTEUR-1) return 1;
+			else if(case_y == NB_BLOCKS_HAUTEUR-1) return 1; //Si on on est contre le bord bas
 			else if(LEVEL[case_y+1][case_x].type != MUR) return 1;
 			break;
 		default: break;
@@ -249,6 +253,7 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 	return 0;
 }
 
+//Si on est sur une intersection de chemins
 int in_intersection(SDL_Rect pos, int direction)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
@@ -263,6 +268,7 @@ int in_intersection(SDL_Rect pos, int direction)
 	return 0;
 }
 
+//Deplace
 void move(SDL_Rect *pos, int direction, int speed)
 {
 	switch (direction)
@@ -287,6 +293,8 @@ void move(SDL_Rect *pos, int direction, int speed)
 	}
 }
 
+/*Renvoie les index de case en fonction de la position
+ * et de la direction*/
 SDL_Rect get_case(SDL_Rect position, int direction)
 {
 	SDL_Rect pos;
