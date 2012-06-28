@@ -13,7 +13,8 @@ int main(int argc, char** argv)
 		switch(selection)
 		{
 			case 0:
-				level=0;
+				if(argc==2) level=atoi(argv[1]);
+				else level=0;
 				while(result && level<NB_LEVEL)
 				{
 					result=jouer(level);

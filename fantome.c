@@ -8,7 +8,7 @@ void init_ghosts(Fantome *ftm)
 	{
 		for(j=0; j<8; j++)
 		{
-			sprintf(img, "image/ghosts/%d.png", (i%4)*8+j);
+			sprintf(img, "image/ghosts/%d.png", i*8+j);
 			if( (ftm[i].image[j] = IMG_Load(img)) == NULL )
 			{
 				fprintf(stderr, "Erreur chargement texture du Fantome %d\n", i);

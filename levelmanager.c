@@ -220,25 +220,28 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 			if (!dans_case(pos)) {//Si on est entre deux cases
 				if( (cur_direction==GAUCHE) || (cur_direction==DROITE) ) return 1;
 			}
-			//else if(LEVEL[case_y][case_x+1].type == MUR && ) return 1;
+			else if(case_x == NB_BLOCKS_LARGEUR-1) return 1;
 			else if(LEVEL[case_y][case_x+1].type != MUR) return 1;
 			break;
 		case GAUCHE: //Vers la gauche
 			if(!dans_case(pos)) {
 				if( (cur_direction==GAUCHE) || (cur_direction==DROITE) ) return 1;
 			}
+			else if(case_x == 0) return 1;
 			else if(LEVEL[case_y][case_x-1].type != MUR) return 1;
 			break;
 		case HAUT: //Vers le haut
 			if(!dans_case(pos)) {
 				if( (cur_direction==HAUT) || (cur_direction==BAS) ) return 1;
 			}
+			else if(case_y == 0) return 1;
 			else if(LEVEL[case_y-1][case_x].type != MUR) return 1;
 			break;
 		case BAS: //Vers le bas
 			if(!dans_case(pos)) {
 				if( (cur_direction==HAUT) || (cur_direction==BAS) ) return 1;
 			}
+			else if(case_y == NB_BLOCKS_HAUTEUR-1) return 1;
 			else if(LEVEL[case_y+1][case_x].type != MUR) return 1;
 			break;
 		default: break;
@@ -266,15 +269,19 @@ void move(SDL_Rect *pos, int direction, int speed)
 	{
 		case DROITE:
 			pos->x += speed;
+			if(pos->x+BLOCK_SIZE > WIDTH) pos->x = -BLOCK_SIZE;
 			break;
 		case GAUCHE:
 			pos->x -= speed;
+			if(pos->x+BLOCK_SIZE <= 0) pos->x = WIDTH;
 			break;
 		case HAUT:
 			pos->y -= speed;
+			if(pos->y+BLOCK_SIZE <= 0) pos->y = HEIGHT;
 			break;
 		case BAS:
 			pos->y += speed;
+			if(pos->y+BLOCK_SIZE > HEIGHT) pos->y = -BLOCK_SIZE;
 			break;
 		default: break;
 	}
@@ -300,40 +307,6 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 	}
 	return pos;
 }
-
-/*int select_file()
-{
-	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-	SDL_Event event;
-	POINT p1;
-	p1.x=50;
-	char level[128];
-	int i, ok=1;
-	for(i=0; i<NB_LEVEL; i++)
-	{
-		p1.y = i*100+100;
-		sprintf(level, "%d : level %d", i+1, i+1);
-		aff_pol(level, FONT_SIZE, p1, blanc);
-	}
-	SDL_Flip(screen);
-	while(ok)
-	{
-		SDL_WaitEvent(&event);
-		switch(event.type)
-		{
-			case SDL_QUIT : exit(EXIT_SUCCESS);
-			case SDL_KEYDOWN:
-				if(event.key.keysym.sym==SDLK_ESCAPE) return -1;
-				else if (event.key.keysym.sym==SDLK_KP1) return 0;
-				else if (event.key.keysym.sym==SDLK_KP2) return 1;
-				else if (event.key.keysym.sym==SDLK_KP3) return 2;
-				else if (event.key.keysym.sym==SDLK_KP4) return 3;
-				break;
-			default: break;
-		}
-	}
-	return -1;
-}*/
 
 /*
  * Lit un fichier et extrait les valeurs

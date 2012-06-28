@@ -2,7 +2,7 @@
 
 int jouer(int level)
 {
-	play_menu(level+1);
+	//play_menu(level+1);
 	init_level();
 	init_blocks();
 	load_level(level);
@@ -48,10 +48,10 @@ int jouer(int level)
 		for(i=0; i<NB_GHOST; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i, pac.position, pac.cur_direction);
 		affiche_pacman(&pac);
 		affiche_fantomes(ftm);
-		action(&pac, ftm);
 		if(!pac.nb_lives) return 0;
 		if(selection==3) return 2;
 		SDL_Flip(screen);
+		action(&pac, ftm);
 	}
 	return 1;
 }

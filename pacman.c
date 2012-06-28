@@ -35,7 +35,14 @@ void pac_restart(Pacman *pac)
 //Pour afficher Pacman
 void affiche_pacman(Pacman *pac)
 {
-	SDL_BlitSurface(pac->image[pac->num_image], NULL, screen, &pac->position);
+	if(pac->position.x < 0 || pac->position.y < 0)
+	{
+		SDL_Rect copie_pos;
+		copie_pos.x = pac->position.x;
+		copie_pos.y = pac->position.y;
+		SDL_BlitSurface(pac->image[pac->num_image], NULL, screen, &copie_pos);
+	}
+	else SDL_BlitSurface(pac->image[pac->num_image], NULL, screen, &pac->position);
 }
 
 void deplace_pacman(Pacman *pac, int new_direction)
