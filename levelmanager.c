@@ -155,10 +155,10 @@ int init_blocks()
 		sprintf(img, "image/bonus/%d.png", i);
 		BLOCK_BONUS[i] = IMG_Load(img);
 	}
-	for (i=1; i<NB_PACMAN_BLOCK+1; i++)
+	for (i=0; i<NB_PACMAN_BLOCK; i++)
 	{
-		sprintf(img, "image/pacman/%d.png", i);
-		BLOCK_PACMAN[i-1] = IMG_Load(img);
+		sprintf(img, "image/pacman/%d.png", i*2);
+		BLOCK_PACMAN[i] = IMG_Load(img);
 	}
 	BLOCK_GHOST[0] = IMG_Load("image/ghosts/0.png");
 	BLOCK_GHOST[1] = IMG_Load("image/ghosts/8.png");
