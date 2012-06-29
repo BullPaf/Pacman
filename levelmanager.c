@@ -71,7 +71,7 @@ void extract_val(char *s, int line)
 				LEVEL[line][nb_val].nb_elt=nb_elt;
 				nb_elt=0;
 			}
-			else if(type=='3') //pac start
+			else if(type=='3') //PACMAN
 			{
 				i+=2;
 				LEVEL[line][nb_val].type = PACMAN;
@@ -85,7 +85,7 @@ void extract_val(char *s, int line)
 				LEVEL[line][nb_val].elt_type[0]=PAC_START_DIRECTION;
 				i++;
 			}
-			else if(type=='4') //fantome start
+			else if(type=='4') //GHOSTS
 			{
 				i+=2;
 				if(NB_GHOST < NB_MAX_GHOSTS) NB_GHOST++;
@@ -100,13 +100,10 @@ void extract_val(char *s, int line)
 				else if(s[i]=='1') ghost=VIOLET;
 				else if(s[i]=='2') ghost=BLEU;
 				else if(s[i]=='3') ghost=JAUNE;
-				//GHOST_START_X[ghost]=nb_val;
-				//GHOST_START_Y[ghost]=line;
-				LEVEL[line][nb_val].elt_type[0]=ghost;
-				//Pour avoir + de 4 fantomes
 				GHOST_START_X[NB_GHOST-1]=nb_val;
 				GHOST_START_Y[NB_GHOST-1]=line;
 				GHOST_COULEUR[NB_GHOST-1]=ghost;
+				LEVEL[line][nb_val].elt_type[0]=ghost;
 				i++; 
 			}
 			nb_val ++;
@@ -161,10 +158,11 @@ int init_blocks()
 		sprintf(img, "image/pacman/%d.png", i*2);
 		BLOCK_PACMAN[i] = IMG_Load(img);
 	}
-	BLOCK_GHOST[0] = IMG_Load("image/ghosts/0.png");
-	BLOCK_GHOST[1] = IMG_Load("image/ghosts/8.png");
-	BLOCK_GHOST[2] = IMG_Load("image/ghosts/16.png");
-	BLOCK_GHOST[3] = IMG_Load("image/ghosts/24.png");
+	for (i=0; i<NB_GHOST_BLOCKS; i++)
+	{
+		sprintf(img, "image/ghosts/%d.png", i*8);
+		BLOCK_GHOST[i] = IMG_Load(img);
+	}
 	return 1;
 }
 

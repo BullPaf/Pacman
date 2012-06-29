@@ -42,8 +42,10 @@ int editer()
 					else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
 					{
 						clicDroitEnCours=1;
-						if( (event.button.x < WIDTH) && (event.button.x >= 0) )
+						if( (event.button.x < WIDTH) && (event.button.x >= 0) ) {
+							if(LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type == GHOST) NB_GHOST--;
 							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN; //On efface la texture
+						}
 					}
 					//Change d'élément avec le scroll de la souris
 					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%(NB_ALL_BLOCKS);
@@ -66,7 +68,10 @@ int editer()
 						position.x = (event.motion.x/BLOCK_SIZE)*BLOCK_SIZE;
 						position.y = (event.motion.y/BLOCK_SIZE)*BLOCK_SIZE;
 					}
-					if(clicDroitEnCours) LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN;
+					if(clicDroitEnCours) {
+						if(LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type == GHOST) NB_GHOST--;
+						LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN;
+					}
 					break;
 				case SDL_KEYDOWN :
 					if (event.key.keysym.sym == SDLK_ESCAPE) selection=edit_menu();
@@ -143,8 +148,10 @@ void plot_object(int x, int y, int type)
 			fprintf(stderr, "Too much ghost, plz remove at least one ghost\n");
 			return;
 		}
-		else NB_GHOST++;
+		else if(LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE].type != GHOST) NB_GHOST++; //Si on plot un fantome sur un autre pas d'incrément
 	}
+	if(LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE].type == GHOST && editor[type].type != GHOST) NB_GHOST--;
+	//fprintf(stderr, "Il y a %d fantome(s)\n", NB_GHOST);
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
 
