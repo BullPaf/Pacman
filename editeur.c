@@ -138,19 +138,12 @@ void plot_object(int x, int y, int type)
 	}
 	else if(editor[type].type==GHOST)
 	{
-		int i,j;
-		//Si un le meme fantome existe déja on doit le supprimer
-		for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
+		if(NB_GHOST == NB_MAX_GHOSTS)
 		{
-			for(j=0; j<NB_BLOCKS_LARGEUR; j++)
-			{
-				if(LEVEL[i][j].type==GHOST && LEVEL[i][j].elt_type[0]==editor[type].elt_type[0])
-				{
-					LEVEL[i][j].type=RIEN;
-					break;
-				}
-			}
+			fprintf(stderr, "Too much ghost, plz remove at least one ghost\n");
+			return;
 		}
+		else NB_GHOST++;
 	}
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }

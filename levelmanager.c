@@ -100,12 +100,13 @@ void extract_val(char *s, int line)
 				else if(s[i]=='1') ghost=VIOLET;
 				else if(s[i]=='2') ghost=BLEU;
 				else if(s[i]=='3') ghost=JAUNE;
-				GHOST_START_X[ghost]=nb_val;
-				GHOST_START_Y[ghost]=line;
+				//GHOST_START_X[ghost]=nb_val;
+				//GHOST_START_Y[ghost]=line;
 				LEVEL[line][nb_val].elt_type[0]=ghost;
 				//Pour avoir + de 4 fantomes
-				//GHOST_START_X[NB_GHOST-1]=nb_val;
-				//GHOST_START_Y[NB_GHOST-1]=line;
+				GHOST_START_X[NB_GHOST-1]=nb_val;
+				GHOST_START_Y[NB_GHOST-1]=line;
+				GHOST_COULEUR[NB_GHOST-1]=ghost;
 				i++; 
 			}
 			nb_val ++;

@@ -13,6 +13,7 @@ typedef struct Fantome
 	int invinsible; //S'il est invinsible
 	int dead; //S'il est mort
 	int counter; //Permet de mesurer le temps
+	int couleur; //La couleur du fantome ca peut servir
 	SDL_Rect position, start; //Position actuelle et position de départ
 	SDL_Surface* image[16]; //Les différentes images des fantomes
 }Fantome;

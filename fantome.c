@@ -6,9 +6,10 @@ void init_ghosts(Fantome *ftm)
 	char img[32];
 	for (i=0; i<NB_GHOST; i++)
 	{
+		ftm[i].couleur = GHOST_COULEUR[i];
 		for(j=0; j<8; j++)
 		{
-			sprintf(img, "image/ghosts/%d.png", i*8+j);
+			sprintf(img, "image/ghosts/%d.png", ftm[i].couleur*8+j);
 			if( (ftm[i].image[j] = IMG_Load(img)) == NULL )
 			{
 				fprintf(stderr, "Erreur chargement texture du Fantome %d\n", i);
