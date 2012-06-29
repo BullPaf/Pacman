@@ -8,6 +8,7 @@ void play_menu(int);
 void win_menu();
 void lost_menu();
 int game_menu();
+int edit_menu();
 int select_file_menu();
 
 #endif

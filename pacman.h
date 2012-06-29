@@ -9,6 +9,7 @@ typedef struct Pacman
 	int cur_direction; //Direction en cours
 	int speed; //Deplacement en pixel à chaque coup
 	int nb_lives; //Nombre de vie(s)
+	int nb_keys; //Nombdre de clé
 	int num_image; //L'image à afficher
 	int counter; //Permet de mesurer le temps
 	SDL_Rect position; //Position actuelle

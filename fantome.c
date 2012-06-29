@@ -62,6 +62,7 @@ void affiche_fantomes(Fantome *ftm)
  * Amélioration: implémenter une recherche de plus cours chemin*/
 int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 {
+	int tmp=0;
 	if(f.dead)
 	{
 		SDL_Rect ftm_case, target_case;
@@ -69,29 +70,30 @@ int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 		target_case = get_case(target_pos, target_dir);
 		if(ftm_case.x > target_case.x)
 		{
-			if(can_move(f.position, GAUCHE, f.cur_direction) && f.cur_direction != DROITE) return GAUCHE;
+			if(can_move(f.position, GAUCHE, f.cur_direction, &tmp) && f.cur_direction != DROITE) return GAUCHE;
 		}
 		else if(ftm_case.x < target_case.x)
 		{
-			if(can_move(f.position, DROITE, f.cur_direction) && f.cur_direction != GAUCHE) return DROITE;
+			if(can_move(f.position, DROITE, f.cur_direction, &tmp) && f.cur_direction != GAUCHE) return DROITE;
 		}
 		if(ftm_case.y > target_case.y)
 		{
-			if(can_move(f.position, HAUT, f.cur_direction) && f.cur_direction != BAS) return HAUT;
+			if(can_move(f.position, HAUT, f.cur_direction, &tmp) && f.cur_direction != BAS) return HAUT;
 		}
 		else if(ftm_case.y < target_case.y)
 		{
-			if(can_move(f.position, BAS, f.cur_direction) && f.cur_direction != HAUT) return BAS;
+			if(can_move(f.position, BAS, f.cur_direction, &tmp) && f.cur_direction != HAUT) return BAS;
 		}
 	}
 	int rand_dir = rand()%4+1;
-	while( !can_move(f.position, rand_dir, f.cur_direction) ) rand_dir = rand()%4+1;
+	while( !can_move(f.position, rand_dir, f.cur_direction, &tmp) ) rand_dir = rand()%4+1;
 	return rand_dir;
 }
 
 /*Deplacements aléatoires*/
 void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int target_dir)
 {
+	int tmp=0;
 	if(ftm->dead)
 	{
 		target.x=ftm->start.x;
@@ -105,7 +107,7 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 		ftm->cur_direction = *new_directions;
 		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
 	}
-	else if(can_move(ftm->position, *new_directions, ftm->cur_direction))
+	else if(can_move(ftm->position, *new_directions, ftm->cur_direction, &tmp))
 		move(&(ftm->position), *new_directions, ftm->speed);
 	else
 	{

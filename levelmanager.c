@@ -55,7 +55,7 @@ void extract_val(char *s, int line)
 						nb[0]='0';
 					}
 					LEVEL[line][nb_val].elt_type[nb_elt]=atoi(nb);
-					if(atoi(nb) == 0) POINTS++; //Si c'est un point on incremente le nombre de POINTS
+					if(atoi(nb) == 9) POINTS++; //Si c'est un point on incremente le nombre de POINTS
 					nb_elt++; j=0;
 				}
 				i++; nb_elt=0;
@@ -214,7 +214,7 @@ int dans_case(SDL_Rect pos)
 }
 
 //Si on peut bouger
-int can_move(SDL_Rect pos, int new_direction, int cur_direction)
+int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
 	//fprintf(stderr, "Case x = %d && Case y = %d\n", case_x, case_y);
@@ -226,6 +226,13 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 			}
 			else if(case_x == NB_BLOCKS_LARGEUR-1) return 1; //Si on on est contre le bord droit
 			else if(LEVEL[case_y][case_x+1].type != MUR) return 1;
+			else if(LEVEL[case_y][case_x+1].elt_type[0] >= 14 && *key) //Cadenas
+			{
+				//fprintf(stderr, "Bloc(%d, %d) avec candenas\n", case_x+1, case_y);
+				remove_bloc(case_y, case_x+1);
+				(*key)--;
+				return 1;
+			}
 			break;
 		case GAUCHE: //Vers la gauche
 			if(!dans_case(pos)) {
@@ -233,6 +240,13 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 			}
 			else if(case_x == 0) return 1; //Si on on est contre le bord gauche
 			else if(LEVEL[case_y][case_x-1].type != MUR) return 1;
+			else if(LEVEL[case_y][case_x-1].elt_type[0] >= 14 && *key) //Cadenas
+			{
+				//fprintf(stderr, "Bloc(%d, %d) avec candenas\n", case_x-1, case_y);
+				remove_bloc(case_y, case_x-1);
+				(*key)--;
+				return 1;
+			}
 			break;
 		case HAUT: //Vers le haut
 			if(!dans_case(pos)) {
@@ -240,6 +254,13 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 			}
 			else if(case_y == 0) return 1; //Si on on est contre le bord haut
 			else if(LEVEL[case_y-1][case_x].type != MUR) return 1;
+			else if(LEVEL[case_y-1][case_x].elt_type[0] >= 14 && *key) //Cadenas
+			{
+				//fprintf(stderr, "Bloc(%d, %d) avec candenas\n", case_x, case_y-1);
+				remove_bloc(case_y-1, case_x);
+				(*key)--;
+				return 1;
+			}
 			break;
 		case BAS: //Vers le bas
 			if(!dans_case(pos)) {
@@ -247,6 +268,13 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction)
 			}
 			else if(case_y == NB_BLOCKS_HAUTEUR-1) return 1; //Si on on est contre le bord bas
 			else if(LEVEL[case_y+1][case_x].type != MUR) return 1;
+			else if(LEVEL[case_y+1][case_x].elt_type[0] >= 14 && *key) //Cadenas
+			{
+				//fprintf(stderr, "Bloc(%d, %d) avec candenas\n", case_x, case_y+1);
+				remove_bloc(case_y+1, case_x);
+				(*key)--;
+				return 1;
+			}
 			break;
 		default: break;
 	}
@@ -314,6 +342,86 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 			break;
 	}
 	return pos;
+}
+
+void remove_bloc(int y, int x)
+{
+	LEVEL[y][x].type=RIEN;
+	switch(LEVEL[y][x].elt_type[0])
+	{
+		case 14:
+			if(x && LEVEL[y][x-1].type==MUR) LEVEL[y][x-1].elt_type[0] = remove_right_bloc(LEVEL[y][x-1].elt_type[0]);
+			if(x<NB_BLOCKS_LARGEUR && LEVEL[y][x+1].type==MUR)
+				LEVEL[y][x+1].elt_type[0] = remove_left_bloc(LEVEL[y][x+1].elt_type[0]);
+			break;
+		case 15:
+			if(y && LEVEL[y-1][x].type==MUR) LEVEL[y-1][x].elt_type[0] = remove_down_bloc(LEVEL[y-1][x].elt_type[0]);
+			if(y<NB_BLOCKS_HAUTEUR && LEVEL[y+1][x].type==MUR)
+				LEVEL[y+1][x].elt_type[0] = remove_up_bloc(LEVEL[y+1][x].elt_type[0]);
+			break;
+		case 16:
+			if(y<NB_BLOCKS_HAUTEUR && LEVEL[y+1][x].type==MUR)
+				LEVEL[y+1][x].elt_type[0] = remove_up_bloc(LEVEL[y+1][x].elt_type[0]);
+			break;
+		case 17:
+			if(x && LEVEL[y][x-1].type==MUR) LEVEL[y][x-1].elt_type[0] = remove_right_bloc(LEVEL[y][x-1].elt_type[0]);
+			break;
+		case 18:
+			if(y && LEVEL[y-1][x].type==MUR) LEVEL[y-1][x].elt_type[0] = remove_down_bloc(LEVEL[y-1][x].elt_type[0]);
+			break;
+		case 19:
+			if(x<NB_BLOCKS_LARGEUR && LEVEL[y][x+1].type==MUR)
+				LEVEL[y][x+1].elt_type[0] = remove_left_bloc(LEVEL[y][x+1].elt_type[0]);
+			break;
+	}
+}
+
+int remove_right_bloc(int elt)
+{
+	if(elt==0) return 11;
+	else if(elt==3) return 10;
+	else if(elt==5) return 12;
+	else if(elt==6) return 2;
+	else if(elt==7) return 1;
+	else if(elt==8) return 4;
+	else if(elt==14) return 17;
+	else return elt;
+}
+
+int remove_left_bloc(int elt)
+{
+	if(elt==0) return 13;
+	else if(elt==2) return 12;
+	else if(elt==4) return 10;
+	else if(elt==6) return 5;
+	else if(elt==8) return 3;
+	else if(elt==9) return 1;
+	else if(elt==14) return 19;
+	else return elt;
+}
+
+int remove_up_bloc(int elt)
+{
+	if(elt==1) return 10;
+	else if(elt==2) return 11;
+	else if(elt==5) return 13;
+	else if(elt==6) return 0;
+	else if(elt==7) return 3;
+	else if(elt==9) return 4;
+	else if(elt==15) return 16;
+	else return elt;
+}
+
+int remove_down_bloc(int elt)
+{
+	if(elt==1) return 12;
+	else if(elt==3) return 13;
+	else if(elt==4) return 11;
+	else if(elt==7) return 5;
+	else if(elt==8) return 0;
+	else if(elt==9) return 2;
+	else if(elt==15) return 18;
+	else return elt;
 }
 
 /*

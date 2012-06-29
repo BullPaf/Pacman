@@ -1,0 +1,4 @@
+Majeur:
+Fantome n'arrive pas toujours à traverser l'écran
+
+Mineur:

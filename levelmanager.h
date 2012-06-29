@@ -49,9 +49,14 @@ void draw_level(); //ok
 void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);
 
 int dans_case(SDL_Rect);
-int can_move(SDL_Rect, int, int);
+int can_move(SDL_Rect, int, int, int*);
 int in_intersection(SDL_Rect, int);
 void move(SDL_Rect*, int, int);
+void remove_bloc(int, int);
+int remove_right_bloc(int);
+int remove_left_bloc(int);
+int remove_down_bloc(int);
+int remove_up_bloc(int);
 SDL_Rect get_case(SDL_Rect, int);
 
 #endif

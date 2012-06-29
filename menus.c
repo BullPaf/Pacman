@@ -168,8 +168,8 @@ int select_file_menu()
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
 	char level[32];
-	int selection=0, continuer=1, i, couleur[NB_LEVEL];
-	for(i=0; i<NB_LEVEL; i++) couleur[i]=blanc;
+	int selection=0, continuer=1, i, couleur[NB_LEVEL+1];
+	for(i=0; i<NB_LEVEL+1; i++) couleur[i]=blanc;
 	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
 	while(continuer)
 	{
@@ -186,10 +186,10 @@ int select_file_menu()
 					free(pacman);
 					return selection;
 				}
-				else if(event.key.keysym.sym==SDLK_DOWN) selection=(selection+1)%NB_LEVEL;
+				else if(event.key.keysym.sym==SDLK_DOWN) selection=(selection+1)%(NB_LEVEL+1);
 				else if(event.key.keysym.sym==SDLK_UP)
 				{
-					if(!selection) selection=NB_LEVEL-1;
+					if(!selection) selection=NB_LEVEL;
 					else selection--;
 				}
 				break;
@@ -199,16 +199,78 @@ int select_file_menu()
 		couleur[selection]=jaune;
 		p1.x=100; p1.y=75;
 		aff_pol("Choississez un niveau", 50, p1, jaune);
-		p1.x=300; p1.y=200;
+		p1.x=200; p1.y=200;
 		pos.x=p1.x-60;
-		pos.y=p1.y+(selection*45);
+		pos.y=p1.y+(selection*50);
 		SDL_BlitSurface(pacman, NULL, screen, &pos);
 		for(i=0; i<NB_LEVEL; i++)
 		{
 			sprintf(level, "Level %d", i+1);
-			aff_pol(level, 30, p1, couleur[i]);
+			aff_pol(level, 40, p1, couleur[i]);
 			p1.y+=50;
 		}
+		aff_pol("Annuler", 40, p1, couleur[i]);
+		SDL_Flip(screen);
+	}
+	return 0;
+}
+
+int edit_menu()
+{
+	POINT p1;
+	SDL_Event event;
+	SDL_Surface* pacman=NULL;
+	SDL_Rect pos;
+	int selection=0, couleur[]={blanc,blanc,blanc,blanc,gris,blanc};
+	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
+	while(1)
+	{
+		couleur[selection]=blanc;
+		SDL_WaitEvent(&event);
+		switch(event.type)
+		{
+			case SDL_QUIT:
+				exit(EXIT_SUCCESS);
+				break;
+			case SDL_KEYDOWN:
+				if (event.key.keysym.sym==SDLK_RETURN)
+				{
+					free(pacman);
+					return selection;
+				}
+				else if(event.key.keysym.sym==SDLK_DOWN)
+				{
+					if(selection==3) selection=5;
+					else selection=(selection+1)%6;
+				}
+				else if(event.key.keysym.sym==SDLK_UP)
+				{
+					if(!selection) selection=5;
+					else if(selection==5) selection=3;
+					else selection--;
+				}
+				break;
+		}
+		// Effacement de l'écran
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		couleur[selection]=jaune;
+		p1.x=200; p1.y=50;
+		aff_pol("MENU EDITEUR", 60, p1, jaune);
+		p1.x=275; p1.y=175;
+		pos.x=p1.x-60;
+		pos.y=p1.y+(selection*70);
+		SDL_BlitSurface(pacman, NULL, screen, &pos);
+		aff_pol("CONTINUER", 40, p1, couleur[0]);
+		p1.y=p1.y+70;
+		aff_pol("SAUVER", 40, p1, couleur[1]);
+		p1.y=p1.y+70;
+		aff_pol("CHARGER", 40, p1, couleur[2]);
+		p1.y=p1.y+70;
+		aff_pol("EFFACER", 40, p1, couleur[3]);
+		p1.y=p1.y+70;
+		aff_pol("TESTER", 40, p1, couleur[4]);
+		p1.y=p1.y+70;
+		aff_pol("QUITTER", 40, p1, couleur[5]);
 		SDL_Flip(screen);
 	}
 	return 0;

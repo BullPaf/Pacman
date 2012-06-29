@@ -14,7 +14,8 @@ int editer()
 	SDL_Rect position;
 	SDL_Event event;
 	position.x=position.y=0;
-	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0, tempsPrecedent=0, level=-1;
+	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0, tempsPrecedent=0,\
+	level=-1, selection=0;
 	init_blocks();
 	init_editor();
 	init_level();
@@ -68,33 +69,34 @@ int editer()
 					if(clicDroitEnCours) LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN;
 					break;
 				case SDL_KEYDOWN :
-					if (event.key.keysym.sym == SDLK_ESCAPE) ok=0;
-					else if (event.key.keysym.sym == SDLK_s) //'s'--> sauver le niveau
+					if (event.key.keysym.sym == SDLK_ESCAPE) selection=edit_menu();
+					if(selection==1) //sauver le niveau
 					{
 						level = select_file_menu();
-						if(level>=0)
+						if(level!=NB_LEVEL)
 						{
 							save_level(level);
 							message=SAVE;
 							tempsPrecedent = SDL_GetTicks();
 						}
 					}
-					else if (event.key.keysym.sym == SDLK_l) //'l' --> charger le dernier niveau
+					else if(selection == 2) //charger un niveau
 					{
 						level = select_file_menu();
-						if(level>=0)
+						if(level!=NB_LEVEL)
 						{
 							load_level(level);
 							message=LOAD;
 							tempsPrecedent = SDL_GetTicks();
 						}
 					}
-					else if (event.key.keysym.sym == SDLK_r) //'r' --> supprime tout
+					else if (selection == 3) //supprime tout
 					{
 						init_level();
 						message=DELETE;
 						tempsPrecedent = SDL_GetTicks();
 					}
+					else if (selection == 5) return 0;
 					break;
 				default : break;
 			}
@@ -134,7 +136,7 @@ void plot_object(int x, int y, int type)
 			}
 		}
 	}
-	/*else if(editor[type].type==GHOST)
+	else if(editor[type].type==GHOST)
 	{
 		int i,j;
 		//Si un le meme fantome existe déja on doit le supprimer
@@ -149,7 +151,7 @@ void plot_object(int x, int y, int type)
 				}
 			}
 		}
-	}*/
+	}
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
 
@@ -193,7 +195,7 @@ void print_info(int *message, int tempsPrecedent, POINT p, int level)
 {
 	int tempsActuel;
 	char tmp[128];
-	sprintf(tmp, "Level %d ", level);
+	sprintf(tmp, "Level %d ", level+1);
 	switch(*message)
 	{
 		case AUCUN:
@@ -251,16 +253,6 @@ void load_gui()
 		position.y=2+(BLOCK_SIZE+3)*(i/5);
 		affiche_une_case(editor[i], &position, screen);
 	}
-	p1.x=WIDTH+10; p1.y=position.y + 50;
-	aff_pol("Sauvegarder : s", FONT_SIZE, p1, blanc);
-	p1.y=p1.y+50;
-	aff_pol("Charger : l", FONT_SIZE, p1, blanc);
-	p1.y=p1.y+50;
-	aff_pol("Effacer : Clic droit", FONT_SIZE, p1, blanc);
-	p1.y=p1.y+50;
-	aff_pol("Tout effacer : r", FONT_SIZE, p1, blanc);
-	p1.y=p1.y+50;
-	aff_pol("Menu Principal : Echap", FONT_SIZE, p1, blanc);
 }
 
 /*

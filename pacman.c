@@ -19,6 +19,7 @@ void init_pacman(Pacman *pac)
 	pac->num_image     = (pac->cur_direction*2)-2;
 	pac->counter       = 0;
 	pac->nb_lives      = 2;
+	pac->nb_keys       = 10;
 	pac->speed         = 4;
 	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 }
@@ -47,7 +48,7 @@ void affiche_pacman(Pacman *pac)
 void deplace_pacman(Pacman *pac, int new_direction)
 {
 	//Si on peut se deplacer dans la nouvelle direction
-	if(new_direction && can_move(pac->position, new_direction, pac->cur_direction))
+	if(new_direction && can_move(pac->position, new_direction, pac->cur_direction, &(pac->nb_keys)))
 	{
 		move(&(pac->position), new_direction, pac->speed);
 		if(new_direction != pac->cur_direction)
@@ -59,7 +60,7 @@ void deplace_pacman(Pacman *pac, int new_direction)
 		else pac->num_image -= 1;
 	}
 	//Sinon si on peut continuer dans l'ancienne direction
-	else if(can_move(pac->position, pac->cur_direction, pac->cur_direction))
+	else if(can_move(pac->position, pac->cur_direction, pac->cur_direction, &(pac->nb_keys)))
 	{
 		move(&(pac->position), pac->cur_direction, pac->speed);
 		if( (pac->num_image)%2==0 ) pac->num_image+=1;

@@ -42,7 +42,7 @@ int jouer(int level)
 		}
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		draw_level();
-		draw_lives(&pac);
+		draw_pac_infos(&pac);
 		draw_score(level);
 		deplace_pacman(&pac, pac_new_direction);
 		for(i=0; i<NB_GHOST; i++) deplace_fantomes(ftm+i, ghosts_new_directions+i, pac.position, pac.cur_direction);
@@ -76,11 +76,11 @@ void action(Pacman *pac, Fantome *ftm)
 	pos=get_case(pac->position, pac->cur_direction);
 	if( LEVEL[pos.y][pos.x].type == BONUS && dans_case(pac->position) )
 	{
-		if(LEVEL[pos.y][pos.x].elt_type[0]==0) {
+		if(LEVEL[pos.y][pos.x].elt_type[0]==9) {
 			SCORE+=100;
 			POINTS--;
 		}
-		else if(LEVEL[pos.y][pos.x].elt_type[0]==1) {
+		else if(LEVEL[pos.y][pos.x].elt_type[0]==0) {
 			set_ghosts_eatable(ftm);
 		}
 		else if(LEVEL[pos.y][pos.x].elt_type[0]==2) {
@@ -93,7 +93,7 @@ void action(Pacman *pac, Fantome *ftm)
 		}
 		//Clé-->debloque des passages secrets
 		else if(LEVEL[pos.y][pos.x].elt_type[0]==8) {
-			fprintf(stderr, "Manger une clé\n");
+			pac->nb_keys++;
 		}
 		LEVEL[pos.y][pos.x].type=RIEN;
 	}
@@ -134,7 +134,7 @@ void set_ghosts_eatable(Fantome *ftm)
 }
 
 //A deplacer
-void draw_lives(Pacman *pac)
+void draw_pac_infos(Pacman *pac)
 {
 	POINT p1;
 	SDL_Rect position;
@@ -147,6 +147,22 @@ void draw_lives(Pacman *pac)
 		position.x=WIDTH+5+i*BLOCK_SIZE;
 		SDL_BlitSurface(pac->image[DROITE], NULL, screen, &position);
 	}
+	p1.x=WIDTH+10; p1.y=10;
+	aff_pol("Lives :", FONT_SIZE, p1, blanc);
+	position.y=p1.y+30;
+	for(i=0; i<pac->nb_lives; i++)
+	{
+		position.x=WIDTH+5+i*BLOCK_SIZE;
+		SDL_BlitSurface(pac->image[DROITE], NULL, screen, &position);
+	}
+	p1.y+=75;
+	aff_pol("Keys :", FONT_SIZE, p1, blanc);
+	position.y=p1.y+30;
+	for(i=0; i<pac->nb_keys; i++)
+	{
+		position.x=WIDTH+5+i*BLOCK_SIZE;
+		SDL_BlitSurface(BLOCK_BONUS[8], NULL, screen, &position);
+	}
 }
 
 //A deplacer
@@ -155,9 +171,9 @@ void draw_score(int level)
 	POINT p1;
 	char score[50];
 	sprintf(score, "Score : %d", SCORE);
-	p1.x=WIDTH+10; p1.y=100;
+	p1.x=WIDTH+10; p1.y=150;
 	aff_pol(score, FONT_SIZE, p1, blanc);
 	sprintf(score, "Level : %d", level+1);
-	p1.x=WIDTH+10; p1.y=150;
+	p1.x=WIDTH+10; p1.y=200;
 	aff_pol(score, FONT_SIZE, p1, blanc);
 }
