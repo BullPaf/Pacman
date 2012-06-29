@@ -150,8 +150,7 @@ void plot_object(int x, int y, int type)
 		}
 		else if(LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE].type != GHOST) NB_GHOST++; //Si on plot un fantome sur un autre pas d'incrément
 	}
-	if(LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE].type == GHOST && editor[type].type != GHOST) NB_GHOST--;
-	//fprintf(stderr, "Il y a %d fantome(s)\n", NB_GHOST);
+	else if(LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE].type == GHOST) NB_GHOST--; //Si on efface un fantome
 	LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE] = editor[type];
 }
 
