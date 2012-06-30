@@ -4,8 +4,8 @@ LIBS=`sdl-config --libs` -lm -lSDL_ttf -lSDL_image
 
 all: pacman
 
-pacman: main.c pacman.o graphics.o levelmanager.o editeur.o jeu.o fantome.o menus.o
-	$(CC) $(CFLAGS) main.c graphics.o pacman.o levelmanager.o editeur.o jeu.o fantome.o menus.o -o pacman $(LIBS)
+pacman: main.c pacman.o graphics.o levelmanager.o editeur.o jeu.o fantome.o menus.o input.o
+	$(CC) $(CFLAGS) main.c graphics.o pacman.o levelmanager.o editeur.o jeu.o fantome.o menus.o input.o -o pacman $(LIBS)
 
 pacman.o: pacman.c pacman.h
 	$(CC) $(CFLAGS) -c pacman.c
@@ -27,6 +27,9 @@ fantome.o: fantome.c fantome.h
 
 menus.o: menus.c menus.h
 	$(CC) $(CFLAGS) -c menus.c
+
+input.o: input.c input.h
+	$(CC) $(CFLAGS) -c input.c
 
 clean:
 	rm -f *core *.o pacman

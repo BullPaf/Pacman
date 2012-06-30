@@ -19,7 +19,7 @@ void init_pacman(Pacman *pac)
 	pac->num_image     = (pac->cur_direction*2)-2;
 	pac->counter       = 0;
 	pac->nb_lives      = 2;
-	pac->nb_keys       = 10;
+	pac->nb_keys       = 0;
 	pac->speed         = 4;
 	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 }

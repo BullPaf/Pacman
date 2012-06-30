@@ -1,4 +1,5 @@
 #include "jeu.h"
+#include "input.h"
 
 int jouer(int level)
 {
@@ -7,39 +8,28 @@ int jouer(int level)
 	init_blocks();
 	load_level(level);
 	Pacman pac;
-	fprintf(stderr, "%d GHOST in activity!\n", NB_GHOST);
+	//fprintf(stderr, "%d GHOST in activity!\n", NB_GHOST);
 	Fantome ftm[NB_GHOST];
-	SDL_Event event;
 	int i, pac_new_direction=0, ghosts_new_directions[NB_GHOST], selection=0;
 	init_pacman(&pac);
 	init_ghosts(ftm);
 	srand(time(NULL));
 	for(i=0; i<NB_GHOST; i++) ghosts_new_directions[i]=1;
+	Input in;
+	memset(&in,0,sizeof(in));
 	while(POINTS)
 	{
 		SDL_Delay(DELAY);
-		while(SDL_PollEvent(&event))
-		{
-			switch(event.type)
-			{
-				case SDL_QUIT : exit(EXIT_SUCCESS);
-				case SDL_KEYDOWN :
-					if (event.key.keysym.sym == SDLK_ESCAPE)
-					{
-						selection=game_menu();
-					}
-					else if (event.key.keysym.sym == SDLK_UP) pac_new_direction=HAUT;
-					else if (event.key.keysym.sym == SDLK_DOWN) pac_new_direction=BAS;
-					else if (event.key.keysym.sym == SDLK_LEFT) pac_new_direction=GAUCHE;
-					else if (event.key.keysym.sym == SDLK_RIGHT) pac_new_direction=DROITE;
-					else if (event.key.keysym.sym == SDLK_w) return 1; //cheat code for winning!!
-					else if (event.key.keysym.sym == SDLK_l) return 0; //cheat code for loosing!!
-					break;
-				default:
-					pac_new_direction=0;
-					break;
-			}
-		}
+		UpdateEvents(&in);
+		if(in.quit) exit(EXIT_SUCCESS);
+		else if(in.key[SDLK_ESCAPE]) selection=game_menu();
+		else if(in.key[SDLK_DOWN]) pac_new_direction=BAS;
+		else if(in.key[SDLK_UP]) pac_new_direction=HAUT;
+		else if (in.key[SDLK_LEFT]) pac_new_direction=GAUCHE;
+		else if (in.key[SDLK_RIGHT]) pac_new_direction=DROITE;
+		else if (in.key[SDLK_w]) return 1; //cheat code for winning!!
+		else if (in.key[SDLK_l]) return 0; //cheat code for loosing!!
+		else pac_new_direction=0;
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		draw_level();
 		draw_pac_infos(&pac);

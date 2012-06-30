@@ -1,4 +1,5 @@
 #include "menus.h"
+#include "input.h"
 
 /*FACTORISER TOUT CE CODE MERDIQUE*/
 
@@ -7,40 +8,36 @@
  * de mieux qd meme */
 int main_menu()
 {
+	Input in;
+	memset(&in,0,sizeof(in));
 	POINT p1;
-	SDL_Event event;
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
-	int selection=0, continuer=1, couleur[]={blanc,gris,blanc, blanc, blanc};
+	int selection=0, couleur[]={blanc,gris,blanc, blanc, blanc};
 	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
-	while(continuer)
+	while(!in.quit)
 	{
-		SDL_WaitEvent(&event);
-		switch(event.type)
+		UpdateEvents(&in);
+		if(in.key[SDLK_RETURN])
 		{
-			case SDL_QUIT:
-				exit(EXIT_SUCCESS);
-				break;
-			case SDL_KEYDOWN:
-				if (event.key.keysym.sym==SDLK_RETURN)
-				{
-					free(pacman);
-					return selection;
-				}
-				else if(event.key.keysym.sym==SDLK_DOWN)
-				{
-					couleur[selection]=blanc;
-					if(selection==0) selection++;
-					selection=(selection+1)%5;
-				}
-				else if(event.key.keysym.sym==SDLK_UP)
-				{
-					couleur[selection]=blanc;
-					if(!selection) selection=4;
-					else if(selection==2) selection=0;
-					else selection--;
-				}
-				break;
+			in.key[SDLK_RETURN]=0;
+			free(pacman);
+			return selection;
+		}
+		else if(in.key[SDLK_DOWN])
+		{
+			in.key[SDLK_DOWN]=0;
+			couleur[selection]=blanc;
+			if(selection==0) selection++;
+			selection=(selection+1)%5;
+		}
+		else if(in.key[SDLK_UP])
+		{
+			in.key[SDLK_UP]=0;
+			couleur[selection]=blanc;
+			if(!selection) selection=4;
+			else if(selection==2) selection=0;
+			else selection--;
 		}
 		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
@@ -107,40 +104,36 @@ void lost_menu()
 
 int game_menu()
 {
+	Input in;
+	memset(&in,0,sizeof(in));
 	POINT p1;
-	SDL_Event event;
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
-	int selection=0, continuer=1, couleur[]={blanc,gris,gris,blanc};
+	int selection=0, couleur[]={blanc,gris,gris,blanc};
 	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
-	while(continuer)
+	while(!in.quit)
 	{
-		SDL_WaitEvent(&event);
-		switch(event.type)
+		UpdateEvents(&in);
+		if(in.key[SDLK_RETURN])
 		{
-			case SDL_QUIT:
-				exit(EXIT_SUCCESS);
-				break;
-			case SDL_KEYDOWN:
-				if (event.key.keysym.sym==SDLK_RETURN)
-				{
-					free(pacman);
-					return selection;
-				}
-				else if(event.key.keysym.sym==SDLK_DOWN)
-				{
-					couleur[selection]=blanc;
-					if(selection==0) selection+=2;
-					selection=(selection+1)%4;
-				}
-				else if(event.key.keysym.sym==SDLK_UP)
-				{
-					couleur[selection]=blanc;
-					if(!selection) selection=3;
-					else if(selection==3) selection=0;
-					else selection--;
-				}
-				break;
+			in.key[SDLK_RETURN]=0;
+			free(pacman);
+			return selection;
+		}
+		else if(in.key[SDLK_DOWN])
+		{
+			in.key[SDLK_DOWN]=0;
+			couleur[selection]=blanc;
+			if(selection==0) selection+=2;
+			selection=(selection+1)%4;
+		}
+		else if(in.key[SDLK_UP])
+		{
+			in.key[SDLK_UP]=0;
+			couleur[selection]=blanc;
+			if(!selection) selection=3;
+			else if(selection==3) selection=0;
+			else selection--;
 		}
 		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
@@ -165,36 +158,35 @@ int game_menu()
 
 int select_file_menu()
 {
+	Input in;
+	memset(&in,0,sizeof(in));
 	POINT p1;
-	SDL_Event event;
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
 	char level[32];
-	int selection=0, continuer=1, i, couleur[NB_LEVEL+1];
+	int selection=0, i, couleur[NB_LEVEL+1];
 	for(i=0; i<NB_LEVEL+1; i++) couleur[i]=blanc;
 	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
-	while(continuer)
+	while(!in.quit)
 	{
 		couleur[selection]=blanc;
-		SDL_WaitEvent(&event);
-		switch(event.type)
+		UpdateEvents(&in);
+		if(in.key[SDLK_RETURN])
 		{
-			case SDL_QUIT:
-				exit(EXIT_SUCCESS);
-				break;
-			case SDL_KEYDOWN:
-				if (event.key.keysym.sym==SDLK_RETURN)
-				{
-					free(pacman);
-					return selection;
-				}
-				else if(event.key.keysym.sym==SDLK_DOWN) selection=(selection+1)%(NB_LEVEL+1);
-				else if(event.key.keysym.sym==SDLK_UP)
-				{
-					if(!selection) selection=NB_LEVEL;
-					else selection--;
-				}
-				break;
+			in.key[SDLK_RETURN]=0;
+			free(pacman);
+			return selection;
+		}
+		else if(in.key[SDLK_DOWN])
+		{
+			in.key[SDLK_DOWN]=0;
+			selection=(selection+1)%(NB_LEVEL+1);
+		}
+		else if(in.key[SDLK_UP])
+		{
+			in.key[SDLK_UP]=0;
+			if(!selection) selection=NB_LEVEL;
+			else selection--;
 		}
 		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
@@ -219,39 +211,35 @@ int select_file_menu()
 
 int edit_menu()
 {
+	Input in;
+	memset(&in,0,sizeof(in));
 	POINT p1;
-	SDL_Event event;
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
 	int selection=0, couleur[]={blanc,blanc,blanc,blanc,gris,blanc};
 	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
-	while(1)
+	while(!in.quit)
 	{
 		couleur[selection]=blanc;
-		SDL_WaitEvent(&event);
-		switch(event.type)
+		UpdateEvents(&in);
+		if(in.key[SDLK_RETURN])
 		{
-			case SDL_QUIT:
-				exit(EXIT_SUCCESS);
-				break;
-			case SDL_KEYDOWN:
-				if (event.key.keysym.sym==SDLK_RETURN)
-				{
-					free(pacman);
-					return selection;
-				}
-				else if(event.key.keysym.sym==SDLK_DOWN)
-				{
-					if(selection==3) selection=5;
-					else selection=(selection+1)%6;
-				}
-				else if(event.key.keysym.sym==SDLK_UP)
-				{
-					if(!selection) selection=5;
-					else if(selection==5) selection=3;
-					else selection--;
-				}
-				break;
+			in.key[SDLK_RETURN]=0;
+			free(pacman);
+			return selection;
+		}
+		else if(in.key[SDLK_DOWN])
+		{
+			in.key[SDLK_DOWN]=0;
+			if(selection==3) selection=5;
+			else selection=(selection+1)%6;
+		}
+		else if(in.key[SDLK_UP])
+		{
+			in.key[SDLK_UP]=0;
+			if(!selection) selection=5;
+			else if(selection==5) selection=3;
+			else selection--;
 		}
 		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));

@@ -1,4 +1,5 @@
 #include "editeur.h"
+#include "input.h"
 
 /*
  * Met en place l'environement d'edition
@@ -12,99 +13,74 @@ int editer()
 	info.x=WIDTH+10;
 	info.y=HEIGHT-100;
 	SDL_Rect position;
-	SDL_Event event;
 	position.x=position.y=0;
-	int type=0, ok=1, message=AUCUN, clicGaucheEnCours=0, clicDroitEnCours=0, tempsPrecedent=0,\
-	level=-1, selection=0;
+	int type=0, ok=1, message=AUCUN, tempsPrecedent=0, level=-1, selection=0;
 	init_blocks();
 	init_editor();
 	init_level();
+	Input in;
+	memset(&in,0,sizeof(in));
 	while(ok)
 	{
-		while(SDL_PollEvent(&event))
+		UpdateEvents(&in);
+		position.x = (in.mousex/BLOCK_SIZE)*BLOCK_SIZE;
+		position.y = (in.mousey/BLOCK_SIZE)*BLOCK_SIZE;
+		if(in.quit) exit(EXIT_SUCCESS);
+		if (in.mousebuttons[SDL_BUTTON_LEFT])
 		{
-			switch(event.type)
+			if( (in.mousex >= WIDTH) && (in.mousey < EDIT_WIDTH-1) ) //On click dans le menu de droite
 			{
-				case SDL_QUIT : exit(EXIT_SUCCESS);
-				case SDL_MOUSEBUTTONDOWN :
-					if (event.button.button == SDL_BUTTON_LEFT) //Click gauche
-					{
-						clicGaucheEnCours=1;
-						if( (event.button.x >= WIDTH) && (event.button.x < EDIT_WIDTH-1) ) //On click dans le menu de droite
-						{
-							type = get_block_type(event.button.x, event.button.y, type); //Recupère l'élément choisi
-							position.x = event.button.x-BLOCK_SIZE/2; //Centre la texture sur le pointeur
-							position.y = event.button.y-BLOCK_SIZE/2;
-						}
-						else if ( (event.button.x < WIDTH) && (event.button.x >= 0) ) //On veut placer l'objet
-							plot_object(event.button.x, event.button.y, type);
-					}
-					else if (event.button.button == SDL_BUTTON_RIGHT) //Click droit
-					{
-						clicDroitEnCours=1;
-						if( (event.button.x < WIDTH) && (event.button.x >= 0) ) {
-							if(LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type == GHOST) NB_GHOST--;
-							LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN; //On efface la texture
-						}
-					}
-					//Change d'élément avec le scroll de la souris
-					else if (event.button.button == SDL_BUTTON_WHEELDOWN)   type = (type+1)%(NB_ALL_BLOCKS);
-					else if (event.button.button == SDL_BUTTON_WHEELUP)
-					{
-						type = (type-1)%(NB_ALL_BLOCKS);
-						if (type < 0) type = NB_ALL_BLOCKS-1;
-					}
-					break;
-				case SDL_MOUSEBUTTONUP: // On désactive le booléen qui disait qu'un bouton était enfoncé
-					if (event.button.button == SDL_BUTTON_LEFT)
-						clicGaucheEnCours = 0;
-					else if (event.button.button == SDL_BUTTON_RIGHT)
-						clicDroitEnCours = 0;
-					break;
-				case SDL_MOUSEMOTION : //On déplace la souris
-					if(type >= 0) //Si un élément est séléctionné
-					{
-						if(clicGaucheEnCours) plot_object(event.button.x, event.button.y, type);
-						position.x = (event.motion.x/BLOCK_SIZE)*BLOCK_SIZE;
-						position.y = (event.motion.y/BLOCK_SIZE)*BLOCK_SIZE;
-					}
-					if(clicDroitEnCours) {
-						if(LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type == GHOST) NB_GHOST--;
-						LEVEL[event.button.y/BLOCK_SIZE][event.button.x/BLOCK_SIZE].type = RIEN;
-					}
-					break;
-				case SDL_KEYDOWN :
-					if (event.key.keysym.sym == SDLK_ESCAPE) selection=edit_menu();
-					if(selection==1) //sauver le niveau
-					{
-						level = select_file_menu();
-						if(level!=NB_LEVEL)
-						{
-							save_level(level);
-							message=SAVE;
-							tempsPrecedent = SDL_GetTicks();
-						}
-					}
-					else if(selection == 2) //charger un niveau
-					{
-						level = select_file_menu();
-						if(level!=NB_LEVEL)
-						{
-							load_level(level);
-							message=LOAD;
-							tempsPrecedent = SDL_GetTicks();
-						}
-					}
-					else if (selection == 3) //supprime tout
-					{
-						init_level();
-						message=DELETE;
-						tempsPrecedent = SDL_GetTicks();
-					}
-					else if (selection == 5) return 0;
-					break;
-				default : break;
+				type = get_block_type(in.mousex, in.mousey, type); //Recupère l'élément choisi
+				position.x = in.mousex-BLOCK_SIZE/2; //Centre la texture sur le pointeur
+				position.y = in.mousey-BLOCK_SIZE/2;
 			}
+			else if ( (in.mousex < WIDTH) && (in.mousex >= 0) ) //On veut placer l'objet
+				plot_object(in.mousex, in.mousey, type);
+		}
+		else if (in.mousebuttons[SDL_BUTTON_RIGHT])
+		{
+			if( (in.mousex < WIDTH) && (in.mousex >= 0) ) {
+				if(LEVEL[in.mousey/BLOCK_SIZE][in.mousex/BLOCK_SIZE].type == GHOST) NB_GHOST--;
+				LEVEL[in.mousey/BLOCK_SIZE][in.mousex/BLOCK_SIZE].type = RIEN; //On efface la texture
+			}
+		}
+		else if (in.mousebuttons[SDL_BUTTON_WHEELUP])
+		{
+			type = (type-1)%(NB_ALL_BLOCKS);
+			if (type < 0) type = NB_ALL_BLOCKS-1;
+		}
+		else if (in.mousebuttons[SDL_BUTTON_WHEELDOWN]) type = (type+1)%(NB_ALL_BLOCKS);
+		if(in.key[SDLK_ESCAPE])
+		{
+			in.key[SDLK_ESCAPE]=0;
+			selection=edit_menu();
+			if(selection==1) //sauver le niveau
+			{
+				level = select_file_menu();
+				if(level!=NB_LEVEL)
+				{
+					save_level(level);
+					message=SAVE;
+					tempsPrecedent = SDL_GetTicks();
+				}
+			}
+			else if(selection == 2) //charger un niveau
+			{
+				level = select_file_menu();
+				if(level!=NB_LEVEL)
+				{
+					load_level(level);
+					message=LOAD;
+					tempsPrecedent = SDL_GetTicks();
+				}
+			}
+			else if (selection == 3) //supprime tout
+			{
+				init_level();
+				message=DELETE;
+				tempsPrecedent = SDL_GetTicks();
+			}
+			else if (selection == 5) return 0;
 		}
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		load_gui(); //Affiche l'interface
