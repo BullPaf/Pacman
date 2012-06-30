@@ -11,7 +11,7 @@ int main_menu()
 	SDL_Event event;
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
-	int selection=0, continuer=1, couleur[]={blanc,gris,blanc,blanc};
+	int selection=0, continuer=1, couleur[]={blanc,gris,blanc, blanc, blanc};
 	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
 	while(continuer)
 	{
@@ -31,12 +31,12 @@ int main_menu()
 				{
 					couleur[selection]=blanc;
 					if(selection==0) selection++;
-					selection=(selection+1)%4;
+					selection=(selection+1)%5;
 				}
 				else if(event.key.keysym.sym==SDLK_UP)
 				{
 					couleur[selection]=blanc;
-					if(!selection) selection=3;
+					if(!selection) selection=4;
 					else if(selection==2) selection=0;
 					else selection--;
 				}
@@ -47,7 +47,7 @@ int main_menu()
 		couleur[selection]=jaune;
 		p1.x=100; p1.y=75;
 		aff_pol("BIENVENUE DANS PACMAN!!", 60, p1, jaune);
-		p1.x=300; p1.y=250;
+		p1.x=300; p1.y=200;
 		pos.x=p1.x-60;
 		pos.y=p1.y+(selection*80);
 		SDL_BlitSurface(pacman, NULL, screen, &pos);
@@ -57,7 +57,9 @@ int main_menu()
 		p1.y=p1.y+80;
 		aff_pol("EDITER", 50, p1, couleur[2]);
 		p1.y=p1.y+80;
-		aff_pol("QUITTER", 50, p1, couleur[3]);
+		aff_pol("OPTIONS", 50, p1, couleur[3]);
+		p1.y=p1.y+80;
+		aff_pol("QUITTER", 50, p1, couleur[4]);
 		p1.x=EDIT_WIDTH-50; p1.y=EDIT_HEIGHT-30;
 		aff_pol("v 0.1b", 20, p1, jaune);
 		SDL_Flip(screen);

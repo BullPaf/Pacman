@@ -429,6 +429,7 @@ int remove_down_bloc(int elt)
 */
 void load_level(int level)
 {
+	NB_GHOST=0;
 	FILE *level_file = fopen(LEVEL_FILE[level], "r");
 	char chaine[LINE_SIZE];
 	int line=0;

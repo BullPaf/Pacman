@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 		selection=main_menu();
 		switch(selection)
 		{
-			case 0:
+			case 0: //Jouer
 				if(argc==2) level=atoi(argv[1]);
 				else level=0;
 				while(result && level<NB_LEVEL)
@@ -25,10 +25,12 @@ int main(int argc, char** argv)
 				}
 				//if(level==NB_LEVEL)
 				break;
-			case 1: break;
-			case 2: editer();
+			case 1: break; // Charger
+			case 2: editer(); //Edition
 				break;
-			case 3: continuer=0;
+			case 3: //options(); //Option
+				break;
+			case 4: continuer=0; //Quitter
 				break;
 			default: break;
 		}
