@@ -55,7 +55,17 @@ void ghost_restart(Fantome *ftm)
 void affiche_fantomes(Fantome *ftm)
 {
 	int i;
-	for(i=0; i<NB_GHOST; i++) SDL_BlitSurface(ftm[i].image[ftm[i].num_image], NULL, screen, &(ftm[i].position));
+	for(i=0; i<NB_GHOST; i++)
+	{
+		if(ftm[i].position.x < 0 || ftm[i].position.y < 0)
+		{
+			SDL_Rect copie_pos;
+			copie_pos.x = ftm[i].position.x;
+			copie_pos.y = ftm[i].position.y;
+			SDL_BlitSurface(ftm[i].image[ftm[i].num_image], NULL, screen, &copie_pos);
+		}
+		else SDL_BlitSurface(ftm[i].image[ftm[i].num_image], NULL, screen, &(ftm[i].position));
+	}
 }
 
 /*Fonction assez naïve qui cherche la meilleur direction à prendre
@@ -64,8 +74,8 @@ void affiche_fantomes(Fantome *ftm)
 int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 {
 	int tmp=0;
-	if(f.dead)
-	{
+	//if(f.dead)
+	//{
 		SDL_Rect ftm_case, target_case;
 		ftm_case = get_case(f.position, f.cur_direction);
 		target_case = get_case(target_pos, target_dir);
@@ -85,7 +95,7 @@ int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
 		{
 			if(can_move(f.position, BAS, f.cur_direction, &tmp) && f.cur_direction != HAUT) return BAS;
 		}
-	}
+	//}
 	int rand_dir = rand()%4+1;
 	while( !can_move(f.position, rand_dir, f.cur_direction, &tmp) ) rand_dir = rand()%4+1;
 	return rand_dir;
@@ -109,7 +119,10 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
 	}
 	else if(can_move(ftm->position, *new_directions, ftm->cur_direction, &tmp))
+	{
+		fprintf(stderr, "Je suis le fantome %d peux bouger\n", ftm->couleur);
 		move(&(ftm->position), *new_directions, ftm->speed);
+	}
 	else
 	{
 		*new_directions = find_direction(*ftm, target, target_dir);

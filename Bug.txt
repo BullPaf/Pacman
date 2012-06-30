@@ -1,5 +1,5 @@
 Majeur:
-Fantome n'arrive pas toujours à traverser l'écran
 Les vies et les clés de pacman ne se conservent pas en changeant de niveau
 
 Mineur:
+

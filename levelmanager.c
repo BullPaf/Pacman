@@ -284,6 +284,7 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 int in_intersection(SDL_Rect pos, int direction)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
+	//if(case_x==0 || case_x == NB_BLOCKS_LARGEUR-1 || case_y == 0 || case_y == NB_BLOCKS_HAUTEUR-1) return 1;
 	if(direction == DROITE || direction == GAUCHE)
 	{
 		if(dans_case(pos) && (LEVEL[case_y-1][case_x].type != MUR || LEVEL[case_y+1][case_x].type != MUR)) return 1;
