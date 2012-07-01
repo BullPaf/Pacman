@@ -83,23 +83,23 @@ void action(Pacman *pac, Fantome *ftm)
 	pos=get_case(pac->position, pac->cur_direction);
 	if( LEVEL[pos.y][pos.x].type == BONUS && dans_case(pac->position) )
 	{
-		if(LEVEL[pos.y][pos.x].elt_type[0]==9) {
+		if(LEVEL[pos.y][pos.x].elt_type==9) {
 			SCORE+=100;
 			POINTS--;
 		}
-		else if(LEVEL[pos.y][pos.x].elt_type[0]==0) {
+		else if(LEVEL[pos.y][pos.x].elt_type==0) {
 			set_ghosts_eatable(ftm);
 		}
-		else if(LEVEL[pos.y][pos.x].elt_type[0]==2) {
+		else if(LEVEL[pos.y][pos.x].elt_type==2) {
 			if(pac->nb_lives<5) pac->nb_lives++;
 			else SCORE+=1000;
 		}
 		//Pomme-->accélère le pacman
-		else if(LEVEL[pos.y][pos.x].elt_type[0]==4) {
+		else if(LEVEL[pos.y][pos.x].elt_type==4) {
 			fprintf(stderr, "Manger une pomme\n");
 		}
 		//Clé-->debloque des passages secrets
-		else if(LEVEL[pos.y][pos.x].elt_type[0]==8) {
+		else if(LEVEL[pos.y][pos.x].elt_type==8) {
 			pac->nb_keys++;
 		}
 		LEVEL[pos.y][pos.x].type=RIEN;

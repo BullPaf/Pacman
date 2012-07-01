@@ -2,13 +2,12 @@
 #define H_LEVEL
 #include "graphics.h"
 #include "constantes.h"
+#include "movemanager.h"
 #include <string.h>
 #define LINE_SIZE 2048
 
 //typedef enum Block_type;
 typedef enum Block_type {RIEN, MUR, BONUS, PACMAN, GHOST}Block_type;
-//typedef enum Position;
-typedef enum Position {CENTRE, HAUT, DROITE, BAS, GAUCHE}Position;
 typedef enum Couleur {ROUGE, VIOLET, BLEU, JAUNE}Couleur;
 
 /*Les surface qui contiennent toutes les textures du jeu*/
@@ -21,9 +20,10 @@ SDL_Surface *BLOCK_GHOST[NB_GHOST_BLOCKS];
 typedef struct CASE
 {
 	Block_type type; //Si c'est un MUR ou un BONUS
-	int nb_elt; //Combien d'element dans la case, si MUR nb_elt=1
-	Position position[MAX_ELT_CASE]; //Pour chacun des éléments de la case défini sa position(HAUT ou DROITE ect...)
-	int elt_type[MAX_ELT_CASE]; //Permet de savoir pour chaque élément quelle texture afficher
+	//int nb_elt; //Combien d'element dans la case, si MUR nb_elt=1
+	//Position position[MAX_ELT_CASE]; //Pour chacun des éléments de la case défini sa position(HAUT ou DROITE ect...)
+	//int elt_type[MAX_ELT_CASE]; //Permet de savoir pour chaque élément quelle texture afficher
+	int elt_type;
 }CASE;
 
 int PAC_START_X;
@@ -49,9 +49,6 @@ void draw_level(); //ok
 void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);
 
 int dans_case(SDL_Rect);
-int can_move(SDL_Rect, int, int, int*);
-int in_intersection(SDL_Rect, int);
-void move(SDL_Rect*, int, int);
 void remove_bloc(int, int);
 int remove_right_bloc(int);
 int remove_left_bloc(int);

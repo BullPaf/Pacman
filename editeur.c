@@ -136,32 +136,24 @@ void init_editor()
 	for(i=0; i<NB_WALL_BLOCKS; i++)
 	{
 		editor[i].type=MUR;
-		editor[i].nb_elt=1;
-		editor[i].position[0]=CENTRE;
-		editor[i].elt_type[0]=i;
+		editor[i].elt_type=i;
 	}
 	for(j=0; j<NB_BONUS_BLOCKS; j++)
 	{
 		editor[i].type=BONUS;
-		editor[i].nb_elt=1;
-		editor[i].position[0]=CENTRE;
-		editor[i].elt_type[0]=j;
+		editor[i].elt_type=j;
 		i++;
 	}
 	for(j=0; j<NB_PACMAN_BLOCK; j++)
 	{
 		editor[i].type=PACMAN;
-		editor[i].nb_elt=1;
-		editor[i].position[0]=CENTRE;
-		editor[i].elt_type[0]=j+1;
+		editor[i].elt_type=j+1;
 		i++;
 	}
 	for(j=0; j<NB_GHOST_BLOCKS; j++)
 	{
 		editor[i].type=GHOST;
-		editor[i].nb_elt=1;
-		editor[i].position[0]=CENTRE;
-		editor[i].elt_type[0]=j;
+		editor[i].elt_type=j;
 		i++;
 	}
 }
