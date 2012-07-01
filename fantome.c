@@ -119,10 +119,7 @@ void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int ta
 		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
 	}
 	else if(can_move(ftm->position, *new_directions, ftm->cur_direction, &tmp))
-	{
-		fprintf(stderr, "Je suis le fantome %d peux bouger\n", ftm->couleur);
 		move(&(ftm->position), *new_directions, ftm->speed);
-	}
 	else
 	{
 		*new_directions = find_direction(*ftm, target, target_dir);

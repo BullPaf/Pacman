@@ -13,7 +13,7 @@ int main_menu()
 	POINT p1;
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
-	int selection=0, couleur[]={blanc,gris,blanc, blanc, blanc};
+	int selection=0, couleur[]={blanc, blanc, gris, blanc, blanc, blanc};
 	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
 	while(!in.quit)
 	{
@@ -28,35 +28,37 @@ int main_menu()
 		{
 			in.key[SDLK_DOWN]=0;
 			couleur[selection]=blanc;
-			if(selection==0) selection++;
-			selection=(selection+1)%5;
+			if(selection==1) selection++;
+			selection=(selection+1)%6;
 		}
 		else if(in.key[SDLK_UP])
 		{
 			in.key[SDLK_UP]=0;
 			couleur[selection]=blanc;
-			if(!selection) selection=4;
-			else if(selection==2) selection=0;
+			if(!selection) selection=5;
+			else if(selection==3) selection=1;
 			else selection--;
 		}
 		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		couleur[selection]=jaune;
-		p1.x=100; p1.y=75;
+		p1.x=100; p1.y=50;
 		aff_pol("BIENVENUE DANS PACMAN!!", 60, p1, jaune);
-		p1.x=300; p1.y=200;
+		p1.x=300; p1.y=150;
 		pos.x=p1.x-60;
 		pos.y=p1.y+(selection*80);
 		SDL_BlitSurface(pacman, NULL, screen, &pos);
-		aff_pol("JOUER", 50, p1, couleur[0]);
+		aff_pol("CAMPAGNE", 50, p1, couleur[0]);
 		p1.y=p1.y+80;
-		aff_pol("CHARGER", 50, p1, couleur[1]);
+		aff_pol("JOUER", 50, p1, couleur[1]);
 		p1.y=p1.y+80;
-		aff_pol("EDITER", 50, p1, couleur[2]);
+		aff_pol("CHARGER", 50, p1, couleur[2]);
 		p1.y=p1.y+80;
-		aff_pol("OPTIONS", 50, p1, couleur[3]);
+		aff_pol("EDITER", 50, p1, couleur[3]);
 		p1.y=p1.y+80;
-		aff_pol("QUITTER", 50, p1, couleur[4]);
+		aff_pol("OPTIONS", 50, p1, couleur[4]);
+		p1.y=p1.y+80;
+		aff_pol("QUITTER", 50, p1, couleur[5]);
 		p1.x=EDIT_WIDTH-50; p1.y=EDIT_HEIGHT-30;
 		aff_pol("v 0.1b", 20, p1, jaune);
 		SDL_Flip(screen);

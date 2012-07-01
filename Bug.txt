@@ -1,5 +1,7 @@
 Majeur:
+Bug memoire voir valgrind
+Bugs de fantomes quand ils traversent les cotés
 Les vies et les clés de pacman ne se conservent pas en changeant de niveau
 
 Mineur:
-
+Apres une partie le menu deconne

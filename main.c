@@ -12,7 +12,10 @@ int main(int argc, char** argv)
 		selection=main_menu();
 		switch(selection)
 		{
-			case 0: //Jouer
+			case 0: //Campagne
+				campagne_pacman(0);
+				break;
+			case 1:
 				if(argc==2) level=atoi(argv[1]);
 				else level=0;
 				while(result && level<NB_LEVEL)
@@ -24,13 +27,13 @@ int main(int argc, char** argv)
 					level++;
 				}
 				//if(level==NB_LEVEL)
+				break; // Charger
+			case 2: break;
+			case 3: editer(); //Edition
 				break;
-			case 1: break; // Charger
-			case 2: editer(); //Edition
+			case 4: //options(); //Option
 				break;
-			case 3: //options(); //Option
-				break;
-			case 4: continuer=0; //Quitter
+			case 5: continuer=0; //Quitter
 				break;
 			default: break;
 		}

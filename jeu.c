@@ -1,6 +1,23 @@
 #include "jeu.h"
 #include "input.h"
 
+/*TODO
+ * Faire une campagne avec une seule initialisation
+ * de pacman et des fantomes.
+ */
+int campagne_pacman(int level)
+{
+	//Pacman pac;
+	//Fantome ftm[NB_GHOST];
+	return 0;
+}
+
+/*Cette fonction ne doit servir qu'a
+ * jouer une seule partie:
+ * 1) Ici on doit pouvoir choisir de jouer
+ * soit le pacman soit un fantome.
+ * 2) On doit pouvoir aussi jouer à plusieurs
+ */
 int jouer(int level)
 {
 	//play_menu(level+1);
