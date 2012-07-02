@@ -4,8 +4,9 @@
 #include "fantome.h"
 #include "menus.h"
 #include "levelmanager.h"
+#include "config.h"
 
-int jouer(int);
+int jouer(int, config*);
 int campagne_pacman(int);
 void action(Pacman*, Fantome*);
 void set_ghosts_eatable(Fantome *ftm);

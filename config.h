@@ -1,13 +1,19 @@
 #ifndef H_CONFIG
 #define H_CONFIG
 #include <stdlib.h>
+#include "levelmanager.h"
+#include "graphics.h"
 
-enum {PACMAN, FANTOME};
+typedef struct
+{
+	int up, down, left, right; //Key for directions
+	int character;
+}player;
 
 typedef struct config
 {
 	int nb_players;
-	int *players;
+	player *players;
 }config;
 
 void load_default_config(config*);

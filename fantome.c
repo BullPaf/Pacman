@@ -1,6 +1,6 @@
 #include "fantome.h"
 
-void init_ghosts(Fantome *ftm)
+void init_ghosts(Fantome *ftm, config *cfg)
 {
 	int i,j;
 	char img[32];
@@ -31,10 +31,21 @@ void init_ghosts(Fantome *ftm)
 		ftm[i].position.y    = ftm[i].start.y;
 		ftm[i].speed         = 4;
 		ftm[i].cur_direction = 1;
-		ftm[i].num_image     = (ftm[i].cur_direction-1)*2;
+		ftm[i].num_image     = (ftm[i].cur_direction)*2;
 		ftm[i].invinsible    = 1;
 		ftm[i].dead          = 0;
+		ftm[i].nb_keys       = 0;
 		ftm[i].counter       = 0;
+		ftm[i].controllerFonction = ia_controller;
+		ftm[i].controlled_by = -1;
+		for(j=0; j<cfg->nb_players; j++)
+		{
+			if (cfg->players[j].character==GHOST && !i)
+			{
+				ftm[i].controlled_by = j;
+				ftm[i].controllerFonction = human_controller;
+			}
+		}
 		LEVEL[GHOST_START_Y[i]][GHOST_START_X[i]].type=RIEN;
 	}
 }
@@ -42,9 +53,10 @@ void init_ghosts(Fantome *ftm)
 void ghost_restart(Fantome *ftm)
 {
 	ftm->position.x    = ftm->start.x;
+	if(ftm->controlled_by != -1) ftm->controllerFonction = human_controller;
 	ftm->position.y    = ftm->start.y;
-	ftm->cur_direction = rand()%4+1;;
-	ftm->num_image     = (ftm->cur_direction-1)*2;
+	ftm->cur_direction = rand()%4;
+	ftm->num_image     = (ftm->cur_direction)*2;
 	ftm->speed         = 4;
 	ftm->invinsible    = 1;
 	ftm->dead          = 0;
@@ -68,93 +80,59 @@ void affiche_fantomes(Fantome *ftm)
 	}
 }
 
-/*Fonction assez naïve qui cherche la meilleur direction à prendre
- * en fonction de l'objectif
- * Amélioration: implémenter une recherche de plus cours chemin*/
-int find_direction(Fantome f, SDL_Rect target_pos, int target_dir)
+void set_ftm_target(Fantome f, SDL_Rect *target)
 {
-	int tmp=0;
-	//if(f.dead)
-	//{
-		SDL_Rect ftm_case, target_case;
-		ftm_case = get_case(f.position, f.cur_direction);
-		target_case = get_case(target_pos, target_dir);
-		if(ftm_case.x > target_case.x)
-		{
-			if(can_move(f.position, GAUCHE, f.cur_direction, &tmp) && f.cur_direction != DROITE) return GAUCHE;
-		}
-		else if(ftm_case.x < target_case.x)
-		{
-			if(can_move(f.position, DROITE, f.cur_direction, &tmp) && f.cur_direction != GAUCHE) return DROITE;
-		}
-		if(ftm_case.y > target_case.y)
-		{
-			if(can_move(f.position, HAUT, f.cur_direction, &tmp) && f.cur_direction != BAS) return HAUT;
-		}
-		else if(ftm_case.y < target_case.y)
-		{
-			if(can_move(f.position, BAS, f.cur_direction, &tmp) && f.cur_direction != HAUT) return BAS;
-		}
-	//}
-	int rand_dir = rand()%4+1;
-	while( !can_move(f.position, rand_dir, f.cur_direction, &tmp) ) rand_dir = rand()%4+1;
-	return rand_dir;
+	if(f.dead)
+	{
+		SDL_Rect tmp;
+		tmp.x=f.start.x;
+		tmp.y=f.start.y;
+		target=&tmp;
+	}
+	else target=NULL;
 }
 
-/*Deplacements aléatoires*/
-void deplace_fantomes(Fantome *ftm, int *new_directions, SDL_Rect target, int target_dir)
+void updateGhosts(Fantome *ftm)
 {
-	int tmp=0;
-	if(ftm->dead)
+	int i;
+	for(i=0; i<NB_GHOST; i++)
 	{
-		target.x=ftm->start.x;
-		target.y=ftm->start.y;
-	}
-	if (*new_directions != ftm->cur_direction && !ftm->dead) *new_directions = ftm->cur_direction;
-	if(in_intersection(ftm->position, ftm->cur_direction))
-	{
-		*new_directions = find_direction(*ftm, target, target_dir);
-		move(&(ftm->position), *new_directions, ftm->speed);
-		ftm->cur_direction = *new_directions;
-		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
-	}
-	else if(can_move(ftm->position, *new_directions, ftm->cur_direction, &tmp))
-		move(&(ftm->position), *new_directions, ftm->speed);
-	else
-	{
-		*new_directions = find_direction(*ftm, target, target_dir);
-		move(&(ftm->position), *new_directions, ftm->speed);
-		ftm->cur_direction = *new_directions;
-		if(ftm->invinsible) ftm->num_image=(ftm->cur_direction-1)*2;
-	}
-	if( !(ftm->invinsible) && !(ftm->dead) )
-	{
-		int tempsEcoule = SDL_GetTicks()-ftm->counter;
-		if(tempsEcoule < 7000 && tempsEcoule > 5000) //Fantome bientot invulnerable
+		if( ftm[i].invinsible )
 		{
-			if(ftm->num_image==10) ftm->num_image=9;
-			else ftm->num_image=10;
-			return;
+			if( (ftm[i].num_image)%2==0 ) ftm[i].num_image = (ftm[i].cur_direction*2)+1;
+			else ftm[i].num_image = (ftm[i].cur_direction*2);
 		}
-		else if (tempsEcoule >= 7000) //Fantome redevient invulnérable
+		else if( !(ftm[i].dead)) //Fantome peut etre mangé
 		{
-			ftm->invinsible = 1;
-			ftm->speed      = 4;
-			if(ftm->position.x % 4 != 0) ftm->position.x+=2;
-			if(ftm->position.y % 4 != 0) ftm->position.y+=2;
-			//On charge l'image correspondante à la direction en cours
-			ftm->num_image=(ftm->cur_direction-1)*2;
+			int tempsEcoule = SDL_GetTicks()-ftm[i].counter;
+			if(tempsEcoule < 7000 && tempsEcoule > 5000) //Fantome bientot invulnerable
+			{
+				if(ftm[i].num_image==10) ftm[i].num_image=9;
+				else ftm[i].num_image=10;
+			}
+			else if (tempsEcoule >= 7000) //Fantome redevient invulnérable
+			{
+				ftm[i].invinsible = 1;
+				ftm[i].speed      = 4;
+				if(ftm[i].position.x % 4 != 0) ftm[i].position.x+=2;
+				if(ftm[i].position.y % 4 != 0) ftm[i].position.y+=2;
+				//On charge l'image correspondante à la direction en cours
+				ftm[i].num_image=(ftm[i].cur_direction)*2;
+			}
+			else
+			{
+				if(ftm[i].num_image%2==0) ftm[i].num_image+=1;
+				else ftm[i].num_image -= 1;
+			}
+		}
+		else //Fantome mort
+		{
+			int tempsEcoule = SDL_GetTicks()-ftm[i].counter;
+			if (tempsEcoule >= 7000 || (ftm[i].position.x == ftm[i].start.x && ftm[i].position.y == ftm[i].start.y) )
+				ghost_restart(ftm+i);
+			ftm[i].num_image=12+ftm[i].cur_direction;
 		}
 	}
-	if(ftm->dead)
-	{
-		int tempsEcoule = SDL_GetTicks()-ftm->counter;
-		if (tempsEcoule >= 7000 || (ftm->position.x == ftm->start.x && ftm->position.y == ftm->start.y) ) ghost_restart(ftm);
-		ftm->num_image=11+ftm->cur_direction;
-	}
-	//Permutation des images pour effets de mouvements
-	else if(ftm->num_image%2==0) ftm->num_image+=1;
-	else ftm->num_image -= 1;
 }
 
 void ghost_death(Fantome* ftm)
@@ -166,6 +144,7 @@ void ghost_death(Fantome* ftm)
 	//SDL_Flip(screen);
 	SDL_Delay(500);
 	ftm->dead=1;
+	ftm->controllerFonction = ia_controller;
 	ftm->speed = 10;
 	ftm->position.x=ftm_case.x*BLOCK_SIZE;
 	ftm->position.y=ftm_case.y*BLOCK_SIZE;

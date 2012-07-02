@@ -44,34 +44,18 @@ void extract_val(char *s, int line)
 				i+=2; //On saute les ':'
 				while(s[i] != ' ') //Délimiteur type de bonus
 				{
-					//while( (s[i] != ',') && (s[i] != ':') ) //tant qu'on a pas de virgule ou de deux points on lit une valeur
-					//{
-						nb[j]=s[i];
-						j++; i++;
-					//}
+					nb[j]=s[i];
+					j++; i++;
 				}
-					if(j==1) //Si la valeur ne fait qu'un caractere==>decalage
-					{
-						nb[1]=nb[0];
-						nb[0]='0';
-					}
-					LEVEL[line][nb_val].elt_type=atoi(nb);
-					if(atoi(nb) == 9) POINTS++; //Si c'est un point on incremente le nombre de POINTS
-					i++; j=0;
-			}
-				
-				/*while(s[i] != ' ') //tant qu'on ai pas arrivé à la fin on lit les positions
+				if(j==1) //Si la valeur ne fait qu'un caractere==>decalage
 				{
-					if(s[i]=='0') LEVEL[line][nb_val].position[nb_elt] = CENTRE;
-					else if(s[i]=='1') LEVEL[line][nb_val].position[nb_elt] = HAUT;
-					else if(s[i]=='2') LEVEL[line][nb_val].position[nb_elt] = DROITE;
-					else if(s[i]=='3') LEVEL[line][nb_val].position[nb_elt] = BAS;
-					else if(s[i]=='4') LEVEL[line][nb_val].position[nb_elt] = GAUCHE;
-					i++; nb_elt++;
-				}*/
-				//LEVEL[line][nb_val].nb_elt=nb_elt;
-				//nb_elt=0;
-			//}
+					nb[1]=nb[0];
+					nb[0]='0';
+				}
+				LEVEL[line][nb_val].elt_type=atoi(nb);
+				if(atoi(nb) == 9) POINTS++; //Si c'est un point on incremente le nombre de POINTS
+				i++; j=0;
+			}
 			else if(type=='3') //PACMAN
 			{
 				i+=2;
@@ -79,10 +63,10 @@ void extract_val(char *s, int line)
 				//LEVEL[line][nb_val].position[0]=CENTRE;
 				PAC_START_X=nb_val;
 				PAC_START_Y=line;
-				if(s[i]=='1') PAC_START_DIRECTION = HAUT;
-				else if(s[i]=='2') PAC_START_DIRECTION = DROITE;
-				else if(s[i]=='3') PAC_START_DIRECTION = BAS;
-				else if(s[i]=='4') PAC_START_DIRECTION = GAUCHE;
+				if(s[i]=='0') PAC_START_DIRECTION = HAUT;
+				else if(s[i]=='1') PAC_START_DIRECTION = DROITE;
+				else if(s[i]=='2') PAC_START_DIRECTION = BAS;
+				else if(s[i]=='3') PAC_START_DIRECTION = GAUCHE;
 				LEVEL[line][nb_val].elt_type=PAC_START_DIRECTION;
 				i++;
 			}
@@ -96,7 +80,6 @@ void extract_val(char *s, int line)
 					exit(EXIT_FAILURE);
 				}
 				LEVEL[line][nb_val].type = GHOST;
-				//LEVEL[line][nb_val].position[0]=CENTRE;
 				if(s[i]=='0') ghost=ROUGE;
 				else if(s[i]=='1') ghost=VIOLET;
 				else if(s[i]=='2') ghost=BLEU;
@@ -172,7 +155,7 @@ void affiche_une_case(CASE c, SDL_Rect *pos, SDL_Surface *s)
 {
 	if(c.type==MUR) SDL_BlitSurface(BLOCK_MUR[c.elt_type], NULL, s, pos);
 	else if(c.type==BONUS) SDL_BlitSurface(BLOCK_BONUS[c.elt_type], NULL, s, pos);
-	else if(c.type==PACMAN) SDL_BlitSurface(BLOCK_PACMAN[c.elt_type-1], NULL, s, pos);
+	else if(c.type==PACMAN) SDL_BlitSurface(BLOCK_PACMAN[c.elt_type], NULL, s, pos);
 	else if(c.type==GHOST) SDL_BlitSurface(BLOCK_GHOST[c.elt_type], NULL, s, pos);
 }
 
@@ -347,14 +330,7 @@ void save_level(int level)
 			if(LEVEL[i][j].type==MUR) fprintf(level_file, "1:%d ", LEVEL[i][j].elt_type);
 			else if(LEVEL[i][j].type==PACMAN) fprintf(level_file, "3:%d ", LEVEL[i][j].elt_type);
 			else if(LEVEL[i][j].type==GHOST) fprintf(level_file, "4:%d ", LEVEL[i][j].elt_type);
-			else if(LEVEL[i][j].type==BONUS)
-			{
-				fprintf(level_file, "2:%d ", LEVEL[i][j].elt_type);
-				/*for(k=1; k<LEVEL[i][j].nb_elt; k++) fprintf(level_file, ",%d", LEVEL[i][j].elt_type[k]);
-				fprintf(level_file, ":%d", LEVEL[i][j].position[0]);
-				for(k=1; k<LEVEL[i][j].nb_elt; k++) fprintf(level_file, ":%d", LEVEL[i][j].position[k]);
-				fputc(' ', level_file);*/
-			}
+			else if(LEVEL[i][j].type==BONUS) fprintf(level_file, "2:%d ", LEVEL[i][j].elt_type);
 			else fputs("0 ", level_file);
 		}
 		fputc('\n', level_file);

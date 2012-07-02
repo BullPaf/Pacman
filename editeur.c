@@ -147,7 +147,7 @@ void init_editor()
 	for(j=0; j<NB_PACMAN_BLOCK; j++)
 	{
 		editor[i].type=PACMAN;
-		editor[i].elt_type=j+1;
+		editor[i].elt_type=j;
 		i++;
 	}
 	for(j=0; j<NB_GHOST_BLOCKS; j++)

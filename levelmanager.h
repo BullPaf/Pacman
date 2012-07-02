@@ -2,8 +2,8 @@
 #define H_LEVEL
 #include "graphics.h"
 #include "constantes.h"
-#include "movemanager.h"
 #include <string.h>
+
 #define LINE_SIZE 2048
 
 //typedef enum Block_type;
@@ -20,9 +20,6 @@ SDL_Surface *BLOCK_GHOST[NB_GHOST_BLOCKS];
 typedef struct CASE
 {
 	Block_type type; //Si c'est un MUR ou un BONUS
-	//int nb_elt; //Combien d'element dans la case, si MUR nb_elt=1
-	//Position position[MAX_ELT_CASE]; //Pour chacun des éléments de la case défini sa position(HAUT ou DROITE ect...)
-	//int elt_type[MAX_ELT_CASE]; //Permet de savoir pour chaque élément quelle texture afficher
 	int elt_type;
 }CASE;
 

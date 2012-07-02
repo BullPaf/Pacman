@@ -3,7 +3,7 @@
 #include <time.h>
 #include "levelmanager.h"
 #include "constantes.h"
-#include "pacman.h"
+#include "movemanager.h"
 
 typedef struct Fantome
 {
@@ -13,15 +13,18 @@ typedef struct Fantome
 	int invinsible; //S'il est invinsible
 	int dead; //S'il est mort
 	int counter; //Permet de mesurer le temps
+	int controlled_by;
+	int nb_keys;
 	int couleur; //La couleur du fantome ca peut servir
 	SDL_Rect position, start; //Position actuelle et position de départ
 	SDL_Surface* image[16]; //Les différentes images des fantomes
+	void (*controllerFonction)(Input, config, int, SDL_Rect*, int*, int*, int*, int*, SDL_Rect*);
 }Fantome;
 
-void init_ghosts(Fantome*);
+void init_ghosts(Fantome*, config*);
 void affiche_fantomes(Fantome*);
-int find_direction(Fantome, SDL_Rect, int);
-void deplace_fantomes(Fantome*, int*, SDL_Rect, int);
+void updateGhosts(Fantome *);
+void set_ftm_target(Fantome, SDL_Rect*);
 void ghost_restart(Fantome*);
 void ghost_death(Fantome*);
 

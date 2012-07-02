@@ -1,6 +1,6 @@
 #include "pacman.h"
 
-void init_pacman(Pacman *pac)
+void init_pacman(Pacman *pac, config *cfg)
 {
 	char img[32];
 	int i;
@@ -16,11 +16,20 @@ void init_pacman(Pacman *pac)
 	pac->position.x    = PAC_START_X*BLOCK_SIZE;
 	pac->position.y    = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;
-	pac->num_image     = (pac->cur_direction*2)-2;
+	pac->num_image     = (pac->cur_direction*2);
 	pac->counter       = 0;
 	pac->nb_lives      = 2;
 	pac->nb_keys       = 0;
 	pac->speed         = 4;
+	pac->controllerFonction = ia_controller;
+	for(i=0; i<cfg->nb_players; i++)
+	{
+		if (cfg->players[i].character==PACMAN)
+		{
+			pac->controlled_by = i;
+			pac->controllerFonction = human_controller;
+		}
+	}
 	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 }
 
@@ -29,7 +38,7 @@ void pac_restart(Pacman *pac)
 	pac->position.x = PAC_START_X*BLOCK_SIZE;
 	pac->position.y = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;
-	pac->num_image = (pac->cur_direction*2)-2;
+	pac->num_image = (pac->cur_direction*2);
 }
 
 //Pour afficher Pacman
@@ -45,27 +54,15 @@ void affiche_pacman(Pacman *pac)
 	else SDL_BlitSurface(pac->image[pac->num_image], NULL, screen, &pac->position);
 }
 
-void deplace_pacman(Pacman *pac, int new_direction)
+void updatePacman(Pacman *pac)
 {
-	//Si on peut se deplacer dans la nouvelle direction
-	if(new_direction && can_move(pac->position, new_direction, pac->cur_direction, &(pac->nb_keys)))
-	{
-		move(&(pac->position), new_direction, pac->speed);
-		if(new_direction != pac->cur_direction)
-		{
-			pac->cur_direction = new_direction;
-			pac->num_image = (pac->cur_direction*2)-2;
-		}
-		if( (pac->num_image)%2==0 ) pac->num_image+=1;
-		else pac->num_image -= 1;
-	}
-	//Sinon si on peut continuer dans l'ancienne direction
-	else if(can_move(pac->position, pac->cur_direction, pac->cur_direction, &(pac->nb_keys)))
-	{
-		move(&(pac->position), pac->cur_direction, pac->speed);
-		if( (pac->num_image)%2==0 ) pac->num_image+=1;
-		else pac->num_image -= 1;
-	}
+	if( (pac->num_image)%2==0 ) pac->num_image = (pac->cur_direction*2)+1;
+	else pac->num_image = (pac->cur_direction*2);
+}
+
+SDL_Rect* get_pac_target(Pacman pac)
+{
+	return NULL;
 }
 
 //Animation de mort

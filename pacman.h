@@ -3,6 +3,7 @@
 #include "graphics.h"
 #include "constantes.h"
 #include "levelmanager.h"
+#include "movemanager.h"
 
 typedef struct Pacman
 {
@@ -12,13 +13,16 @@ typedef struct Pacman
 	int nb_keys; //Nombdre de clé
 	int num_image; //L'image à afficher
 	int counter; //Permet de mesurer le temps
+	int controlled_by;
 	SDL_Rect position; //Position actuelle
 	SDL_Surface* image[19]; //Les différentes images de pacman
+	void (*controllerFonction)(Input, config, int, SDL_Rect*, int*, int*, int*, int*, SDL_Rect*);
 }Pacman;
 
-void init_pacman(Pacman*);
+void init_pacman(Pacman*, config*);
 void affiche_pacman(Pacman*);
-void deplace_pacman(Pacman*, int);
+void updatePacman(Pacman*);
+SDL_Rect* get_pac_target(Pacman);
 void pac_restart(Pacman*);
 void pac_death(Pacman*);
 

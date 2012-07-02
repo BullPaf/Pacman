@@ -2,11 +2,14 @@
 #include "editeur.h"
 #include "jeu.h"
 #include "menus.h"
+#include "config.h"
 
 int main(int argc, char** argv)
 {
 	int continuer=1, level=0, selection=0, result=1;
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
+	config cfg;
+	load_default_config(&cfg);
 	while (continuer)
 	{
 		selection=main_menu();
@@ -20,7 +23,7 @@ int main(int argc, char** argv)
 				else level=0;
 				while(result && level<NB_LEVEL)
 				{
-					result=jouer(level);
+					result=jouer(level, &cfg);
 					if(result==1) win_menu();
 					else if(result==2) result=0;
 					else if(!result) lost_menu();
