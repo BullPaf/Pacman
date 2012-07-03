@@ -5,11 +5,41 @@
  * Faire une campagne avec une seule initialisation
  * de pacman et des fantomes.
  */
-int campagne_pacman(int level)
+void campagne(config *cfg)
 {
-	//Pacman pac;
-	//Fantome ftm[NB_GHOST];
-	return 0;
+	int level=0, result=1, ok=1;
+	init_level();
+	init_blocks();
+	load_level(level);
+	Pacman pac;
+	Fantome ftm[NB_GHOST];
+	Input in;
+	init_pacman(&pac, cfg);
+	init_ghosts(ftm, cfg);
+	memset(&in,0,sizeof(in));
+	/*Certainement pas la bonne
+	 * facon de faire */
+	while(ok)
+	{
+		//play_menu(level+1);
+		result = jouer(&pac, ftm, in, cfg);
+		if(result==1) win_menu();
+		else if(!result)
+		{
+			lost_menu();
+			ok=0;
+		}
+		else if(result==2) ok=0;
+		if(level < NB_LEVEL-1)
+		{
+			level++;
+			init_level();
+			load_level(level);
+			pac_restart(&pac);
+			init_ghosts(ftm, cfg);
+		}
+		else ok=0;
+	}
 }
 
 /*Cette fonction ne doit servir qu'a
@@ -18,7 +48,7 @@ int campagne_pacman(int level)
  * soit le pacman soit un fantome.
  * 2) On doit pouvoir aussi jouer à plusieurs
  */
-int jouer(int level, config *cfg)
+int one_level(int level, config *cfg)
 {
 	//play_menu(level+1);
 	init_level();
@@ -27,11 +57,15 @@ int jouer(int level, config *cfg)
 	Pacman pac;
 	Fantome ftm[NB_GHOST];
 	Input in;
-	int i, selection=0; 
 	init_pacman(&pac, cfg);
 	init_ghosts(ftm, cfg);
-	srand(time(NULL));
 	memset(&in,0,sizeof(in));
+	return jouer(&pac, ftm, in, cfg);
+}
+
+int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
+{
+	int i, selection=0;
 	while(POINTS)
 	{
 		SDL_Delay(DELAY);
@@ -45,26 +79,26 @@ int jouer(int level, config *cfg)
 		else if (in.key[SDLK_w]) return 1; //cheat code for winning!!
 		else if (in.key[SDLK_l]) return 0; //cheat code for loosing!!
 
-		set_pac_target(&pac);
-		pac.controllerFonction(in, *cfg, pac.controlled_by, &(pac.position), &(pac.cur_direction), &(pac.nb_keys), &(pac.speed), &(pac.num_image), pac.target);
+		set_pac_target(pac);
+		pac->controllerFonction(in, *cfg, pac->controlled_by, &(pac->position), &(pac->cur_direction), &(pac->nb_keys), &(pac->speed), &(pac->num_image), pac->target);
 		for(i=0; i<NB_GHOST; i++)
 		{
-			set_ftm_target(ftm+i, pac.position);
+			set_ftm_target(ftm+i, pac->position);
 			ftm[i].controllerFonction(in, *cfg, ftm[i].controlled_by, &(ftm[i].position), &(ftm[i].cur_direction), &(ftm[i].nb_keys), &(ftm[i].speed), &(ftm[i].num_image), ftm[i].target);
 		}
 
-		updatePacman(&pac);
+		updatePacman(pac);
 		updateGhosts(ftm);
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		draw_level();
-		draw_pac_infos(&pac);
-		draw_score(level);
-		affiche_pacman(&pac);
+		draw_pac_infos(pac);
+		draw_score();
+		affiche_pacman(pac);
 		affiche_fantomes(ftm);
-		if(!pac.nb_lives) return 0;
+		if(!pac->nb_lives) return 0;
 		if(selection==3) return 2;
 		SDL_Flip(screen);
-		action(&pac, ftm);
+		action(pac, ftm);
 	}
 	return 1;
 }
@@ -171,14 +205,14 @@ void draw_pac_infos(Pacman *pac)
 }
 
 //A deplacer
-void draw_score(int level)
+void draw_score()
 {
 	POINT p1;
 	char score[50];
 	sprintf(score, "Score : %d", SCORE);
 	p1.x=WIDTH+10; p1.y=150;
 	aff_pol(score, FONT_SIZE, p1, blanc);
-	sprintf(score, "Level : %d", level+1);
+	/*sprintf(score, "Level : %d", level+1);
 	p1.x=WIDTH+10; p1.y=200;
-	aff_pol(score, FONT_SIZE, p1, blanc);
+	aff_pol(score, FONT_SIZE, p1, blanc);*/
 }

@@ -25,10 +25,10 @@ void init_ghosts(Fantome *ftm, config *cfg)
 				exit(EXIT_FAILURE);
 			}
 		}
-		ftm[i].start.x       = (GHOST_START_X[i])*BLOCK_SIZE;
-		ftm[i].start.y       = (GHOST_START_Y[i])*BLOCK_SIZE;
-		ftm[i].position.x    = ftm[i].start.x;
-		ftm[i].position.y    = ftm[i].start.y;
+		ftm[i].start.x       = GHOST_START_X[i];
+		ftm[i].start.y       = GHOST_START_Y[i];
+		ftm[i].position.x    = ftm[i].start.x*BLOCK_SIZE;
+		ftm[i].position.y    = ftm[i].start.y*BLOCK_SIZE;
 		ftm[i].speed         = 4;
 		ftm[i].cur_direction = 1;
 		ftm[i].num_image     = (ftm[i].cur_direction)*2;
@@ -54,9 +54,10 @@ void init_ghosts(Fantome *ftm, config *cfg)
 
 void ghost_restart(Fantome *ftm)
 {
-	ftm->position.x    = ftm->start.x;
+	//LEVEL[ftm->start.y][ftm->start.x].type=RIEN;
+	ftm->position.x    = ftm->start.x*BLOCK_SIZE;
 	if(ftm->controlled_by != -1) ftm->controllerFonction = human_controller;
-	ftm->position.y    = ftm->start.y;
+	ftm->position.y    = ftm->start.y*BLOCK_SIZE;
 	ftm->cur_direction = rand()%4;
 	ftm->num_image     = (ftm->cur_direction)*2;
 	ftm->speed         = 4;
@@ -65,7 +66,7 @@ void ghost_restart(Fantome *ftm)
 	ftm->counter       = 0;
 }
 
-//Pour afficher Pacman
+//Pour afficher le fantome
 void affiche_fantomes(Fantome *ftm)
 {
 	int i;
@@ -82,6 +83,7 @@ void affiche_fantomes(Fantome *ftm)
 	}
 }
 
+/*Option fantome intelligent ou pas à ajouter*/
 void set_ftm_target(Fantome *f, SDL_Rect pac)
 {
 	if(f->dead)
@@ -132,13 +134,14 @@ void updateGhosts(Fantome *ftm)
 		else //Fantome mort
 		{
 			int tempsEcoule = SDL_GetTicks()-ftm[i].counter;
-			if (tempsEcoule >= 7000 || (ftm[i].position.x == ftm[i].start.x && ftm[i].position.y == ftm[i].start.y) )
+			if (tempsEcoule >= 7000 || (ftm[i].position.x == ftm[i].start.x*BLOCK_SIZE && ftm[i].position.y == ftm[i].start.y*BLOCK_SIZE) )
 				ghost_restart(ftm+i);
 			ftm[i].num_image=12+ftm[i].cur_direction;
 		}
 	}
 }
 
+/*Rajouter les gains de points*/
 void ghost_death(Fantome* ftm)
 {
 	//POINT p1;

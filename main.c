@@ -16,21 +16,12 @@ int main(int argc, char** argv)
 		switch(selection)
 		{
 			case 0: //Campagne
-				campagne_pacman(0);
+				campagne(&cfg);
 				break;
 			case 1:
-				if(argc==2) level=atoi(argv[1]);
-				else level=0;
-				result=1;
-				while(result && level<NB_LEVEL)
-				{
-					result=jouer(level, &cfg);
-					if(result==1) win_menu();
-					else if(result==2) result=0;
-					else if(!result) lost_menu();
-					level++;
-				}
-				//if(level==NB_LEVEL)
+				level=select_file_menu();
+				result=one_level(level, &cfg);
+				if(result==1) win_menu();
 				break; // Charger
 			case 2:
 				break;

@@ -37,6 +37,7 @@ void init_pacman(Pacman *pac, config *cfg)
 
 void pac_restart(Pacman *pac)
 {
+	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 	pac->position.x = PAC_START_X*BLOCK_SIZE;
 	pac->position.y = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;
