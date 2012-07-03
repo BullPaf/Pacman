@@ -13,10 +13,6 @@ void init_pacman(Pacman *pac, config *cfg)
 			exit(EXIT_FAILURE);
 		}
 	}
-	pac->position.x    = PAC_START_X*BLOCK_SIZE;
-	pac->position.y    = PAC_START_Y*BLOCK_SIZE;
-	pac->cur_direction = PAC_START_DIRECTION;
-	pac->num_image     = (pac->cur_direction*2);
 	pac->counter       = 0;
 	pac->nb_lives      = 2;
 	pac->nb_keys       = 0;
@@ -32,16 +28,15 @@ void init_pacman(Pacman *pac, config *cfg)
 			pac->controllerFonction = human_controller;
 		}
 	}
-	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 }
 
 void pac_restart(Pacman *pac)
 {
-	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 	pac->position.x = PAC_START_X*BLOCK_SIZE;
 	pac->position.y = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;
 	pac->num_image = (pac->cur_direction*2);
+	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 }
 
 //Pour afficher Pacman

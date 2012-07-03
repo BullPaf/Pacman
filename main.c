@@ -22,6 +22,7 @@ int main(int argc, char** argv)
 				level=select_file_menu();
 				result=one_level(level, &cfg);
 				if(result==1) win_menu();
+				else if(!result) lost_menu();
 				break; // Charger
 			case 2:
 				break;

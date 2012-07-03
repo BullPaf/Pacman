@@ -7,38 +7,26 @@
  */
 void campagne(config *cfg)
 {
-	int level=0, result=1, ok=1;
-	init_level();
-	init_blocks();
-	load_level(level);
+	SCORE=0;
+	int level=0, result=1;
 	Pacman pac;
-	Fantome ftm[NB_GHOST];
+	Fantome ftm[NB_MAX_GHOSTS];
 	Input in;
+
 	init_pacman(&pac, cfg);
-	init_ghosts(ftm, cfg);
+	init_blocks();
 	memset(&in,0,sizeof(in));
-	/*Certainement pas la bonne
-	 * facon de faire */
-	while(ok)
+
+	while(level < NB_LEVEL && result)
 	{
 		//play_menu(level+1);
+		init_level();
+		load_level(level);
 		result = jouer(&pac, ftm, in, cfg);
 		if(result==1) win_menu();
-		else if(!result)
-		{
-			lost_menu();
-			ok=0;
-		}
-		else if(result==2) ok=0;
-		if(level < NB_LEVEL-1)
-		{
-			level++;
-			init_level();
-			load_level(level);
-			pac_restart(&pac);
-			init_ghosts(ftm, cfg);
-		}
-		else ok=0;
+		else if(!result) lost_menu();
+		else if(result==2) result=0;
+		level++;
 	}
 }
 
@@ -50,21 +38,25 @@ void campagne(config *cfg)
  */
 int one_level(int level, config *cfg)
 {
+	SCORE=0;
 	//play_menu(level+1);
+	Pacman pac;
+	Fantome ftm[NB_MAX_GHOSTS];
+	Input in;
+
+	init_pacman(&pac, cfg);
 	init_level();
 	init_blocks();
 	load_level(level);
-	Pacman pac;
-	Fantome ftm[NB_GHOST];
-	Input in;
-	init_pacman(&pac, cfg);
-	init_ghosts(ftm, cfg);
 	memset(&in,0,sizeof(in));
+
 	return jouer(&pac, ftm, in, cfg);
 }
 
 int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
 {
+	pac_restart(pac);
+	init_ghosts(ftm, cfg);
 	int i, selection=0;
 	while(POINTS)
 	{
