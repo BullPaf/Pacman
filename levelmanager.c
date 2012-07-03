@@ -60,7 +60,6 @@ void extract_val(char *s, int line)
 			{
 				i+=2;
 				LEVEL[line][nb_val].type = PACMAN;
-				//LEVEL[line][nb_val].position[0]=CENTRE;
 				PAC_START_X=nb_val;
 				PAC_START_Y=line;
 				if(s[i]=='0') PAC_START_DIRECTION = HAUT;
@@ -192,7 +191,7 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 	SDL_Rect pos;
 	switch(direction)
 	{
-		case DROITE: //Vers la droite
+		case DROITE:
 			pos.x = (position.x+BLOCK_SIZE-1)/BLOCK_SIZE;
 			pos.y = position.y/BLOCK_SIZE;
 			break;

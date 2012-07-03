@@ -18,22 +18,22 @@ int main(int argc, char** argv)
 			case 0: //Campagne
 				campagne(&cfg);
 				break;
-			case 1:
+			case 1: //Jouer un niveau
 				level=select_file_menu();
 				result=one_level(level, &cfg);
 				if(result==1) win_menu();
 				else if(!result) lost_menu();
-				break; // Charger
-			case 2:
 				break;
-			case 3:
-				editer(); //Edition
+			case 2: // Charger
 				break;
-			case 4:
-				configure(&cfg); //Option
+			case 3: //Edition
+				editer();
 				break;
-			case 5:
-				continuer=0; //Quitter
+			case 4: //Option
+				configure(&cfg);
+				break;
+			case 5: //Quitter
+				continuer=0;
 				break;
 			default: break;
 		}

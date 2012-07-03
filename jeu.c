@@ -1,10 +1,6 @@
 #include "jeu.h"
 #include "input.h"
 
-/*TODO
- * Faire une campagne avec une seule initialisation
- * de pacman et des fantomes.
- */
 void campagne(config *cfg)
 {
 	SCORE=0;
@@ -30,12 +26,6 @@ void campagne(config *cfg)
 	}
 }
 
-/*Cette fonction ne doit servir qu'a
- * jouer une seule partie:
- * 1) Ici on doit pouvoir choisir de jouer
- * soit le pacman soit un fantome.
- * 2) On doit pouvoir aussi jouer à plusieurs
- */
 int one_level(int level, config *cfg)
 {
 	SCORE=0;
