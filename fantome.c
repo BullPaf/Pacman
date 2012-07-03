@@ -37,6 +37,8 @@ void init_ghosts(Fantome *ftm, config *cfg)
 		ftm[i].nb_keys       = 0;
 		ftm[i].counter       = 0;
 		ftm[i].controllerFonction = ia_controller;
+		ftm[i].target.x      = -1;
+		ftm[i].target.y      = -1;
 		ftm[i].controlled_by = -1;
 		for(j=0; j<cfg->nb_players; j++)
 		{
@@ -80,16 +82,18 @@ void affiche_fantomes(Fantome *ftm)
 	}
 }
 
-void set_ftm_target(Fantome f, SDL_Rect *target)
+void set_ftm_target(Fantome *f, SDL_Rect pac)
 {
-	if(f.dead)
+	if(f->dead)
 	{
-		SDL_Rect tmp;
-		tmp.x=f.start.x;
-		tmp.y=f.start.y;
-		target=&tmp;
+		f->target.x=f->start.x;
+		f->target.y=f->start.y;
 	}
-	else target=NULL;
+	else 
+	{
+		f->target.x=pac.x;
+		f->target.y=pac.y;
+	}
 }
 
 void updateGhosts(Fantome *ftm)

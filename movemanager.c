@@ -1,6 +1,6 @@
 #include "movemanager.h"
 
-void human_controller(Input in, config cfg, int controller, SDL_Rect *position, int *cur_direction, int *nb_keys, int *speed, int *num_image, SDL_Rect *target)
+void human_controller(Input in, config cfg, int controller, SDL_Rect *position, int *cur_direction, int *nb_keys, int *speed, int *num_image, SDL_Rect target)
 {
 	int new_direction;
 	if(in.key[cfg.players[controller].down]) new_direction=BAS;
@@ -18,7 +18,7 @@ void human_controller(Input in, config cfg, int controller, SDL_Rect *position, 
 	else if(can_move(*position, *cur_direction, *cur_direction, nb_keys)) move(position, *cur_direction, *speed);
 }
 
-void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int *cur_direction, int *nb_keys, int *speed, int *num_image, SDL_Rect *target)
+void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int *cur_direction, int *nb_keys, int *speed, int *num_image, SDL_Rect target)
 {
 	int new_direction;
 	if(in_intersection(*position, *cur_direction))
@@ -41,6 +41,7 @@ void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int
 int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
+	//if(case_y >= NB_BLOCKS_HAUTEUR || case_y < 0 || case_x >= NB_BLOCKS_LARGEUR || case_x < 0) return 0;
 	switch (new_direction)
 	{
 		case DROITE: //Vers la droite
@@ -104,6 +105,7 @@ int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 int in_intersection(SDL_Rect pos, int direction)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
+	if(case_y >= NB_BLOCKS_HAUTEUR || case_y < 0 || case_x >= NB_BLOCKS_LARGEUR || case_x < 0) return 0;
 	if(direction == DROITE || direction == GAUCHE)
 	{
 		if(dans_case(pos) && (LEVEL[case_y-1][case_x].type != MUR || LEVEL[case_y+1][case_x].type != MUR)) return 1;
@@ -126,7 +128,7 @@ void move(SDL_Rect *pos, int direction, int speed)
 			break;
 		case GAUCHE:
 			pos->x -= speed;
-			if(pos->x+BLOCK_SIZE <= 0) pos->x = WIDTH+BLOCK_SIZE;
+			if(pos->x+BLOCK_SIZE <= 0) pos->x = WIDTH-BLOCK_SIZE;
 			break;
 		case HAUT:
 			pos->y -= speed;
@@ -143,14 +145,14 @@ void move(SDL_Rect *pos, int direction, int speed)
 /*Fonction assez naïve qui cherche la meilleur direction à prendre
  * en fonction de l'objectif
  * Amélioration: implémenter une recherche de plus cours chemin*/
-int find_direction(SDL_Rect pos, int cur_direction, SDL_Rect *target, int *nb_keys)
+int find_direction(SDL_Rect pos, int cur_direction, SDL_Rect target, int *nb_keys)
 {
-	if(target != NULL)
+	if(target.x != -1 && target.y != -1)
 	{
-		fprintf(stderr, "J'ai un objectif YOUPI!, X=%d, Y=%d\n", target->x, target->y);
 		SDL_Rect ftm_case, target_case;
 		ftm_case = get_case(pos, cur_direction);
-		target_case = get_case(*target, HAUT);
+		target_case = get_case(target, HAUT);
+		//fprintf(stderr, "J'ai un objectif YOUPI!, X=%d, Y=%d\n", target_case.x, target_case.y);
 		if(ftm_case.x > target_case.x)
 		{
 			if(can_move(pos, GAUCHE, cur_direction, nb_keys) && cur_direction != DROITE) return GAUCHE;
@@ -168,7 +170,6 @@ int find_direction(SDL_Rect pos, int cur_direction, SDL_Rect *target, int *nb_ke
 			if(can_move(pos, BAS, cur_direction, nb_keys) && cur_direction != HAUT) return BAS;
 		}
 	}
-	//else fprintf(stderr, "Aucune direction à suivre\n");
 	int rand_dir = rand()%4;
 	while( !can_move(pos, rand_dir, cur_direction, nb_keys) ) rand_dir = rand()%4;
 	return rand_dir;

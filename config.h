@@ -2,6 +2,7 @@
 #define H_CONFIG
 #include <stdlib.h>
 #include "levelmanager.h"
+#include "menus.h"
 #include "graphics.h"
 
 typedef struct
@@ -17,5 +18,6 @@ typedef struct config
 }config;
 
 void load_default_config(config*);
+void configure(config*);
 
 #endif

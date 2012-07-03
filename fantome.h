@@ -16,15 +16,15 @@ typedef struct Fantome
 	int controlled_by;
 	int nb_keys;
 	int couleur; //La couleur du fantome ca peut servir
-	SDL_Rect position, start; //Position actuelle et position de départ
+	SDL_Rect position, start, target; //Position actuelle et position de départ
 	SDL_Surface* image[16]; //Les différentes images des fantomes
-	void (*controllerFonction)(Input, config, int, SDL_Rect*, int*, int*, int*, int*, SDL_Rect*);
+	void (*controllerFonction)(Input, config, int, SDL_Rect*, int*, int*, int*, int*, SDL_Rect);
 }Fantome;
 
 void init_ghosts(Fantome*, config*);
 void affiche_fantomes(Fantome*);
 void updateGhosts(Fantome *);
-void set_ftm_target(Fantome, SDL_Rect*);
+void set_ftm_target(Fantome*, SDL_Rect);
 void ghost_restart(Fantome*);
 void ghost_death(Fantome*);
 

@@ -13,7 +13,7 @@ enum {HAUT, DROITE, BAS, GAUCHE};
 #define NB_MAX_GHOSTS 16
 #define NB_ALL_BLOCKS NB_BONUS_BLOCKS+NB_WALL_BLOCKS+NB_PACMAN_BLOCK+NB_GHOST_BLOCKS
 #define DELAY 40 //Diminuer pour accélérer le jeu
-#define NB_LEVEL 4
+#define NB_LEVEL 2
 
 #define WIDTH BLOCK_SIZE * NB_BLOCKS_LARGEUR //Largeur d'ecran
 #define HEIGHT BLOCK_SIZE * NB_BLOCKS_HAUTEUR //Hauteur d'ecran

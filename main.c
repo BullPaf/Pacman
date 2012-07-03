@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv)
 {
-	int continuer=1, level=0, selection=0, result=1;
+	int continuer=1, level, selection=0, result;
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	config cfg;
 	load_default_config(&cfg);
@@ -21,6 +21,7 @@ int main(int argc, char** argv)
 			case 1:
 				if(argc==2) level=atoi(argv[1]);
 				else level=0;
+				result=1;
 				while(result && level<NB_LEVEL)
 				{
 					result=jouer(level, &cfg);
@@ -31,12 +32,16 @@ int main(int argc, char** argv)
 				}
 				//if(level==NB_LEVEL)
 				break; // Charger
-			case 2: break;
-			case 3: editer(); //Edition
+			case 2:
 				break;
-			case 4: //options(); //Option
+			case 3:
+				editer(); //Edition
 				break;
-			case 5: continuer=0; //Quitter
+			case 4:
+				configure(&cfg); //Option
+				break;
+			case 5:
+				continuer=0; //Quitter
 				break;
 			default: break;
 		}

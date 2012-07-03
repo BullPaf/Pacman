@@ -21,6 +21,8 @@ void init_pacman(Pacman *pac, config *cfg)
 	pac->nb_lives      = 2;
 	pac->nb_keys       = 0;
 	pac->speed         = 4;
+	pac->target.x      = -1;
+	pac->target.y      = -1;
 	pac->controllerFonction = ia_controller;
 	for(i=0; i<cfg->nb_players; i++)
 	{
@@ -60,9 +62,10 @@ void updatePacman(Pacman *pac)
 	else pac->num_image = (pac->cur_direction*2);
 }
 
-SDL_Rect* get_pac_target(Pacman pac)
+void set_pac_target(Pacman *pac)
 {
-	return NULL;
+	pac->target.x = -1;
+	pac->target.y = -1;
 }
 
 //Animation de mort

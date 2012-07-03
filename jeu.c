@@ -32,9 +32,6 @@ int jouer(int level, config *cfg)
 	init_ghosts(ftm, cfg);
 	srand(time(NULL));
 	memset(&in,0,sizeof(in));
-	SDL_Rect *pac_target, *ftm_target[NB_GHOST];
-	for(i=0; i<NB_GHOST; i++) ftm_target[i]=NULL;
-	//fprintf(stderr, "%d GHOST in activity!\n", NB_GHOST);
 	while(POINTS)
 	{
 		SDL_Delay(DELAY);
@@ -47,13 +44,15 @@ int jouer(int level, config *cfg)
 		}
 		else if (in.key[SDLK_w]) return 1; //cheat code for winning!!
 		else if (in.key[SDLK_l]) return 0; //cheat code for loosing!!
-		pac_target = get_pac_target(pac);
-		pac.controllerFonction(in, *cfg, pac.controlled_by, &(pac.position), &(pac.cur_direction), &(pac.nb_keys), &(pac.speed), &(pac.num_image), pac_target);
+
+		set_pac_target(&pac);
+		pac.controllerFonction(in, *cfg, pac.controlled_by, &(pac.position), &(pac.cur_direction), &(pac.nb_keys), &(pac.speed), &(pac.num_image), pac.target);
 		for(i=0; i<NB_GHOST; i++)
 		{
-			set_ftm_target(ftm[i],ftm_target[i]);
-			ftm[i].controllerFonction(in, *cfg, ftm[i].controlled_by, &(ftm[i].position), &(ftm[i].cur_direction), &(ftm[i].nb_keys), &(ftm[i].speed), &(ftm[i].num_image), ftm_target[i]);
+			set_ftm_target(ftm+i, pac.position);
+			ftm[i].controllerFonction(in, *cfg, ftm[i].controlled_by, &(ftm[i].position), &(ftm[i].cur_direction), &(ftm[i].nb_keys), &(ftm[i].speed), &(ftm[i].num_image), ftm[i].target);
 		}
+
 		updatePacman(&pac);
 		updateGhosts(ftm);
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
