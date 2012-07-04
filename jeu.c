@@ -2,7 +2,6 @@
 
 void campagne(config *cfg)
 {
-	SCORE=0;
 	int level=0, result=1;
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
@@ -26,12 +25,11 @@ void campagne(config *cfg)
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
-	draw_result(SCORE);
+	draw_result(pac.score);
 }
 
 int one_level(int level, config *cfg)
 {
-	SCORE=0;
 	//play_menu(level+1);
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
@@ -49,7 +47,7 @@ int one_level(int level, config *cfg)
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
-	draw_result(SCORE);
+	draw_result(pac.score);
 	return result;
 }
 
@@ -84,7 +82,7 @@ int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		draw_level();
 		draw_pac_infos(pac);
-		draw_score();
+		draw_score(pac->score);
 		affiche_pacman(pac);
 		affiche_fantomes(ftm);
 		if(!pac->nb_lives) return 0;
@@ -108,7 +106,7 @@ void action(Pacman *pac, Fantome *ftm)
 		}
 		if(col==2) {
 			ghost_death(ftm+i);
-			SCORE+=1000;
+			pac->score+=1000;
 			return;
 		}
 	}
@@ -116,7 +114,7 @@ void action(Pacman *pac, Fantome *ftm)
 	if( LEVEL[pos.y][pos.x].type == BONUS && dans_case(pac->position) )
 	{
 		if(LEVEL[pos.y][pos.x].elt_type==9) {
-			SCORE+=100;
+			pac->score+=100;
 			POINTS--;
 		}
 		else if(LEVEL[pos.y][pos.x].elt_type==0) {
@@ -124,7 +122,7 @@ void action(Pacman *pac, Fantome *ftm)
 		}
 		else if(LEVEL[pos.y][pos.x].elt_type==2) {
 			if(pac->nb_lives<5) pac->nb_lives++;
-			else SCORE+=1000;
+			else pac->score+=1000;
 		}
 		//Pomme-->accélère le pacman
 		else if(LEVEL[pos.y][pos.x].elt_type==4) {
@@ -197,13 +195,13 @@ void draw_pac_infos(Pacman *pac)
 }
 
 //A deplacer
-void draw_score()
+void draw_score(int score)
 {
 	POINT p1;
-	char score[50];
-	sprintf(score, "Score : %d", SCORE);
+	char score_c[50];
+	sprintf(score_c, "Score : %d", score);
 	p1.x=WIDTH+10; p1.y=150;
-	aff_pol(score, FONT_SIZE, p1, blanc);
+	aff_pol(score_c, FONT_SIZE, p1, blanc);
 	/*sprintf(score, "Level : %d", level+1);
 	p1.x=WIDTH+10; p1.y=200;
 	aff_pol(score, FONT_SIZE, p1, blanc);*/

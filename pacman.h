@@ -8,6 +8,7 @@
 typedef struct Pacman
 {
 	int cur_direction; //Direction en cours
+	int score;
 	int speed; //Deplacement en pixel à chaque coup
 	int nb_lives; //Nombre de vie(s)
 	int nb_keys; //Nombdre de clé

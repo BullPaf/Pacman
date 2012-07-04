@@ -1,5 +1,5 @@
-ABC 0
-ABC 0
+0 4900
+1 800
 ABC 0
 ABC 0
 ABC 0

@@ -11,7 +11,7 @@ typedef struct
 	int score;
 }One;
 
-int SCORE;
+//int SCORE;
 
 int draw_result(int);
 int read_results(One*);

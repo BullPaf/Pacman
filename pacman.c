@@ -13,6 +13,7 @@ void init_pacman(Pacman *pac, config *cfg)
 			exit(EXIT_FAILURE);
 		}
 	}
+	pac->score         = 0;
 	pac->counter       = 0;
 	pac->nb_lives      = 2;
 	pac->nb_keys       = 0;
