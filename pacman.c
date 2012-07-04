@@ -78,3 +78,9 @@ void pac_death(Pacman *pac)
 	pac->nb_lives--;
 	pac_restart(pac);
 }
+
+void delete_pacman(Pacman *pac)
+{
+	int i;
+	for(i=0; i<19; i++) free(pac->image[i]);
+}

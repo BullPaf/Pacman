@@ -1,5 +1,7 @@
 #ifndef H_MENUS
 #define H_MENUS
+#include <stdlib.h>
+//#include <SDL_image.h>
 #include "constantes.h"
 #include "levelmanager.h"
 

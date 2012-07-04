@@ -27,5 +27,6 @@ void updateGhosts(Fantome *);
 void set_ftm_target(Fantome*, SDL_Rect);
 void ghost_restart(Fantome*);
 void ghost_death(Fantome*);
+void delete_ghosts(Fantome*);
 
 #endif

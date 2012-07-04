@@ -24,6 +24,9 @@ void campagne(config *cfg)
 		else if(result==2) result=0;
 		level++;
 	}
+	delete_pacman(&pac);
+	delete_ghosts(ftm);
+	delete_blocks();
 }
 
 int one_level(int level, config *cfg)
@@ -40,7 +43,11 @@ int one_level(int level, config *cfg)
 	load_level(level);
 	memset(&in,0,sizeof(in));
 
-	return jouer(&pac, ftm, in, cfg);
+	int result = jouer(&pac, ftm, in, cfg);
+	delete_pacman(&pac);
+	delete_ghosts(ftm);
+	delete_blocks();
+	return result;
 }
 
 int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)

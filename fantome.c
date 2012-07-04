@@ -157,3 +157,12 @@ void ghost_death(Fantome* ftm)
 	ftm->position.y=ftm_case.y*BLOCK_SIZE;
 	ftm->counter=SDL_GetTicks();
 }
+
+void delete_ghosts(Fantome *ftm)
+{
+	int i,j;
+	for (i=0; i<NB_GHOST; i++)
+	{
+		for(j=0; j<16; j++) free(ftm[i].image[j]);
+	}
+}

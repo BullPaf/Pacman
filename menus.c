@@ -14,7 +14,8 @@ int main_menu()
 	SDL_Surface* pacman=NULL;
 	SDL_Rect pos;
 	int selection=0, couleur[]={blanc, blanc, gris, blanc, blanc, blanc};
-	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
+	pacman = IMG_Load("image/menu.png");
+	if(pacman == NULL ) exit(EXIT_FAILURE);
 	while(!in.quit)
 	{
 		UpdateEvents(&in);
@@ -63,7 +64,7 @@ int main_menu()
 		aff_pol("v 0.1b", 20, p1, jaune);
 		SDL_Flip(screen);
 	}
-	return 0;
+	return 5;
 }
 
 void play_menu(int level)

@@ -38,6 +38,8 @@ int main(int argc, char** argv)
 			default: break;
 		}
 	}
+	delete_config(&cfg);
+	//free(screen);
 	SDL_Quit();
 	return EXIT_SUCCESS;
 }

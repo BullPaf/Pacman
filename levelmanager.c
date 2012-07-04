@@ -336,3 +336,16 @@ void save_level(int level)
 	}
 	fclose(level_file);
 }
+
+void delete_blocks()
+{
+	int i;
+	for (i=0; i<NB_WALL_BLOCKS; i++)
+		free(BLOCK_MUR[i]);
+	for (i=0; i<NB_BONUS_BLOCKS; i++)
+		free(BLOCK_BONUS[i]);
+	for (i=0; i<NB_PACMAN_BLOCK; i++)
+		free(BLOCK_PACMAN[i]);
+	for (i=0; i<NB_GHOST_BLOCKS; i++)
+		free(BLOCK_GHOST[i]);
+}

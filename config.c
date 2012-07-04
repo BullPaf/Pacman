@@ -22,3 +22,8 @@ void configure(config *cfg)
 	fprintf(stderr, "Default configuration loaded\n");
 	load_default_config(cfg);
 }
+
+void delete_config(config *cfg)
+{
+	free(cfg->players);
+}
