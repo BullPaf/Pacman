@@ -41,7 +41,6 @@ void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int
 int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
-	//if(case_y >= NB_BLOCKS_HAUTEUR || case_y < 0 || case_x >= NB_BLOCKS_LARGEUR || case_x < 0) return 0;
 	switch (new_direction)
 	{
 		case DROITE: //Vers la droite

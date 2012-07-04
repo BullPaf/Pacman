@@ -54,7 +54,6 @@ void init_ghosts(Fantome *ftm, config *cfg)
 
 void ghost_restart(Fantome *ftm)
 {
-	//LEVEL[ftm->start.y][ftm->start.x].type=RIEN;
 	ftm->position.x    = ftm->start.x*BLOCK_SIZE;
 	if(ftm->controlled_by != -1) ftm->controllerFonction = human_controller;
 	ftm->position.y    = ftm->start.y*BLOCK_SIZE;

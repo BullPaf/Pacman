@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv)
 {
-	int continuer=1, selection=0, result;
+	int continuer=1, selection=0;
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
 	config cfg;
 	load_default_config(&cfg);
@@ -19,10 +19,7 @@ int main(int argc, char** argv)
 				campagne(&cfg);
 				break;
 			case 1: //Jouer un niveau
-
-				result=one_level(select_file_menu(), &cfg);
-				if(result==1) win_menu();
-				else if(!result) lost_menu();
+				one_level(select_file_menu(), &cfg);
 				break;
 			case 2: // Charger
 				break;

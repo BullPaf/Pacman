@@ -5,6 +5,8 @@
 #include "menus.h"
 #include "levelmanager.h"
 #include "config.h"
+#include "input.h"
+#include "scoremanager.h"
 
 int one_level(int, config*);
 int jouer(Pacman*, Fantome*, Input, config*);

@@ -1,5 +1,4 @@
 #include "jeu.h"
-#include "input.h"
 
 void campagne(config *cfg)
 {
@@ -27,6 +26,7 @@ void campagne(config *cfg)
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
+	draw_result();
 }
 
 int one_level(int level, config *cfg)
@@ -44,9 +44,12 @@ int one_level(int level, config *cfg)
 	memset(&in,0,sizeof(in));
 
 	int result = jouer(&pac, ftm, in, cfg);
+	if(result==1) win_menu();
+	else if(!result) lost_menu();
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
+	draw_result();
 	return result;
 }
 

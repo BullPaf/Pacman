@@ -25,6 +25,10 @@ void init_menu(Menu *menu, int nb)
 	menu->selection=0;
 }
 
+/*Rajouter le centrage des éléments
+ * Vérifier que tout entre dans l'ecran
+ * sinon réduire la police ou faire
+ * des colonnes*/
 int draw_menu(Menu menu)
 {
 	int i;
