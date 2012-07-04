@@ -80,7 +80,7 @@ int draw_menu(Menu menu)
 
 int main_menu()
 {
-	int nb=6;
+	int nb=7;
 	Menu menu;
 	init_menu(&menu, nb);
 	strcpy(menu.title, "BIENVENUE DANS PACMAN!!");
@@ -89,7 +89,8 @@ int main_menu()
 	strcpy(menu.options[2], "CHARGER");
 	strcpy(menu.options[3], "EDITER");
 	strcpy(menu.options[4], "OPTIONS");
-	strcpy(menu.options[5], "QUITTER");
+	strcpy(menu.options[5], "HIGH SCORE");
+	strcpy(menu.options[6], "QUITTER");
 	menu.available[2]=0;
 	int selection = draw_menu(menu);
 	delete_menu(&menu);

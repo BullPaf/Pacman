@@ -30,6 +30,9 @@ int main(int argc, char** argv)
 				configure(&cfg);
 				break;
 			case 5: //Quitter
+				draw_result(0);
+				break;
+			case 6: //Quitter
 				continuer=0;
 				break;
 			default: break;

@@ -26,7 +26,7 @@ void campagne(config *cfg)
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
-	draw_result();
+	draw_result(SCORE);
 }
 
 int one_level(int level, config *cfg)
@@ -49,7 +49,7 @@ int one_level(int level, config *cfg)
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
-	draw_result();
+	draw_result(SCORE);
 	return result;
 }
 

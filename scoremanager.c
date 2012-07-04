@@ -1,49 +1,85 @@
 #include "scoremanager.h"
 
-int draw_result()
+int read_results(One *p)
 {
-	POINT p1;
-	One p[10];
-	Input in;
-	memset(&in,0,sizeof(in));
-	int i=0, j;
-	char chaine[512];
+	int i=0;
 	FILE *result_file = fopen("data/results.txt", "r");
 	if(result_file != NULL)
 	{
-		while (fgets(chaine, 512, result_file) != NULL)
-		{
-			if(fscanf(result_file, "%s %d", p[i].name, &(p[i].score))) i++;
-		}
-		if(i<10) //On a donc lu moins de 10 score
-		{
-			for(j=i; j<10; j++)
-			{
-				strcpy(p[j].name, "A B C");
-				p[j].score = 0;
-			}
-		}
-		//Ici on est sur d'avoir 10 scores
-		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		p1.x=200; p1.y=50;
-		aff_pol("SCORE", 50, p1, jaune);
-		for(i=0; i<10; i++)
-		{
-			p1.y+=50;
-			sprintf(chaine, "%s..............................................%d", p[i].name, p[i].score);
-			aff_pol(chaine, 30, p1, jaune);
-		}
-		SDL_Flip(screen);
-		while(!in.quit)
-		{
-			UpdateEvents(&in);
-			if(in.key[SDLK_ESCAPE]) return 1;
-		}
+		while (fscanf(result_file, "%s %d", p[i].name, &(p[i].score)) != EOF) i++;
+		fclose(result_file);
+		return 1;
 	}
 	else
 	{
 		fprintf(stderr, "Error while opening results file, sorry no results this time\n");
 		return 0;
+	}
+}
+
+int write_score(One *p)
+{
+	int i;
+	FILE *result_file = fopen("data/results.txt", "w+");
+	if(result_file != NULL)
+	{
+		for(i=0; i<10; i++) fprintf(result_file, "%s %d\n", p[i].name, p[i].score);
+		fclose(result_file);
+		return 1;
+	}
+	else
+	{
+		fprintf(stderr, "Error while opening results file, sorry no results this time\n");
+		return 0;
+	}
+}
+
+int draw_result(int score)
+{
+	POINT p1;
+	int i=0, j=9, newscore=-1;
+	One p[10];
+	char chaine[128];
+	char title[32];
+	if(!read_results(p)) return 0;
+	for(i=0; i<10; i++)
+	{
+		if(score > p[i].score)
+		{
+			newscore=i;
+			break;
+		}
+	}
+	if(newscore >= 0)
+	{
+		while(j != newscore)
+		{
+			p[j].score=p[j-1].score;
+			strcpy(p[j].name, p[j-1].name);
+			j--;
+		}
+		p[newscore].score=score;
+		sprintf(p[newscore].name, "%d", newscore);
+		strcpy(title, "NEW SCORE!");
+		if(!write_score(p)) return 0;
+	}
+	else strcpy(title, "SCORE");
+	Input in;
+	memset(&in,0,sizeof(in));
+	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+	p1.x=200; p1.y=50;
+	aff_pol(title, 50, p1, jaune);
+	for(i=0; i<10; i++)
+	{
+		p1.y+=50;
+		sprintf(chaine, "%s                                                         %d", p[i].name, p[i].score);
+		aff_pol(chaine, 30, p1, jaune);
+	}
+	SDL_Flip(screen);
+	while(!in.quit)
+	{
+		UpdateEvents(&in);
+		if(in.key[SDLK_ESCAPE] || in.key[SDLK_RETURN]) return 1;
 	}
 	return 1;
 }
