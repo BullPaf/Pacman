@@ -3,68 +3,141 @@
 
 /*FACTORISER TOUT CE CODE MERDIQUE*/
 
-/*Affiche le menu
- * Remplacer par qqchose
- * de mieux qd meme */
-int main_menu()
+void init_menu(Menu *menu, int nb)
 {
+	int i;
+	menu->options   = (char**)malloc(nb*sizeof(char*));
+	menu->couleur   = malloc(nb * sizeof(int));
+	menu->available = malloc(nb * sizeof(int));
+	for(i=0; i<nb; i++)
+	{
+		menu->couleur[i]   = blanc;
+		menu->available[i] = 1;
+		menu->options[i]   = malloc(64 * sizeof(char));
+	}
+	menu->img = IMG_Load("image/menu.png");
+	if(menu->img == NULL )
+	{
+		fprintf(stderr, "Erreur loading menu.png in >>init_menu()<<\n");
+		exit(EXIT_FAILURE);
+	}
+	menu->nb_options = nb;
+	menu->selection=0;
+}
+
+int draw_menu(Menu menu)
+{
+	int i;
 	Input in;
 	memset(&in,0,sizeof(in));
-	POINT p1;
-	SDL_Surface* pacman=NULL;
-	SDL_Rect pos;
-	int selection=0, couleur[]={blanc, blanc, gris, blanc, blanc, blanc};
-	pacman = IMG_Load("image/menu.png");
-	if(pacman == NULL ) exit(EXIT_FAILURE);
 	while(!in.quit)
 	{
+		menu.couleur[menu.selection]=blanc;
 		UpdateEvents(&in);
 		if(in.key[SDLK_RETURN])
 		{
 			in.key[SDLK_RETURN]=0;
-			free(pacman);
-			return selection;
+			return menu.selection;
 		}
 		else if(in.key[SDLK_DOWN])
 		{
 			in.key[SDLK_DOWN]=0;
-			couleur[selection]=blanc;
-			if(selection==1) selection++;
-			selection=(selection+1)%6;
+			menu.selection=(menu.selection+1)%(menu.nb_options);
+			while(!menu.available[menu.selection]) menu.selection=(menu.selection+1)%(menu.nb_options);
 		}
 		else if(in.key[SDLK_UP])
 		{
 			in.key[SDLK_UP]=0;
-			couleur[selection]=blanc;
-			if(!selection) selection=5;
-			else if(selection==3) selection=1;
-			else selection--;
+			if(!(menu.selection)) menu.selection=menu.nb_options-1;
+			else menu.selection=(menu.selection-1)%(menu.nb_options);
+			while(!menu.available[menu.selection])
+			{
+				if(!(menu.selection)) menu.selection=menu.nb_options-1;
+				else menu.selection=(menu.selection-1)%(menu.nb_options);
+			}
 		}
-		// Effacement de l'écran
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		couleur[selection]=jaune;
-		p1.x=100; p1.y=50;
-		aff_pol("BIENVENUE DANS PACMAN!!", 60, p1, jaune);
-		p1.x=300; p1.y=150;
-		pos.x=p1.x-60;
-		pos.y=p1.y+(selection*80);
-		SDL_BlitSurface(pacman, NULL, screen, &pos);
-		aff_pol("CAMPAGNE", 50, p1, couleur[0]);
-		p1.y=p1.y+80;
-		aff_pol("JOUER", 50, p1, couleur[1]);
-		p1.y=p1.y+80;
-		aff_pol("CHARGER", 50, p1, couleur[2]);
-		p1.y=p1.y+80;
-		aff_pol("EDITER", 50, p1, couleur[3]);
-		p1.y=p1.y+80;
-		aff_pol("OPTIONS", 50, p1, couleur[4]);
-		p1.y=p1.y+80;
-		aff_pol("QUITTER", 50, p1, couleur[5]);
-		p1.x=EDIT_WIDTH-50; p1.y=EDIT_HEIGHT-30;
-		aff_pol("v 0.1b", 20, p1, jaune);
+		menu.couleur[menu.selection]=jaune;
+		menu.p1.x=100; menu.p1.y=50;
+		aff_pol(menu.title, 50, menu.p1, jaune);
+		menu.p1.x=300; menu.p1.y=150;
+		menu.pos.x=menu.p1.x-60;
+		menu.pos.y=menu.p1.y+(menu.selection*70)-5;
+		SDL_BlitSurface(menu.img, NULL, screen, &(menu.pos));
+		for(i=0; i<menu.nb_options; i++)
+		{
+			aff_pol(menu.options[i], 40, menu.p1, menu.couleur[i]);
+			menu.p1.y=menu.p1.y+70;
+		}
 		SDL_Flip(screen);
 	}
-	return 5;
+	return menu.nb_options-1;
+}
+
+int main_menu()
+{
+	int nb=6;
+	Menu menu;
+	init_menu(&menu, nb);
+	strcpy(menu.title, "BIENVENUE DANS PACMAN!!");
+	strcpy(menu.options[0], "CAMPAGNE");
+	strcpy(menu.options[1], "JOUER");
+	strcpy(menu.options[2], "CHARGER");
+	strcpy(menu.options[3], "EDITER");
+	strcpy(menu.options[4], "OPTIONS");
+	strcpy(menu.options[5], "QUITTER");
+	menu.available[2]=0;
+	int selection = draw_menu(menu);
+	delete_menu(&menu);
+	return selection;
+}
+
+int game_menu()
+{
+	int nb = 4;
+	Menu menu;
+	init_menu(&menu, nb);
+	strcpy(menu.title, "PAUSE");
+	strcpy(menu.options[0], "CONTINUER");
+	strcpy(menu.options[1], "SAUVER");
+	strcpy(menu.options[2], "CHARGER");
+	strcpy(menu.options[3], "MENU PRINCIPAL");
+	menu.available[1]=0;
+	menu.available[2]=0;
+	int selection = draw_menu(menu);
+	delete_menu(&menu);
+	return selection;
+}
+
+int select_file_menu()
+{
+	int nb = NB_LEVEL+1, i;
+	Menu menu;
+	init_menu(&menu, nb);
+	strcpy(menu.title, "Choississez un niveau");
+	for(i=0; i<nb-1; i++) sprintf(menu.options[i], "Level %d", i+1);
+	strcpy(menu.options[i], "Annuler");
+	int selection = draw_menu(menu);
+	delete_menu(&menu);
+	return selection;
+}
+
+int edit_menu()
+{
+	int nb=6;
+	Menu menu;
+	init_menu(&menu, nb);
+	strcpy(menu.title, "MENU EDITEUR");
+	strcpy(menu.options[0], "CONTINUER");
+	strcpy(menu.options[1], "SAUVER");
+	strcpy(menu.options[2], "CHARGER");
+	strcpy(menu.options[3], "EFFACER");
+	strcpy(menu.options[4], "TESTER");
+	strcpy(menu.options[5], "QUITTER");
+	menu.available[4]=0;
+	int selection = draw_menu(menu);
+	delete_menu(&menu);
+	return selection;
 }
 
 void play_menu(int level)
@@ -105,166 +178,17 @@ void lost_menu()
 	SDL_Delay(3000);
 }
 
-int game_menu()
+void draw_version()
 {
-	Input in;
-	memset(&in,0,sizeof(in));
 	POINT p1;
-	SDL_Surface* pacman=NULL;
-	SDL_Rect pos;
-	int selection=0, couleur[]={blanc,gris,gris,blanc};
-	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
-	while(!in.quit)
-	{
-		UpdateEvents(&in);
-		if(in.key[SDLK_RETURN])
-		{
-			in.key[SDLK_RETURN]=0;
-			free(pacman);
-			return selection;
-		}
-		else if(in.key[SDLK_DOWN])
-		{
-			in.key[SDLK_DOWN]=0;
-			couleur[selection]=blanc;
-			if(selection==0) selection+=2;
-			selection=(selection+1)%4;
-		}
-		else if(in.key[SDLK_UP])
-		{
-			in.key[SDLK_UP]=0;
-			couleur[selection]=blanc;
-			if(!selection) selection=3;
-			else if(selection==3) selection=0;
-			else selection--;
-		}
-		// Effacement de l'écran
-		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		couleur[selection]=jaune;
-		p1.x=100; p1.y=75;
-		aff_pol("PAUSE", 60, p1, jaune);
-		p1.x=300; p1.y=250;
-		pos.x=p1.x-60;
-		pos.y=p1.y+(selection*80);
-		SDL_BlitSurface(pacman, NULL, screen, &pos);
-		aff_pol("CONTINUER", 50, p1, couleur[0]);
-		p1.y=p1.y+80;
-		aff_pol("SAUVER", 50, p1, couleur[1]);
-		p1.y=p1.y+80;
-		aff_pol("CHARGER", 50, p1, couleur[2]);
-		p1.y=p1.y+80;
-		aff_pol("MENU PRINCIPAL", 50, p1, couleur[3]);
-		SDL_Flip(screen);
-	}
-	return 0;
+	p1.x=EDIT_WIDTH-50; p1.y=EDIT_HEIGHT-30;
+	aff_pol(VERSION, 20, p1, jaune);
 }
 
-int select_file_menu()
+void delete_menu(Menu *menu)
 {
-	Input in;
-	memset(&in,0,sizeof(in));
-	POINT p1;
-	SDL_Surface* pacman=NULL;
-	SDL_Rect pos;
-	char level[32];
-	int selection=0, i, couleur[NB_LEVEL+1];
-	for(i=0; i<NB_LEVEL+1; i++) couleur[i]=blanc;
-	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
-	while(!in.quit)
-	{
-		couleur[selection]=blanc;
-		UpdateEvents(&in);
-		if(in.key[SDLK_RETURN])
-		{
-			in.key[SDLK_RETURN]=0;
-			free(pacman);
-			return selection;
-		}
-		else if(in.key[SDLK_DOWN])
-		{
-			in.key[SDLK_DOWN]=0;
-			selection=(selection+1)%(NB_LEVEL+1);
-		}
-		else if(in.key[SDLK_UP])
-		{
-			in.key[SDLK_UP]=0;
-			if(!selection) selection=NB_LEVEL;
-			else selection--;
-		}
-		// Effacement de l'écran
-		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		couleur[selection]=jaune;
-		p1.x=100; p1.y=75;
-		aff_pol("Choississez un niveau", 50, p1, jaune);
-		p1.x=200; p1.y=200;
-		pos.x=p1.x-60;
-		pos.y=p1.y+(selection*50);
-		SDL_BlitSurface(pacman, NULL, screen, &pos);
-		for(i=0; i<NB_LEVEL; i++)
-		{
-			sprintf(level, "Level %d", i+1);
-			aff_pol(level, 40, p1, couleur[i]);
-			p1.y+=50;
-		}
-		aff_pol("Annuler", 40, p1, couleur[i]);
-		SDL_Flip(screen);
-	}
-	return 0;
-}
-
-int edit_menu()
-{
-	Input in;
-	memset(&in,0,sizeof(in));
-	POINT p1;
-	SDL_Surface* pacman=NULL;
-	SDL_Rect pos;
-	int selection=0, couleur[]={blanc,blanc,blanc,blanc,gris,blanc};
-	if( (pacman = IMG_Load("image/menu.png")) == NULL ) exit(EXIT_FAILURE);
-	while(!in.quit)
-	{
-		couleur[selection]=blanc;
-		UpdateEvents(&in);
-		if(in.key[SDLK_RETURN])
-		{
-			in.key[SDLK_RETURN]=0;
-			free(pacman);
-			return selection;
-		}
-		else if(in.key[SDLK_DOWN])
-		{
-			in.key[SDLK_DOWN]=0;
-			if(selection==3) selection=5;
-			else selection=(selection+1)%6;
-		}
-		else if(in.key[SDLK_UP])
-		{
-			in.key[SDLK_UP]=0;
-			if(!selection) selection=5;
-			else if(selection==5) selection=3;
-			else selection--;
-		}
-		// Effacement de l'écran
-		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-		couleur[selection]=jaune;
-		p1.x=200; p1.y=50;
-		aff_pol("MENU EDITEUR", 60, p1, jaune);
-		p1.x=275; p1.y=175;
-		pos.x=p1.x-60;
-		pos.y=p1.y+(selection*70);
-		SDL_BlitSurface(pacman, NULL, screen, &pos);
-		aff_pol("CONTINUER", 40, p1, couleur[0]);
-		p1.y=p1.y+70;
-		aff_pol("SAUVER", 40, p1, couleur[1]);
-		p1.y=p1.y+70;
-		aff_pol("CHARGER", 40, p1, couleur[2]);
-		p1.y=p1.y+70;
-		aff_pol("EFFACER", 40, p1, couleur[3]);
-		p1.y=p1.y+70;
-		aff_pol("TESTER", 40, p1, couleur[4]);
-		p1.y=p1.y+70;
-		aff_pol("QUITTER", 40, p1, couleur[5]);
-		SDL_Flip(screen);
-	}
-	return 0;
+	free(menu->options);
+	free(menu->couleur);
+	free(menu->img);
+	free(menu->available);
 }
