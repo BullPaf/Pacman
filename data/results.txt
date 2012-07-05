@@ -1,7 +1,7 @@
-yes! 2600
-chad 2100
-chadi 256
-chadi 0
+chadi 34700
+ABC 0
+ABC 0
+ABC 0
 ABC 0
 ABC 0
 ABC 0
