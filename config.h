@@ -1,9 +1,10 @@
 #ifndef H_CONFIG
 #define H_CONFIG
 #include <stdlib.h>
+//#include "menus.h"
 #include "levelmanager.h"
-#include "menus.h"
 #include "graphics.h"
+//#include "menus.h"
 
 typedef struct
 {
@@ -14,11 +15,10 @@ typedef struct
 typedef struct config
 {
 	int nb_players;
-	player *players;
+	player players[2];
 }config;
 
 void load_default_config(config*);
 void configure(config*);
-void delete_config(config *cfg);
 
 #endif

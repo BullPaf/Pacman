@@ -8,7 +8,7 @@
 #include "input.h"
 #include "scoremanager.h"
 
-int one_level(int, config*);
+void one_level(int, config*);
 int jouer(Pacman*, Fantome*, Input, config*);
 void campagne(config*);
 void action(Pacman*, Fantome*);

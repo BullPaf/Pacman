@@ -36,12 +36,13 @@ int write_score(One *p)
 
 int draw_result(int score)
 {
-	POINT p1;
+	POINT p1,p2;
 	int i=0, j=9, newscore=-1;
 	One p[10];
 	char chaine[128];
 	char title[32];
 	if(!read_results(p)) return 0;
+	//Cherche si on a fait un record
 	for(i=0; i<10; i++)
 	{
 		if(score > p[i].score)
@@ -50,6 +51,7 @@ int draw_result(int score)
 			break;
 		}
 	}
+	//Si record on decale tout le monde
 	if(newscore >= 0)
 	{
 		while(j != newscore)
@@ -59,27 +61,37 @@ int draw_result(int score)
 			j--;
 		}
 		p[newscore].score=score;
-		sprintf(p[newscore].name, "%d", newscore);
+		for(i=0; i<8; i++) p[newscore].name[i]='\0';
 		strcpy(title, "NEW SCORE!");
-		if(!write_score(p)) return 0;
 	}
 	else strcpy(title, "SCORE");
+	/*Affichage des scores*/
 	Input in;
 	memset(&in,0,sizeof(in));
-	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
-	p1.x=200; p1.y=50;
-	aff_pol(title, 50, p1, jaune);
-	for(i=0; i<10; i++)
-	{
-		p1.y+=50;
-		sprintf(chaine, "%s                                                         %d", p[i].name, p[i].score);
-		aff_pol(chaine, 30, p1, jaune);
-	}
-	SDL_Flip(screen);
 	while(!in.quit)
 	{
 		UpdateEvents(&in);
-		if(in.key[SDLK_ESCAPE] || in.key[SDLK_RETURN]) return 1;
+		if(in.key[SDLK_RETURN])
+		{
+			if(!write_score(p)) return 0;
+			else return 1;
+		}
+		else if(in.key[SDLK_ESCAPE]) return 0;
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		p1.x=200; p1.y=50;
+		p2.x=400; p2.y=p1.y;
+		aff_pol(title, 50, p1, jaune);
+		if(newscore >= 0) print_key(p[newscore].name, &in, 8); //permet de taper son nom
+		for(i=0; i<10; i++)
+		{
+			p1.y+=50; p2.y=p1.y;
+			if(i==newscore) aff_pol(p[newscore].name, 30, p1, jaune);
+			else aff_pol(p[i].name, 30, p1, jaune);
+			sprintf(chaine, "%d", p[i].score);
+			aff_pol(chaine, 30, p2, jaune);
+		}
+		SDL_Flip(screen);
 	}
-	return 1;
+	fprintf(stderr, "Score not saved, reason: Unknown!\n");
+	return 0;
 }

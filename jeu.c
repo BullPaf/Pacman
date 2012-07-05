@@ -17,20 +17,26 @@ void campagne(config *cfg)
 		init_level();
 		load_level(level);
 		result = jouer(&pac, ftm, in, cfg);
-		if(result==1) win_menu();
-		else if(!result) lost_menu();
+		if(result==1) {
+			win_menu();
+			draw_result(pac.score);
+		}
+		else if(!result) {
+			lost_menu();
+			draw_result(pac.score);
+		}
 		else if(result==2) result=0;
 		level++;
 	}
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
-	draw_result(pac.score);
 }
 
-int one_level(int level, config *cfg)
+void one_level(int level, config *cfg)
 {
 	//play_menu(level+1);
+	if(level>=NB_LEVEL) return;
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
 	Input in;
@@ -42,13 +48,19 @@ int one_level(int level, config *cfg)
 	memset(&in,0,sizeof(in));
 
 	int result = jouer(&pac, ftm, in, cfg);
-	if(result==1) win_menu();
-	else if(!result) lost_menu();
+	if(result==1)
+	{
+		win_menu();
+		draw_result(pac.score);
+	}
+	else if(!result)
+	{
+		lost_menu();
+		draw_result(pac.score);
+	}
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
-	draw_result(pac.score);
-	return result;
 }
 
 int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
@@ -60,7 +72,13 @@ int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
 	{
 		SDL_Delay(DELAY);
 		UpdateEvents(&in);
-		if(in.quit) exit(EXIT_SUCCESS);
+		if(in.quit)
+		{
+			delete_pacman(pac);
+			delete_ghosts(ftm);
+			delete_blocks();
+			exit(EXIT_SUCCESS);
+		}
 		if(in.key[SDLK_ESCAPE]) 
 		{
 			in.key[SDLK_ESCAPE]=0;

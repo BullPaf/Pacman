@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 				editer();
 				break;
 			case 4: //Option
-				configure(&cfg);
+				options_menu(&cfg);
 				break;
 			case 5: //Quitter
 				draw_result(0);
@@ -38,8 +38,6 @@ int main(int argc, char** argv)
 			default: break;
 		}
 	}
-	delete_config(&cfg);
-	//free(screen);
 	SDL_Quit();
 	return EXIT_SUCCESS;
 }

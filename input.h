@@ -1,6 +1,7 @@
 #ifndef H_INPUT
 #define H_INPUT
 #include "graphics.h"
+#include <string.h>
 
 typedef struct
 {
@@ -8,9 +9,11 @@ typedef struct
 	int mousex,mousey;
 	//int mousexrel,mouseyrel;
 	char mousebuttons[8];
+	char touche[32];
 	char quit;
 }Input;
 
 void UpdateEvents(Input*);
+void print_key(char*, Input*, int);
 
 #endif
