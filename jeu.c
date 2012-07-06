@@ -123,7 +123,7 @@ void action(Pacman *pac, Fantome *ftm)
 	int i, col;
 	SDL_Rect pos;
 	//Gagne une vie
-	if(pac->score && (pac->score)%10000 == 0 && pac->nb_lives < 10)
+	if(pac->score && (pac->score)%10000 == 0 && pac->nb_lives < 5)
 	{
 		pac->nb_lives++;
 		pac->score+=100;
@@ -137,7 +137,7 @@ void action(Pacman *pac, Fantome *ftm)
 		}
 		if(col==2) {
 			ghost_death(ftm+i); //Fantome meurt
-			pac->score+=1000;
+			pac->score+=500;
 			return;
 		}
 	}
@@ -157,7 +157,7 @@ void action(Pacman *pac, Fantome *ftm)
 			pac->nb_keys++;
 		}
 		if(LEVEL[pos.y][pos.x].elt_type==9) { //Pac-gomme
-			pac->score+=100;
+			//pac->score+=100;
 			POINTS--;
 		}
 		LEVEL[pos.y][pos.x].type=RIEN; //On l'a mangé bravo!

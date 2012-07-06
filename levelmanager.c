@@ -121,7 +121,7 @@ void init_level()
 	for(i=0; i<NB_MAX_GHOSTS; i++) GHOST_START_Y[i]=GHOST_START_X[i]=-1;
 	POINTS=0;
 	NB_GHOST=0;
-	DELAY=40;
+	DELAY=20;
 }
 
 /*Affecte à chaque block une texture*/

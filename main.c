@@ -16,14 +16,14 @@ int main(int argc, char** argv)
 		switch(selection)
 		{
 			case 0: //Campagne
-				load_default_config(&cfg);
+				load_default_config(&cfg); //Pour eviter de faire des campagnes avec des configs folkloriques
 				campagne(&cfg, 1);
 				break;
 			case 1: //Jouer un niveau
 				one_level(select_file_menu(), &cfg);
 				break;
 			case 2: // Charger une partie
-				load_default_config(&cfg);
+				load_default_config(&cfg); //Pour eviter de faire des campagnes avec des configs folkloriques
 				campagne(&cfg, load_game());
 				break;
 			case 3: //Edition
