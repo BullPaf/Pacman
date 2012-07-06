@@ -5,6 +5,7 @@
  * et affecte cette valeur à la case du niveau
  * correspondante
  * Tres moche mais ca marche alors pas touche!
+ * Tres sensible au format du fichier!
 */
 void extract_val(char *s, int line)
 {
@@ -111,14 +112,16 @@ void init_level()
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 			LEVEL[i][j].type = RIEN;
 	}
-	for(i=0; i<NB_LEVEL; i++)
+	strcpy(LEVEL_FILE[0], "level/save.txt");
+	for(i=1; i<NB_LEVEL; i++)
 	{
-		sprintf(level, "level/level_%d.txt", i+1);
+		sprintf(level, "level/level_%d.txt", i);
 		strcpy(LEVEL_FILE[i], level);
 	}
 	for(i=0; i<NB_MAX_GHOSTS; i++) GHOST_START_Y[i]=GHOST_START_X[i]=-1;
 	POINTS=0;
 	NB_GHOST=0;
+	DELAY=40;
 }
 
 /*Affecte à chaque block une texture*/
@@ -207,6 +210,9 @@ SDL_Rect get_case(SDL_Rect position, int direction)
 	return pos;
 }
 
+/*Quand un bloc est supprimé durant la partie
+ * modifie les blocs alentours pour conserver
+ * une cohérence dans l'agencement des murs*/
 void remove_bloc(int y, int x)
 {
 	LEVEL[y][x].type=RIEN;
@@ -239,6 +245,7 @@ void remove_bloc(int y, int x)
 	}
 }
 
+/*********Fonctions de remplacement des blocs**************/
 int remove_right_bloc(int elt)
 {
 	if(elt==0) return 11;
@@ -286,6 +293,7 @@ int remove_down_bloc(int elt)
 	else if(elt==15) return 18;
 	else return elt;
 }
+/*******************FIN Fonctions de remplacement de blocs*********************/
 
 /*
  * Lit un fichier et extrait les valeurs
@@ -312,6 +320,43 @@ void load_level(int level)
 		fprintf(stderr, "Error while opening Level file... Bye!\n");
 		exit(EXIT_FAILURE);
 	}
+}
+
+/*Sauve juste le numéro du niveau actuel pour le moment*/
+void save_game(int cur_level)
+{
+	FILE *save_file = fopen(LEVEL_FILE[0], "w+");
+	if (save_file != NULL)
+	{
+		fprintf(save_file, "%d", cur_level);
+		fclose(save_file);
+	}
+	else fprintf(stderr, "Error while saving game...\n");
+}
+
+/*Charge le dernier niveau sauvegardé*/
+int load_game()
+{
+	int level;
+	FILE *save_file = fopen("level/save.txt", "r");
+	if (save_file != NULL)
+	{
+		if(fscanf(save_file, "%d", &level)==EOF) return -1;
+	}
+	else fprintf(stderr, "No game saved...\n");
+	return level;
+}
+
+/*Si une sauvegarde existe*/
+int has_saved_game()
+{
+	FILE *save_file = fopen("level/save.txt", "r");
+	if (save_file != NULL)
+	{
+		fclose(save_file);
+		return 1;
+	}
+	else return 0;
 }
 
 /*

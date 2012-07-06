@@ -30,8 +30,8 @@ int NB_GHOST;
 int GHOST_START_X[NB_MAX_GHOSTS];
 int GHOST_START_Y[NB_MAX_GHOSTS];
 Couleur GHOST_COULEUR[NB_MAX_GHOSTS];
-//int SCORE;
 int POINTS;
+int DELAY;
 
 //Un niveau est un ensemble de CASE
 CASE LEVEL[NB_BLOCKS_HAUTEUR][NB_BLOCKS_LARGEUR];
@@ -41,6 +41,9 @@ int init_blocks(); //Ok
 void init_level(); //Ok
 void load_level(int); //Ok
 void save_level(int); //ok
+void save_game(int);
+int load_game();
+int has_saved_game();
 void extract_val(char *s, int line); //OK
 void draw_level(); //ok
 void affiche_une_case(CASE, SDL_Rect*, SDL_Surface*);

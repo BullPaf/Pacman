@@ -5,7 +5,7 @@
 
 enum {AUCUN, SAVE, LOAD, DELETE}; //Pour les messages de l'editeur
 
-CASE editor[NB_ALL_BLOCKS];
+CASE editor[NB_ALL_BLOCKS]; //Contient tout les éléments du jeu!
 
 int editer();
 void load_gui();

@@ -1,20 +1,22 @@
 #include "menus.h"
 
-/*FACTORISER TOUT CE CODE MERDIQUE*/
-
+/*Les parametres par defaut des menus*/
 void init_menu(Menu *menu, int nb)
 {
 	int i;
 	menu->options   = (char**)malloc(nb*sizeof(char*));
 	menu->couleur   = malloc(nb * sizeof(int));
 	menu->available = malloc(nb * sizeof(int));
+	menu->font_size=30; //Taille des caractères
+	menu->space=60; //espace entre les options
+	/*Toutes les options sont selectionnables*/
 	for(i=0; i<nb; i++)
 	{
 		menu->couleur[i]   = blanc;
 		menu->available[i] = 1;
 		menu->options[i]   = malloc(64 * sizeof(char));
 	}
-	menu->img = IMG_Load("image/menu/menu.png");
+	menu->img = IMG_Load("image/menu/menu.png"); //Le pacman pour montrer l'option selectionné
 	if(menu->img == NULL )
 	{
 		fprintf(stderr, "Erreur loading menu.png in >>init_menu()<<\n");
@@ -66,18 +68,19 @@ int draw_menu(Menu menu)
 		aff_pol(menu.title, 50, menu.p1, jaune);
 		menu.p1.x=300; menu.p1.y=150;
 		menu.pos.x=menu.p1.x-60;
-		menu.pos.y=menu.p1.y+(menu.selection*60)-5;
+		menu.pos.y=menu.p1.y+(menu.selection*menu.space)-5;
 		SDL_BlitSurface(menu.img, NULL, screen, &(menu.pos));
 		for(i=0; i<menu.nb_options; i++)
 		{
-			aff_pol(menu.options[i], 30, menu.p1, menu.couleur[i]);
-			menu.p1.y=menu.p1.y+60;
+			aff_pol(menu.options[i], menu.font_size, menu.p1, menu.couleur[i]);
+			menu.p1.y=menu.p1.y+menu.space;
 		}
 		SDL_Flip(screen);
 	}
 	return menu.nb_options-1;
 }
 
+/*Menu principal du jeu*/
 int main_menu()
 {
 	int nb=7;
@@ -91,42 +94,48 @@ int main_menu()
 	strcpy(menu.options[4], "OPTIONS");
 	strcpy(menu.options[5], "HIGH SCORE");
 	strcpy(menu.options[6], "QUITTER");
-	menu.available[2]=0;
+	if(!has_saved_game())
+	{
+		fprintf(stderr, "Pas de fichier de sauvergarde\n");
+		menu.available[2]=0;
+	}
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
 	return selection;
 }
 
+/*Quand on appuis echap lors d'une partie*/
 int game_menu()
 {
-	int nb = 4;
+	int nb = 3;
 	Menu menu;
 	init_menu(&menu, nb);
 	strcpy(menu.title, "PAUSE");
 	strcpy(menu.options[0], "CONTINUER");
 	strcpy(menu.options[1], "SAUVER");
-	strcpy(menu.options[2], "CHARGER");
-	strcpy(menu.options[3], "MENU PRINCIPAL");
-	menu.available[1]=0;
-	menu.available[2]=0;
+	strcpy(menu.options[2], "MENU PRINCIPAL");
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
 	return selection;
 }
 
+/*Le menu de séléction de fichier*/
 int select_file_menu()
 {
-	int nb = NB_LEVEL+1, i;
+	int nb = NB_LEVEL, i;
 	Menu menu;
 	init_menu(&menu, nb);
+	menu.font_size=25;
+	menu.space=30;
 	strcpy(menu.title, "Choississez un niveau");
 	for(i=0; i<nb-1; i++) sprintf(menu.options[i], "Level %d", i+1);
 	strcpy(menu.options[i], "Annuler");
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
-	return selection;
+	return selection+1;
 }
 
+/*Loersque l'on appuie echap dans l'editeur*/
 int edit_menu()
 {
 	int nb=6;
@@ -145,6 +154,8 @@ int edit_menu()
 	return selection;
 }
 
+/*Affiche en début de niveau le niveau actuel
+ * et un petit compteur de 3 sec*/
 void play_menu(int level)
 {
 	char tmp[16], time[4];
@@ -171,26 +182,31 @@ void play_menu(int level)
  * Accessoirement c'est tres moche*/
 void options_menu(config *cfg)
 {
-	int i, nb=8, couleur[nb], available[nb], selection=0;
-	SDL_Surface *pac, *ghost;
+	int i, j=0, nb=9, couleur[nb], available[nb], selection=0;
+	SDL_Surface *pac[2], *ghost[2], *fleche[2];
 	SDL_Rect pos;
 	POINT p1;
 	Input in;
 	char title[64];
-	char options[8][64];
+	char options[nb][64];
 
 	for(i=0; i<nb; i++)
 	{
 		available[i]=1;
 		couleur[i]=blanc;
 	}
-	pac   = IMG_Load("image/pacman/2.png");
-	ghost = IMG_Load("image/ghosts/2.png");
+	pac[0]   = IMG_Load("image/pacman/2.png");
+	pac[1]   = IMG_Load("image/pacman/3.png");
+	ghost[0] = IMG_Load("image/ghosts/2.png");
+	ghost[1] = IMG_Load("image/ghosts/3.png");
+	fleche[0] = IMG_Load("image/menu/triangler.png");
+	fleche[1] = IMG_Load("image/menu/trianglel.png");
 	if(pac == NULL || ghost == NULL)
 	{
 		fprintf(stderr, "Erreur loading pngs in >>options_menu()<<\n");
 		exit(EXIT_FAILURE);
 	}
+	load_default_config(cfg);
 	memset(&in,0,sizeof(in));
 	strcpy(title, "OPTIONS");
 	strcpy(options[0], "Nb players");
@@ -198,9 +214,10 @@ void options_menu(config *cfg)
 	strcpy(options[2], "Player 1");
 	strcpy(options[3], "Player 2");
 	strcpy(options[4], "Sound");
-	strcpy(options[5], "Reset");
-	strcpy(options[6], "Cancel");
-	strcpy(options[7], "Save");
+	strcpy(options[5], "Reset score");
+	strcpy(options[6], "Reset");
+	strcpy(options[7], "Cancel");
+	strcpy(options[8], "Save");
 	available[1]=0;
 	available[4]=0;
 	if(cfg->nb_players==0)
@@ -209,11 +226,13 @@ void options_menu(config *cfg)
 		available[3]=0;
 	}
 	else if(cfg->nb_players==1) available[3]=0;
+	DELAY=40;
 	while(!in.quit)
 	{
+		SDL_Delay(DELAY);
 		for(i=0; i<nb; i++)
 		{
-			if(!available[i]) couleur[i]=gris;
+			if(!available[i] && i!=1) couleur[i]=gris;
 			else couleur[i]=blanc;
 		}
 		couleur[selection]=blanc;
@@ -222,13 +241,23 @@ void options_menu(config *cfg)
 		else if(in.key[SDLK_RETURN])
 		{
 			in.key[SDLK_RETURN]=0;
-			if(selection==5) load_default_config(cfg); //reset
-			else if(selection==6)
+			if(selection==nb-4) //reset score
+			{
+				reset_score();
+			}
+			if(selection==nb-3)
+			{
+				load_default_config(cfg); //default config
+				sprintf(options[1], "%d", cfg->nb_players);
+				available[2]=1;
+				available[3]=0;
+			}
+			else if(selection==nb-2)
 			{
 				load_default_config(cfg);
 				return;
 			}
-			else if(selection==7) return;
+			else if(selection==nb-1) return;
 		}
 		else if(in.key[SDLK_DOWN])
 		{
@@ -287,30 +316,46 @@ void options_menu(config *cfg)
 
 		p1.x=310; p1.y=150;
 		aff_pol(options[0], 30, p1, couleur[0]); //Nb players
+		pos.x=p1.x+120; pos.y=p1.y;
+		SDL_BlitSurface(fleche[1], NULL, screen, &pos);
 		p1.x+=150;
 		aff_pol(options[1], 30, p1, couleur[1]); //Nb players
+		pos.x+=50;
+		SDL_BlitSurface(fleche[0], NULL, screen, &pos);
 		//Afficher des fleches
 
-		p1.x=250; p1.y=250;
-		pos.x=p1.x+50; pos.y=p1.y+50;
+		j=(j+1)%2;
+		p1.x=250; p1.y=225;
+		pos.x=p1.x+10; pos.y=p1.y+50;
 		aff_pol(options[2], 30, p1, couleur[2]); //Player 1
-		if(cfg->players[0].character == GHOST) SDL_BlitSurface(ghost, NULL, screen, &pos);
-		else SDL_BlitSurface(pac, NULL, screen, &pos);
+		SDL_BlitSurface(fleche[1], NULL, screen, &pos);
+		pos.x+=25;
+		if(cfg->players[0].character == GHOST) SDL_BlitSurface(ghost[j], NULL, screen, &pos);
+		else SDL_BlitSurface(pac[j], NULL, screen, &pos);
+		pos.x+=25;
+		SDL_BlitSurface(fleche[0], NULL, screen, &pos);
 		//Afficher des fleches
 
 		p1.x+=200;
-		pos.x=p1.x+50;
+		pos.x=p1.x+10;
 		aff_pol(options[3], 30, p1, couleur[3]); //Player 2
-		if(cfg->players[1].character == GHOST) SDL_BlitSurface(ghost, NULL, screen, &pos);
-		else SDL_BlitSurface(pac, NULL, screen, &pos);
+		SDL_BlitSurface(fleche[1], NULL, screen, &pos);
+		pos.x+=25;
+		if(cfg->players[1].character == GHOST) SDL_BlitSurface(ghost[j], NULL, screen, &pos);
+		else SDL_BlitSurface(pac[j], NULL, screen, &pos);
+		pos.x+=25;
+		SDL_BlitSurface(fleche[0], NULL, screen, &pos);
 		//Afficher des fleches
 
-		p1.x=250; p1.y+=150;
+		p1.x=250; p1.y+=100;
 		aff_pol(options[4], 30, p1, couleur[4]); //Sound
 		//Afficher des images pour le son
 
-		p1.x=150; p1.y+=150;
-		for(i=5; i<8; i++)
+		p1.x=250; p1.y+=75;
+		aff_pol(options[5], 30, p1, couleur[5]); //Reset score
+
+		p1.x=150; p1.y+=100;
+		for(i=6; i<nb; i++)
 		{
 			aff_pol(options[i], 30, p1, couleur[i]);
 			p1.x+=225;
@@ -319,6 +364,7 @@ void options_menu(config *cfg)
 	}
 }
 
+/*Quand tu gagnes*/
 void win_menu()
 {
 	POINT p1;
@@ -328,6 +374,7 @@ void win_menu()
 	SDL_Delay(3000);
 }
 
+/*Quand tu perds*/
 void lost_menu()
 {
 	POINT p1;
@@ -337,6 +384,7 @@ void lost_menu()
 	SDL_Delay(3000);
 }
 
+/*Affiche la version du jeu*/
 void draw_version()
 {
 	POINT p1;

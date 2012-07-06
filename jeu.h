@@ -9,13 +9,10 @@
 #include "scoremanager.h"
 
 void one_level(int, config*);
-int jouer(Pacman*, Fantome*, Input, config*);
-void campagne(config*);
+int jouer(Pacman*, Fantome*, Input, config*, int);
+void campagne(config*, int);
 void action(Pacman*, Fantome*);
-void set_ghosts_eatable(Fantome *ftm);
-void draw_pac_infos(Pacman*);
-void draw_score();
-/*Detecteur de colision a améliorer*/
+void draw_score(int, int);
 int check_colision(Pacman*, Fantome);
 
 #endif

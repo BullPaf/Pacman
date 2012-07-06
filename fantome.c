@@ -6,7 +6,8 @@ void init_ghosts(Fantome *ftm, config *cfg)
 	char img[32];
 	for (i=0; i<NB_GHOST; i++)
 	{
-		ftm[i].couleur = GHOST_COULEUR[i];
+		ftm[i].couleur = GHOST_COULEUR[i]; //A chaque fantome une couleur
+		//Chargement des textures propres à chaque fantome
 		for(j=0; j<8; j++)
 		{
 			sprintf(img, "image/ghosts/%d.png", ftm[i].couleur*8+j);
@@ -16,6 +17,7 @@ void init_ghosts(Fantome *ftm, config *cfg)
 				exit(EXIT_FAILURE);
 			}
 		}
+		//Chargement des texture commune à touts les fantomes
 		for(j=8; j<16; j++)
 		{
 			sprintf(img, "image/ghosts/%d.png", 24+j);
@@ -30,32 +32,33 @@ void init_ghosts(Fantome *ftm, config *cfg)
 		ftm[i].position.x    = ftm[i].start.x*BLOCK_SIZE;
 		ftm[i].position.y    = ftm[i].start.y*BLOCK_SIZE;
 		ftm[i].speed         = 4;
-		ftm[i].cur_direction = 1;
+		ftm[i].cur_direction = HAUT;
 		ftm[i].num_image     = (ftm[i].cur_direction)*2;
 		ftm[i].invinsible    = 1;
 		ftm[i].dead          = 0;
 		ftm[i].nb_keys       = 0;
 		ftm[i].counter       = 0;
-		ftm[i].controllerFonction = ia_controller;
+		ftm[i].controllerFonction = ia_controller; //Par defaut controllé par IA
 		ftm[i].target.x      = -1;
 		ftm[i].target.y      = -1;
 		ftm[i].controlled_by = -1;
 		for(j=0; j<cfg->nb_players; j++)
 		{
-			if (cfg->players[j].character==GHOST && !i)
+			if (cfg->players[j].character==GHOST && !i) //Si un joueur veut controller un fantome
 			{
 				ftm[i].controlled_by = j;
-				ftm[i].controllerFonction = human_controller;
+				ftm[i].controllerFonction = human_controller; //Il controllera toujours le fantome 0
 			}
 		}
 		LEVEL[GHOST_START_Y[i]][GHOST_START_X[i]].type=RIEN;
 	}
 }
 
+/*No comment*/
 void ghost_restart(Fantome *ftm)
 {
 	ftm->position.x    = ftm->start.x*BLOCK_SIZE;
-	if(ftm->controlled_by != -1) ftm->controllerFonction = human_controller;
+	if(ftm->controlled_by != -1) ftm->controllerFonction = human_controller; //Si un joueur controllé le fantome
 	ftm->position.y    = ftm->start.y*BLOCK_SIZE;
 	ftm->cur_direction = rand()%4;
 	ftm->num_image     = (ftm->cur_direction)*2;
@@ -71,6 +74,8 @@ void affiche_fantomes(Fantome *ftm)
 	int i;
 	for(i=0; i<NB_GHOST; i++)
 	{
+		/*Si les coordonnées sont négatives on passe une copie à SDL_BlitSurface
+		 * Pour ne pas remettre les coordonnées à 0*/
 		if(ftm[i].position.x < 0 || ftm[i].position.y < 0)
 		{
 			SDL_Rect copie_pos;
@@ -82,7 +87,7 @@ void affiche_fantomes(Fantome *ftm)
 	}
 }
 
-/*Option fantome intelligent ou pas à ajouter*/
+/*Permet d'affecter la cible*/
 void set_ftm_target(Fantome *f, SDL_Rect pac)
 {
 	if(f->dead)
@@ -97,13 +102,15 @@ void set_ftm_target(Fantome *f, SDL_Rect pac)
 	}
 }
 
+/*Met à jour graphiquement le fantome*/
 void updateGhosts(Fantome *ftm)
 {
 	int i;
 	for(i=0; i<NB_GHOST; i++)
 	{
-		if( ftm[i].invinsible )
+		if( ftm[i].invinsible ) //Cas normal
 		{
+			//Permet la permutation des images pour effet de mouvement
 			if( (ftm[i].num_image)%2==0 ) ftm[i].num_image = (ftm[i].cur_direction*2)+1;
 			else ftm[i].num_image = (ftm[i].cur_direction*2);
 		}
@@ -112,6 +119,7 @@ void updateGhosts(Fantome *ftm)
 			int tempsEcoule = SDL_GetTicks()-ftm[i].counter;
 			if(tempsEcoule < 7000 && tempsEcoule > 5000) //Fantome bientot invulnerable
 			{
+				//Permutation images bleue et blanche
 				if(ftm[i].num_image==10) ftm[i].num_image=9;
 				else ftm[i].num_image=10;
 			}
@@ -119,12 +127,13 @@ void updateGhosts(Fantome *ftm)
 			{
 				ftm[i].invinsible = 1;
 				ftm[i].speed      = 4;
+				//On calle les corrdonnées pour eviter des effets bizarre
 				if(ftm[i].position.x % 4 != 0) ftm[i].position.x+=2;
 				if(ftm[i].position.y % 4 != 0) ftm[i].position.y+=2;
 				//On charge l'image correspondante à la direction en cours
 				ftm[i].num_image=(ftm[i].cur_direction)*2;
 			}
-			else
+			else //Le fantome peut etre mangé
 			{
 				if(ftm[i].num_image%2==0) ftm[i].num_image+=1;
 				else ftm[i].num_image -= 1;
@@ -133,14 +142,33 @@ void updateGhosts(Fantome *ftm)
 		else //Fantome mort
 		{
 			int tempsEcoule = SDL_GetTicks()-ftm[i].counter;
+			//Un timer pour remettre le fantome à se position initiale s'il n'a pas réussi à y aller tout seul
 			if (tempsEcoule >= 7000 || (ftm[i].position.x == ftm[i].start.x*BLOCK_SIZE && ftm[i].position.y == ftm[i].start.y*BLOCK_SIZE) )
 				ghost_restart(ftm+i);
-			ftm[i].num_image=12+ftm[i].cur_direction;
+			ftm[i].num_image=12+ftm[i].cur_direction; //Les yeux!
 		}
 	}
 }
 
-/*Rajouter les gains de points*/
+/*rend les fantomes mangeables*/
+void set_ghosts_eatable(Fantome *ftm)
+{
+	int i;
+	for(i=0; i<NB_GHOST; i++)
+	{
+		if( !(ftm[i].dead) ) //S'il n'est pas déjà mort
+		{
+			ftm[i].invinsible = 0;
+			ftm[i].speed      = 2;
+			//Initialisation du compteur pour compter 5 sec
+			ftm[i].counter = SDL_GetTicks();
+			//On charge l'image du fantome vulnérable
+			ftm[i].num_image  = 8;
+		}
+	}
+}
+
+/*Tue le fantome*/
 void ghost_death(Fantome* ftm)
 {
 	//POINT p1;
@@ -150,6 +178,8 @@ void ghost_death(Fantome* ftm)
 	//SDL_Flip(screen);
 	SDL_Delay(500);
 	ftm->dead=1;
+	/*Fantome controllé par IA pour revenir à la position initiale
+	n'est util que si le fantome était controllé par un humain*/
 	ftm->controllerFonction = ia_controller;
 	ftm->speed = 10;
 	ftm->position.x=ftm_case.x*BLOCK_SIZE;

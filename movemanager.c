@@ -1,5 +1,8 @@
 #include "movemanager.h"
+/*Le coeur du probleme!*/
 
+
+/*Quand un humain control un personnage*/
 void human_controller(Input in, config cfg, int controller, SDL_Rect *position, int *cur_direction, int *nb_keys, int *speed, int *num_image, SDL_Rect target)
 {
 	int new_direction;
@@ -11,24 +14,31 @@ void human_controller(Input in, config cfg, int controller, SDL_Rect *position, 
 	//Si on peut se deplacer dans la nouvelle direction
 	if(can_move(*position, new_direction, *cur_direction, nb_keys))
 	{
-		move(position, new_direction, *speed);
+		move(position, new_direction, *speed); //Eh ben on bouge
 		*cur_direction = new_direction;
 	}
 	//Sinon si on peut continuer dans l'ancienne direction
 	else if(can_move(*position, *cur_direction, *cur_direction, nb_keys)) move(position, *cur_direction, *speed);
+	//Bah sinon on peut pas bouger
 }
 
+/*L'IA*/
 void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int *cur_direction, int *nb_keys, int *speed, int *num_image, SDL_Rect target)
 {
 	int new_direction;
+	/*Si c'est une intersection on a le droit de cherche à nouveau
+	 * où aller*/
 	if(in_intersection(*position, *cur_direction))
 	{
+		//Cherche la meilleur direction à prendre
 		new_direction = find_direction(*position, *cur_direction, target, nb_keys);
 		move(position, new_direction, *speed);
 		*cur_direction = new_direction;
 	}
+	/*Si c'est pas une intersection on continuer dans la direction courante... enfin si on peut*/
 	else if(can_move(*position, *cur_direction, *cur_direction, nb_keys))
 		move(position, *cur_direction, *speed);
+	//Si on peut pas on cherche une nouvelle direction
 	else
 	{
 		new_direction = find_direction(*position, *cur_direction, target, nb_keys);
@@ -37,7 +47,12 @@ void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int
 	}
 }
 
-//Si on peut bouger
+/*Si on peut bouger renvoie 1
+ * Sinon renvoie 0
+ * Test si new_direction est possible
+ * De maniere générale si on est pas pile dans une case on ne peut qu'aller dans la direction opposée
+ * Si on ne rencontre pas de mur dans la case suivante c'est bon
+ * Si c'est un mur avec un cadenas et que l'on a une clé c'est bon aussi*/
 int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 {
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
@@ -123,19 +138,19 @@ void move(SDL_Rect *pos, int direction, int speed)
 	{
 		case DROITE:
 			pos->x += speed;
-			if(pos->x+BLOCK_SIZE > WIDTH) pos->x = -BLOCK_SIZE;
+			if(pos->x+BLOCK_SIZE > WIDTH) pos->x = -BLOCK_SIZE+speed;
 			break;
 		case GAUCHE:
 			pos->x -= speed;
-			if(pos->x+BLOCK_SIZE <= 0) pos->x = WIDTH-BLOCK_SIZE;
+			if(pos->x+BLOCK_SIZE <= 0) pos->x = WIDTH-speed;
 			break;
 		case HAUT:
 			pos->y -= speed;
-			if(pos->y+BLOCK_SIZE <= 0) pos->y = HEIGHT;
+			if(pos->y+BLOCK_SIZE <= 0) pos->y = HEIGHT-speed;
 			break;
 		case BAS:
 			pos->y += speed;
-			if(pos->y+BLOCK_SIZE > HEIGHT) pos->y = -BLOCK_SIZE;
+			if(pos->y+BLOCK_SIZE > HEIGHT) pos->y = -BLOCK_SIZE+speed;
 			break;
 		default: break;
 	}
@@ -146,12 +161,12 @@ void move(SDL_Rect *pos, int direction, int speed)
  * Amélioration: implémenter une recherche de plus cours chemin*/
 int find_direction(SDL_Rect pos, int cur_direction, SDL_Rect target, int *nb_keys)
 {
+	/*Si on a un objectif*/
 	if(target.x != -1 && target.y != -1)
 	{
 		SDL_Rect ftm_case, target_case;
 		ftm_case = get_case(pos, cur_direction);
 		target_case = get_case(target, HAUT);
-		//fprintf(stderr, "J'ai un objectif YOUPI!, X=%d, Y=%d\n", target_case.x, target_case.y);
 		if(ftm_case.x > target_case.x)
 		{
 			if(can_move(pos, GAUCHE, cur_direction, nb_keys) && cur_direction != DROITE) return GAUCHE;
@@ -169,6 +184,7 @@ int find_direction(SDL_Rect pos, int cur_direction, SDL_Rect target, int *nb_key
 			if(can_move(pos, BAS, cur_direction, nb_keys) && cur_direction != HAUT) return BAS;
 		}
 	}
+	//Sinon on navigue au hasard
 	int rand_dir = rand()%4;
 	while( !can_move(pos, rand_dir, cur_direction, nb_keys) ) rand_dir = rand()%4;
 	return rand_dir;

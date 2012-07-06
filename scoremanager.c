@@ -7,6 +7,13 @@ int read_results(One *p)
 	if(result_file != NULL)
 	{
 		while (fscanf(result_file, "%s %d", p[i].name, &(p[i].score)) != EOF) i++;
+		if(i!=10)
+		{
+			fclose(result_file);
+			reset_score();
+			fprintf(stderr, "Oups, format file for score file is wrong... Reset all score plz!\n");
+			return 0;
+		}
 		fclose(result_file);
 		return 1;
 	}
@@ -30,6 +37,24 @@ int write_score(One *p)
 	else
 	{
 		fprintf(stderr, "Error while opening results file, sorry no results this time\n");
+		return 0;
+	}
+}
+
+int reset_score()
+{
+	int i;
+	FILE *result_file = fopen("data/results.txt", "w+");
+	if(result_file != NULL)
+	{
+		for(i=0; i<10; i++) fputs("ABC 0\n", result_file);
+		fclose(result_file);
+		fprintf(stderr, "Score successfully reset\n");
+		return 1;
+	}
+	else
+	{
+		fprintf(stderr, "Error cannot reset score...\n");
 		return 0;
 	}
 }

@@ -16,12 +16,15 @@ int main(int argc, char** argv)
 		switch(selection)
 		{
 			case 0: //Campagne
-				campagne(&cfg);
+				load_default_config(&cfg);
+				campagne(&cfg, 1);
 				break;
 			case 1: //Jouer un niveau
 				one_level(select_file_menu(), &cfg);
 				break;
-			case 2: // Charger
+			case 2: // Charger une partie
+				load_default_config(&cfg);
+				campagne(&cfg, load_game());
 				break;
 			case 3: //Edition
 				editer();
@@ -29,7 +32,7 @@ int main(int argc, char** argv)
 			case 4: //Option
 				options_menu(&cfg);
 				break;
-			case 5: //Quitter
+			case 5: //Voir les meilleurs score
 				draw_result(0);
 				break;
 			case 6: //Quitter

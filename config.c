@@ -1,5 +1,6 @@
 #include "config.h"
 
+/*Config par défaut*/
 void load_default_config(config *cfg)
 {
 	cfg->nb_players = 1;
@@ -16,9 +17,9 @@ void load_default_config(config *cfg)
 	cfg->players[1].right = SDLK_d;
 }
 
-void configure(config *cfg)
+/*void configure(config *cfg)
 {
 	//options_menu(*cfg);
 	fprintf(stderr, "Default configuration loaded\n");
 	load_default_config(cfg);
-}
+}*/

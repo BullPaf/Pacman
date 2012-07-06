@@ -16,4 +16,5 @@ typedef struct
 int draw_result(int);
 int read_results(One*);
 int write_score(One*);
+int reset_score();
 #endif

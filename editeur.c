@@ -3,9 +3,10 @@
 
 /*
  * Met en place l'environement d'edition
-*/
+ * il faut s'accrocher*/
 int editer()
 {
+	/****************Initialisation*********************/
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Editeur Pacman");
 	SDL_ShowCursor(SDL_ENABLE);
 	SDL_WarpMouse(WIDTH / 2, EDIT_HEIGHT / 2);
@@ -20,12 +21,15 @@ int editer()
 	init_level();
 	Input in;
 	memset(&in,0,sizeof(in));
+	/*****************Fin Initialisation*****************/
+
 	while(ok)
 	{
 		UpdateEvents(&in);
 		position.x = (in.mousex/BLOCK_SIZE)*BLOCK_SIZE;
 		position.y = (in.mousey/BLOCK_SIZE)*BLOCK_SIZE;
 		if(in.quit) exit(EXIT_SUCCESS);
+		/**************************SOURIS*************************/
 		if (in.mousebuttons[SDL_BUTTON_LEFT])
 		{
 			if( (in.mousex >= WIDTH) && (in.mousey < EDIT_WIDTH-1) ) //On click dans le menu de droite
@@ -39,17 +43,20 @@ int editer()
 		}
 		else if (in.mousebuttons[SDL_BUTTON_RIGHT])
 		{
-			if( (in.mousex < WIDTH) && (in.mousex >= 0) ) {
-				if(LEVEL[in.mousey/BLOCK_SIZE][in.mousex/BLOCK_SIZE].type == GHOST) NB_GHOST--;
+			if( (in.mousex < WIDTH) && (in.mousex >= 0) ) { //Si on est sur la carte
+				if(LEVEL[in.mousey/BLOCK_SIZE][in.mousex/BLOCK_SIZE].type == GHOST) NB_GHOST--; //Si on efface un fantome
 				LEVEL[in.mousey/BLOCK_SIZE][in.mousex/BLOCK_SIZE].type = RIEN; //On efface la texture
 			}
 		}
-		else if (in.mousebuttons[SDL_BUTTON_WHEELUP])
+		else if (in.mousebuttons[SDL_BUTTON_WHEELUP]) //Molette haute souris
 		{
 			type = (type-1)%(NB_ALL_BLOCKS);
 			if (type < 0) type = NB_ALL_BLOCKS-1;
 		}
-		else if (in.mousebuttons[SDL_BUTTON_WHEELDOWN]) type = (type+1)%(NB_ALL_BLOCKS);
+		else if (in.mousebuttons[SDL_BUTTON_WHEELDOWN]) type = (type+1)%(NB_ALL_BLOCKS); //Molette bas souris
+		/**************************FIN SOURIS*************************/
+
+		/**************************CLAVIER*************************/
 		if(in.key[SDLK_ESCAPE])
 		{
 			in.key[SDLK_ESCAPE]=0;
@@ -57,7 +64,7 @@ int editer()
 			if(selection==1) //sauver le niveau
 			{
 				level = select_file_menu();
-				if(level!=NB_LEVEL)
+				if(level>=NB_LEVEL)
 				{
 					save_level(level);
 					message=SAVE;
@@ -67,7 +74,7 @@ int editer()
 			else if(selection == 2) //charger un niveau
 			{
 				level = select_file_menu();
-				if(level!=NB_LEVEL)
+				if(level>=NB_LEVEL)
 				{
 					load_level(level);
 					message=LOAD;
@@ -82,10 +89,13 @@ int editer()
 			}
 			else if (selection == 5) return 0;
 		}
+		/**************************FIN CLAVIER*************************/
+
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		load_gui(); //Affiche l'interface
 		highlight_block(type); //Encadre l'élément actif
 		draw_level(); //Dessine le niveau
+		//Dessine les éléments selectionnables
 		if(type<NB_WALL_BLOCKS) SDL_BlitSurface(BLOCK_MUR[type], NULL, screen, &position);
 		else if(type<NB_BONUS_BLOCKS+NB_WALL_BLOCKS)
 			SDL_BlitSurface(BLOCK_BONUS[type%NB_WALL_BLOCKS], NULL, screen, &position);
@@ -98,6 +108,7 @@ int editer()
 	return 0;
 }
 
+/*Affecte à une case l'élément séléctioné*/
 void plot_object(int x, int y, int type)
 {
 	//Si on veut placer un pacman
@@ -117,9 +128,10 @@ void plot_object(int x, int y, int type)
 			}
 		}
 	}
+	//Si on veut placer un fantome
 	else if(editor[type].type==GHOST)
 	{
-		if(NB_GHOST == NB_MAX_GHOSTS)
+		if(NB_GHOST >= NB_MAX_GHOSTS) //Trop de fantome
 		{
 			fprintf(stderr, "Too much ghost, plz remove at least one ghost\n");
 			return;
@@ -158,11 +170,12 @@ void init_editor()
 	}
 }
 
+/*Affiche des messages dans le menu de droite*/
 void print_info(int *message, int tempsPrecedent, POINT p, int level)
 {
 	int tempsActuel;
 	char tmp[128];
-	sprintf(tmp, "Level %d ", level+1);
+	sprintf(tmp, "Level %d ", level);
 	switch(*message)
 	{
 		case AUCUN:
@@ -193,8 +206,6 @@ void print_info(int *message, int tempsPrecedent, POINT p, int level)
  * en gros trace des carrée et affiche les
  * textures à l'interieur
 */
-
-/*En version définitive juste créer une texture correspondante*/
 void load_gui()
 {
 	POINT p1, p2;

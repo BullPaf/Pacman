@@ -26,6 +26,7 @@ void updatePacman(Pacman*);
 void set_pac_target(Pacman*);
 void pac_restart(Pacman*);
 void pac_death(Pacman*);
+void draw_pac_infos(Pacman*);
 void delete_pacman(Pacman*);
 
 #endif

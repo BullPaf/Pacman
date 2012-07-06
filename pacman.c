@@ -59,10 +59,37 @@ void updatePacman(Pacman *pac)
 	else pac->num_image = (pac->cur_direction*2);
 }
 
+/*Pour l'instant si Pacman est controllé par IA
+ * il ira au hasard
+ * Voir Find_direction() dans movemanager.c*/
 void set_pac_target(Pacman *pac)
 {
 	pac->target.x = -1;
 	pac->target.y = -1;
+}
+
+/*Affiche les vies et les clés du pacman*/
+void draw_pac_infos(Pacman *pac)
+{
+	POINT p1;
+	SDL_Rect position;
+	int i;
+	p1.x=WIDTH+10; p1.y=10;
+	aff_pol("Lives :", FONT_SIZE, p1, blanc);
+	position.y=p1.y+30;
+	for(i=0; i<pac->nb_lives; i++)
+	{
+		position.x=WIDTH+5+i*BLOCK_SIZE;
+		SDL_BlitSurface(pac->image[DROITE*2], NULL, screen, &position);
+	}
+	p1.y+=75;
+	aff_pol("Keys :", FONT_SIZE, p1, blanc);
+	position.y=p1.y+30;
+	for(i=0; i<pac->nb_keys; i++)
+	{
+		position.x=WIDTH+5+i*BLOCK_SIZE;
+		SDL_BlitSurface(BLOCK_BONUS[8], NULL, screen, &position);
+	}
 }
 
 //Animation de mort
@@ -76,7 +103,7 @@ void pac_death(Pacman *pac)
 		SDL_BlitSurface(pac->image[i], NULL, screen, &pac->position);
 		SDL_Flip(screen);
 	}
-	pac->nb_lives--;
+	pac->nb_lives--; //On perd une vie :'(
 	pac_restart(pac);
 }
 

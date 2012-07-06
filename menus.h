@@ -4,6 +4,7 @@
 #include "input.h"
 #include "constantes.h"
 #include "levelmanager.h"
+#include "scoremanager.h"
 #include "config.h"
 
 typedef struct
@@ -12,7 +13,7 @@ typedef struct
 	char **options;
 	SDL_Surface *img;
 	SDL_Rect pos;
-	int selection, nb_options, *couleur, *available;
+	int selection, nb_options, *couleur, *available, font_size, space;
 	POINT p1;
 }Menu;
 

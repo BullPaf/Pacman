@@ -9,7 +9,7 @@ typedef struct
 	int mousex,mousey;
 	//int mousexrel,mouseyrel;
 	char mousebuttons[8];
-	char touche[32];
+	char touche[32]; //Stocke le nom de la touche appuyée
 	char quit;
 }Input;
 

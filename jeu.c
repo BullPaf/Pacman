@@ -1,8 +1,10 @@
 #include "jeu.h"
 
-void campagne(config *cfg)
+/*Permet de jouer tout les niveaux
+ * à la suite*/
+void campagne(config *cfg, int level)
 {
-	int level=0, result=1;
+	int result=1;
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
 	Input in;
@@ -13,29 +15,28 @@ void campagne(config *cfg)
 
 	while(level < NB_LEVEL && result)
 	{
-		//play_menu(level+1);
+		play_menu(level);
 		init_level();
 		load_level(level);
-		result = jouer(&pac, ftm, in, cfg);
-		if(result==1) {
-			win_menu();
-			draw_result(pac.score);
-		}
-		else if(!result) {
-			lost_menu();
-			draw_result(pac.score);
-		}
-		else if(result==2) result=0;
+		result = jouer(&pac, ftm, in, cfg, level);
+		if(result==1) win_menu();
+		else if(!result) lost_menu();
+		else if(result==2) break;
 		level++;
+		DELAY--; //On accélère youpi!
 	}
+	if(result != 2) draw_result(pac.score); //Si ce n'est pas un retour volontaire
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
 }
 
+/*Permet de jouer un seul niveau
+ * choisi dans la liste des niveaux
+ * disponibles*/
 void one_level(int level, config *cfg)
 {
-	//play_menu(level+1);
+	play_menu(level);
 	if(level>=NB_LEVEL) return;
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
@@ -47,39 +48,37 @@ void one_level(int level, config *cfg)
 	load_level(level);
 	memset(&in,0,sizeof(in));
 
-	int result = jouer(&pac, ftm, in, cfg);
-	if(result==1)
-	{
-		win_menu();
-		draw_result(pac.score);
-	}
-	else if(!result)
-	{
-		lost_menu();
-		draw_result(pac.score);
-	}
+	int result = jouer(&pac, ftm, in, cfg, level);
+	if(result==1) win_menu();
+	else if(!result) lost_menu();
+	if(result != 2 && cfg->nb_players>0) draw_result(pac.score);
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
 }
 
-int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
+/*Fonction principale du jeu
+ * @return
+ * 	0 si perdu
+ *	1 si gagné
+ * 	2 si retour volontaire*/
+int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg, int level)
 {
 	pac_restart(pac);
 	init_ghosts(ftm, cfg);
 	int i, selection=0;
-	while(POINTS)
+	while(POINTS) //Tant que l'on a pas mangé toutes les pac-gommes
 	{
 		SDL_Delay(DELAY);
 		UpdateEvents(&in);
-		if(in.quit)
+		if(in.quit) //Si clique sur croix
 		{
 			delete_pacman(pac);
 			delete_ghosts(ftm);
 			delete_blocks();
 			exit(EXIT_SUCCESS);
 		}
-		if(in.key[SDLK_ESCAPE]) 
+		if(in.key[SDLK_ESCAPE])
 		{
 			in.key[SDLK_ESCAPE]=0;
 			selection=game_menu();
@@ -87,7 +86,8 @@ int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
 		else if (in.key[SDLK_w]) return 1; //cheat code for winning!!
 		else if (in.key[SDLK_l]) return 0; //cheat code for loosing!!
 
-		set_pac_target(pac);
+		set_pac_target(pac); //Cherche l'endroit ou aller pour pacman
+		//Fonction de déplacement de pacman
 		pac->controllerFonction(in, *cfg, pac->controlled_by, &(pac->position), &(pac->cur_direction), &(pac->nb_keys), &(pac->speed), &(pac->num_image), pac->target);
 		for(i=0; i<NB_GHOST; i++)
 		{
@@ -100,30 +100,43 @@ int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg)
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		draw_level();
 		draw_pac_infos(pac);
-		draw_score(pac->score);
+		draw_score(pac->score, level);
 		affiche_pacman(pac);
 		affiche_fantomes(ftm);
 		if(!pac->nb_lives) return 0;
-		if(selection==3) return 2;
+		if(selection==2) return 2;
+		else if(selection==1)
+		{
+			fprintf(stderr, "Saving game!\n");
+			save_game(level);
+			selection=game_menu();
+		}
 		SDL_Flip(screen);
 		action(pac, ftm);
 	}
 	return 1;
 }
 
+/* Voit si une action peut etre accomplie*/
 void action(Pacman *pac, Fantome *ftm)
 {
 	int i, col;
 	SDL_Rect pos;
+	//Gagne une vie
+	if(pac->score && (pac->score)%10000 == 0 && pac->nb_lives < 10)
+	{
+		pac->nb_lives++;
+		pac->score+=100;
+	}
 	for(i=0; i<NB_GHOST; i++) {
 		col=check_colision(pac, ftm[i]);
 		if(col==1) {
-			pac_death(pac);
+			pac_death(pac); //Pacman est mort :(
 			for(i=0; i<NB_GHOST; i++) ghost_restart(ftm+i);
 			return;
 		}
 		if(col==2) {
-			ghost_death(ftm+i);
+			ghost_death(ftm+i); //Fantome meurt
 			pac->score+=1000;
 			return;
 		}
@@ -131,26 +144,23 @@ void action(Pacman *pac, Fantome *ftm)
 	pos=get_case(pac->position, pac->cur_direction);
 	if( LEVEL[pos.y][pos.x].type == BONUS && dans_case(pac->position) )
 	{
-		if(LEVEL[pos.y][pos.x].elt_type==9) {
+		if(LEVEL[pos.y][pos.x].elt_type==0) set_ghosts_eatable(ftm); //Super Pac-gomme
+		else if(LEVEL[pos.y][pos.x].elt_type==1) pac->score+=200; //Cerise
+		else if(LEVEL[pos.y][pos.x].elt_type==2) pac->score+=300; //Fraise
+		else if(LEVEL[pos.y][pos.x].elt_type==3) pac->score+=500; //Orange
+		else if(LEVEL[pos.y][pos.x].elt_type==4) pac->score+=700; //Pomme
+		else if(LEVEL[pos.y][pos.x].elt_type==5) pac->score+=1000; //Melon
+		else if(LEVEL[pos.y][pos.x].elt_type==6) pac->score+=2000; //Galboss
+		else if(LEVEL[pos.y][pos.x].elt_type==5) pac->score+=3000; //Cloche
+		else if(LEVEL[pos.y][pos.x].elt_type==8) { //Clé
+			pac->score+=5000;
+			pac->nb_keys++;
+		}
+		if(LEVEL[pos.y][pos.x].elt_type==9) { //Pac-gomme
 			pac->score+=100;
 			POINTS--;
 		}
-		else if(LEVEL[pos.y][pos.x].elt_type==0) {
-			set_ghosts_eatable(ftm);
-		}
-		else if(LEVEL[pos.y][pos.x].elt_type==2) {
-			if(pac->nb_lives<5) pac->nb_lives++;
-			else pac->score+=1000;
-		}
-		//Pomme-->accélère le pacman
-		else if(LEVEL[pos.y][pos.x].elt_type==4) {
-			fprintf(stderr, "Manger une pomme\n");
-		}
-		//Clé-->debloque des passages secrets
-		else if(LEVEL[pos.y][pos.x].elt_type==8) {
-			pac->nb_keys++;
-		}
-		LEVEL[pos.y][pos.x].type=RIEN;
+		LEVEL[pos.y][pos.x].type=RIEN; //On l'a mangé bravo!
 	}
 }
 
@@ -165,62 +175,20 @@ int check_colision(Pacman *pac, Fantome f)
 	{
 		if(f.invinsible) return 1; //Pacman se fait manger
 		else if(!f.dead) return 2; //Fantome se fait manger
-		else return 0;
+		else return 0; //Si Pac croise un fantome déja mort
 	}
 	else return 0;
 }
 
-//A deplacer
-void set_ghosts_eatable(Fantome *ftm)
-{
-	int i;
-	for(i=0; i<NB_GHOST; i++)
-	{
-		if( !(ftm[i].dead) )
-		{
-			ftm[i].invinsible = 0;
-			ftm[i].speed      = 2;
-			//Initialisation du compteur pour compter 5 sec
-			ftm[i].counter = SDL_GetTicks();
-			//On charge l'image du fantome vulnérable
-			ftm[i].num_image  = 8;
-		}
-	}
-}
-
-//A deplacer
-void draw_pac_infos(Pacman *pac)
-{
-	POINT p1;
-	SDL_Rect position;
-	int i;
-	p1.x=WIDTH+10; p1.y=10;
-	aff_pol("Lives :", FONT_SIZE, p1, blanc);
-	position.y=p1.y+30;
-	for(i=0; i<pac->nb_lives; i++)
-	{
-		position.x=WIDTH+5+i*BLOCK_SIZE;
-		SDL_BlitSurface(pac->image[DROITE*2], NULL, screen, &position);
-	}
-	p1.y+=75;
-	aff_pol("Keys :", FONT_SIZE, p1, blanc);
-	position.y=p1.y+30;
-	for(i=0; i<pac->nb_keys; i++)
-	{
-		position.x=WIDTH+5+i*BLOCK_SIZE;
-		SDL_BlitSurface(BLOCK_BONUS[8], NULL, screen, &position);
-	}
-}
-
-//A deplacer
-void draw_score(int score)
+/*Affiche le score et le niveau actuel*/
+void draw_score(int score, int level)
 {
 	POINT p1;
 	char score_c[50];
 	sprintf(score_c, "Score : %d", score);
 	p1.x=WIDTH+10; p1.y=150;
 	aff_pol(score_c, FONT_SIZE, p1, blanc);
-	/*sprintf(score, "Level : %d", level+1);
+	sprintf(score_c, "Level : %d", level);
 	p1.x=WIDTH+10; p1.y=200;
-	aff_pol(score, FONT_SIZE, p1, blanc);*/
+	aff_pol(score_c, FONT_SIZE, p1, blanc);
 }

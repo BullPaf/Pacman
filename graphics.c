@@ -15,7 +15,6 @@ void init_graphics(int W, int H, char* s)
 	}
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption(s, NULL);
-	//SDL_EnableKeyRepeat(10, 10);
 }
 
 /* on vérifie que ça ne déborde pas */
@@ -111,14 +110,6 @@ void draw_cross(POINT p1, int T, COULEUR c, SDL_Surface* s)
 // necessite l'installation  de SDL_ttf.h
 void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 {
-	/*Uint16 text[256];
-	int i=0;
-	while(a_ecrire[i] != '\0')
-	{
-		text[i] = a_ecrire[i];
-		i++;
-	}
-	text[i]='\0';*/
 	SDL_Surface *texte = NULL;
 	SDL_Rect position;
 	TTF_Font *police = NULL;
@@ -147,18 +138,15 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 	if (C == magenta) sdl_C = Magenta;
 
 	TTF_Init();
-	//SDL_EnableUNICODE(1);
 	/* Chargement de la police */
 	police = TTF_OpenFont(POLICE_NAME, taille);
 	/* Ecriture du texte dans la SDL_Surface "texte" en mode shaded (optimal) */
 	if (police) texte = TTF_RenderUTF8_Blended(police, a_ecrire, sdl_C);
-	//if (police) texte = TTF_RenderUNICODE_Blended(police, text, sdl_C);
 
 	position.x = p.x;
 	position.y = p.y;
 	if (texte) SDL_BlitSurface(texte, NULL, screen, &position); /* Blit du texte par-dessus */
 
-	//SDL_Flip(screen);
 	if (police) TTF_CloseFont(police);
 	TTF_Quit();
 	if (texte) SDL_FreeSurface(texte);
