@@ -8,6 +8,7 @@ int main(int argc, char** argv)
 {
 	int continuer=1, selection=0;
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
+	init_game();
 	config cfg;
 	load_default_config(&cfg);
 	while (continuer)
@@ -17,7 +18,7 @@ int main(int argc, char** argv)
 		{
 			case 0: //Campagne
 				load_default_config(&cfg); //Pour eviter de faire des campagnes avec des configs folkloriques
-				campagne(&cfg, 1);
+				campagne(&cfg, 0);
 				break;
 			case 1: //Jouer un niveau
 				one_level(select_file_menu(), &cfg);

@@ -124,15 +124,15 @@ int select_file_menu()
 {
 	int nb = NB_LEVEL, i;
 	Menu menu;
-	init_menu(&menu, nb);
+	init_menu(&menu, nb+1);
 	menu.font_size=25;
 	menu.space=30;
 	strcpy(menu.title, "Choississez un niveau");
-	for(i=0; i<nb-1; i++) sprintf(menu.options[i], "Level %d", i+1);
+	for(i=0; i<nb; i++) sprintf(menu.options[i], "%s", LEVEL_FILE[i]);
 	strcpy(menu.options[i], "Annuler");
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
-	return selection+1;
+	return selection;
 }
 
 /*Loersque l'on appuie echap dans l'editeur*/
@@ -161,7 +161,7 @@ void play_menu(int level)
 	char tmp[16], time[4];
 	POINT p1,p2;
 	int counter=3;
-	sprintf(tmp, "LEVEL  %d", level);
+	sprintf(tmp, "LEVEL  %d", level+1);
 	p1.x=320; p1.y=200;
 	p2.x=380; p2.y=260;
 	while(counter)
@@ -226,7 +226,7 @@ void options_menu(config *cfg)
 		available[3]=0;
 	}
 	else if(cfg->nb_players==1) available[3]=0;
-	DELAY=40;
+	DELAY=60;
 	while(!in.quit)
 	{
 		SDL_Delay(DELAY);
@@ -252,12 +252,23 @@ void options_menu(config *cfg)
 				available[2]=1;
 				available[3]=0;
 			}
-			else if(selection==nb-2)
+			else if(selection==nb-2) //Cancel
 			{
+				/*Remet la config par defaut mais devrait
+				Restaurer la config comme elle etait au depart*/
 				load_default_config(cfg);
 				return;
 			}
-			else if(selection==nb-1) return;
+			else if(selection==nb-1) //Save
+			{
+				if(cfg->nb_players==2)
+				{
+					if(cfg->players[0].character == PACMAN && cfg->players[1].character == PACMAN)
+						fprintf(stderr, "Only one pacman is allowed!\n");
+					else return;
+				}
+				else return;
+			}
 		}
 		else if(in.key[SDLK_DOWN])
 		{

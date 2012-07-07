@@ -12,6 +12,7 @@ void campagne(config *cfg, int level)
 	init_pacman(&pac, cfg);
 	init_blocks();
 	memset(&in,0,sizeof(in));
+	DELAY = 40-(level-1);
 
 	while(level < NB_LEVEL && result)
 	{
@@ -47,6 +48,7 @@ void one_level(int level, config *cfg)
 	init_blocks();
 	load_level(level);
 	memset(&in,0,sizeof(in));
+	DELAY = 40-(level-1);
 
 	int result = jouer(&pac, ftm, in, cfg, level);
 	if(result==1) win_menu();
@@ -191,4 +193,31 @@ void draw_score(int score, int level)
 	sprintf(score_c, "Level : %d", level);
 	p1.x=WIDTH+10; p1.y=200;
 	aff_pol(score_c, FONT_SIZE, p1, blanc);
+}
+
+/*recupere tout les niveaux disponibles
+ * dans le dossier level.
+ * Ils sont de base dispo en mode partie unique*/
+void init_game()
+{
+	NB_LEVEL=0;
+	char dirname[64];
+	strcpy(dirname, "level/");
+	DIR *dp = opendir(dirname);
+	if (dp) {
+		struct dirent *entry;
+		while ( (entry = readdir(dp)) ) {
+			if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
+					continue;
+			else
+			{
+				strcat(dirname, entry->d_name);
+				printf("L'entrée lue s'appelle '%s'\n", dirname); 
+				strcpy(LEVEL_FILE[NB_LEVEL], dirname);
+				strcpy(dirname, "level/");
+				NB_LEVEL++;
+			}
+		}
+		closedir(dp);
+	}
 }

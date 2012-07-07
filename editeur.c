@@ -64,7 +64,7 @@ int editer()
 			if(selection==1) //sauver le niveau
 			{
 				level = select_file_menu();
-				if(level>=NB_LEVEL)
+				if(level<NB_LEVEL)
 				{
 					save_level(level);
 					message=SAVE;
@@ -74,7 +74,7 @@ int editer()
 			else if(selection == 2) //charger un niveau
 			{
 				level = select_file_menu();
-				if(level>=NB_LEVEL)
+				if(level<NB_LEVEL)
 				{
 					load_level(level);
 					message=LOAD;

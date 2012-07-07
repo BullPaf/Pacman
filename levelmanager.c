@@ -112,16 +112,10 @@ void init_level()
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
 			LEVEL[i][j].type = RIEN;
 	}
-	strcpy(LEVEL_FILE[0], "level/save.txt");
-	for(i=1; i<NB_LEVEL; i++)
-	{
-		sprintf(level, "level/level_%d.txt", i);
-		strcpy(LEVEL_FILE[i], level);
-	}
 	for(i=0; i<NB_MAX_GHOSTS; i++) GHOST_START_Y[i]=GHOST_START_X[i]=-1;
 	POINTS=0;
 	NB_GHOST=0;
-	DELAY=20;
+	//DELAY=20;
 }
 
 /*Affecte à chaque block une texture*/
@@ -302,6 +296,7 @@ int remove_down_bloc(int elt)
 void load_level(int level)
 {
 	NB_GHOST=0;
+	fprintf(stderr, "try to open %s\n", LEVEL_FILE[level]);
 	FILE *level_file = fopen(LEVEL_FILE[level], "r");
 	char chaine[LINE_SIZE];
 	int line=0;
@@ -325,7 +320,7 @@ void load_level(int level)
 /*Sauve juste le numéro du niveau actuel pour le moment*/
 void save_game(int cur_level)
 {
-	FILE *save_file = fopen(LEVEL_FILE[0], "w+");
+	FILE *save_file = fopen("save/save.txt", "w+");
 	if (save_file != NULL)
 	{
 		fprintf(save_file, "%d", cur_level);
@@ -338,7 +333,7 @@ void save_game(int cur_level)
 int load_game()
 {
 	int level;
-	FILE *save_file = fopen("level/save.txt", "r");
+	FILE *save_file = fopen("save/save.txt", "r");
 	if (save_file != NULL)
 	{
 		if(fscanf(save_file, "%d", &level)==EOF) return -1;
@@ -350,7 +345,7 @@ int load_game()
 /*Si une sauvegarde existe*/
 int has_saved_game()
 {
-	FILE *save_file = fopen("level/save.txt", "r");
+	FILE *save_file = fopen("save/save.txt", "r");
 	if (save_file != NULL)
 	{
 		fclose(save_file);

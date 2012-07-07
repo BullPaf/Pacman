@@ -32,10 +32,11 @@ int GHOST_START_Y[NB_MAX_GHOSTS];
 Couleur GHOST_COULEUR[NB_MAX_GHOSTS];
 int POINTS;
 int DELAY;
+int NB_LEVEL;
 
 //Un niveau est un ensemble de CASE
 CASE LEVEL[NB_BLOCKS_HAUTEUR][NB_BLOCKS_LARGEUR];
-char LEVEL_FILE[NB_LEVEL][128];
+char LEVEL_FILE[256][128];
 
 int init_blocks(); //Ok
 void init_level(); //Ok

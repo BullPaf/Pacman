@@ -7,6 +7,8 @@
 #include "config.h"
 #include "input.h"
 #include "scoremanager.h"
+#include <dirent.h>
+#include <string.h>
 
 void one_level(int, config*);
 int jouer(Pacman*, Fantome*, Input, config*, int);
@@ -14,5 +16,6 @@ void campagne(config*, int);
 void action(Pacman*, Fantome*);
 void draw_score(int, int);
 int check_colision(Pacman*, Fantome);
+void init_game();
 
 #endif
