@@ -35,6 +35,7 @@ int draw_menu(Menu menu)
 	int i;
 	Input in;
 	memset(&in,0,sizeof(in));
+	while(!menu.available[menu.selection]) menu.selection=(menu.selection+1)%(menu.nb_options);
 	for(i=0; i<menu.nb_options; i++) if(!menu.available[i]) menu.couleur[i]=gris;
 	while(!in.quit)
 	{
@@ -152,6 +153,49 @@ int edit_menu()
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
 	return selection;
+}
+
+int save_menu(int level)
+{
+	int nb=3;
+	Menu menu;
+	init_menu(&menu, nb);
+	strcpy(menu.title, "SAVE MENU");
+	if(level>0)
+	{
+		strcpy(menu.options[0], LEVEL_FILE[level]);
+	}
+	else
+	{
+		strcpy(menu.options[0], " ");
+		menu.available[0]=0;
+	}
+	strcpy(menu.options[1], "NEW FILE");
+	strcpy(menu.options[2], "ANNULER");
+	int selection = draw_menu(menu);
+	delete_menu(&menu);
+	return selection;
+}
+
+void new_file_menu(char *new_file)
+{
+	POINT p1;
+	Input in;
+	memset(&in,0,sizeof(in));
+	new_file[0]='\0';
+	while(!in.quit)
+	{
+		UpdateEvents(&in);
+		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
+		if(in.quit) exit(EXIT_FAILURE);
+		if(in.key[SDLK_RETURN]) return;
+		p1.x=100; p1.y=50;
+		aff_pol("TYPE NEW LEVEL NAME", 50, p1, jaune);
+		print_key(new_file, &in, 32); //permet de taper son nom
+		p1.x=50; p1.y=200;
+		aff_pol(new_file, 30, p1, jaune);
+		SDL_Flip(screen);
+	}
 }
 
 /*Affiche en début de niveau le niveau actuel

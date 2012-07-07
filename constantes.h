@@ -20,6 +20,7 @@ enum {HAUT, DROITE, BAS, GAUCHE};
 #define EDIT_WIDTH WIDTH+200 //Largeur avec le menu de droite
 #define EDIT_HEIGHT HEIGHT //Hauteur en mode edition
 
+#define LEVEL_PATH "level/"
 #define FONT_SIZE 22
 
 #endif

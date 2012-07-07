@@ -190,7 +190,7 @@ void draw_score(int score, int level)
 	sprintf(score_c, "Score : %d", score);
 	p1.x=WIDTH+10; p1.y=150;
 	aff_pol(score_c, FONT_SIZE, p1, blanc);
-	sprintf(score_c, "Level : %d", level);
+	sprintf(score_c, "Level : %d", level+1);
 	p1.x=WIDTH+10; p1.y=200;
 	aff_pol(score_c, FONT_SIZE, p1, blanc);
 }
@@ -201,9 +201,10 @@ void draw_score(int score, int level)
 void init_game()
 {
 	NB_LEVEL=0;
-	char dirname[64];
-	strcpy(dirname, "level/");
-	DIR *dp = opendir(dirname);
+	//CAMPAGNE_LEVEL=0;
+	//char dirname[64];
+	//strcpy(dirname, "level/");
+	DIR *dp = opendir(LEVEL_PATH);
 	if (dp) {
 		struct dirent *entry;
 		while ( (entry = readdir(dp)) ) {
@@ -211,13 +212,20 @@ void init_game()
 					continue;
 			else
 			{
-				strcat(dirname, entry->d_name);
-				printf("L'entrée lue s'appelle '%s'\n", dirname); 
-				strcpy(LEVEL_FILE[NB_LEVEL], dirname);
-				strcpy(dirname, "level/");
+				//printf("L'entrée lue s'appelle '%s'\n", entry->d_name); 
+				strcpy(LEVEL_FILE[NB_LEVEL], entry->d_name);
 				NB_LEVEL++;
 			}
 		}
 		closedir(dp);
 	}
+	/*FILE *cmp=fopen("data/campagne.txt", "r");
+	if(cmp != NULL)
+	{
+		while (fscanf(cmp, "%s", CAMPAGNE[CAMPAGNE_LEVEL]) != EOF) CAMPAGNE_LEVEL++;
+	}
+	else
+	{
+		fprintf(stderr, "Cant read campagne file, campagne won't be available\n");
+	}*/
 }

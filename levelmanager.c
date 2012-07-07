@@ -297,7 +297,9 @@ void load_level(int level)
 {
 	NB_GHOST=0;
 	fprintf(stderr, "try to open %s\n", LEVEL_FILE[level]);
-	FILE *level_file = fopen(LEVEL_FILE[level], "r");
+	char myfile[64];
+	sprintf(myfile, "%s%s", LEVEL_PATH, LEVEL_FILE[level]);
+	FILE *level_file = fopen(myfile, "r");
 	char chaine[LINE_SIZE];
 	int line=0;
 	if (level_file != NULL)
@@ -361,7 +363,9 @@ int has_saved_game()
 void save_level(int level)
 {
 	int i,j;
-	FILE *level_file = fopen(LEVEL_FILE[level], "w+");
+	char myfile[64];
+	sprintf(myfile, "%s%s", LEVEL_PATH, LEVEL_FILE[level]);
+	FILE *level_file = fopen(myfile, "w+");
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)

@@ -63,10 +63,21 @@ int editer()
 			selection=edit_menu();
 			if(selection==1) //sauver le niveau
 			{
-				level = select_file_menu();
-				if(level<NB_LEVEL)
+				int tmp = save_menu(level);
+				if(tmp==0) //On ecrase le fichier en cours
 				{
 					save_level(level);
+					message=SAVE;
+					tempsPrecedent = SDL_GetTicks();
+				}
+				if(tmp==1) //On décide de créer un nouveau niveau
+				{
+					char new_file[64];
+					new_file_menu(new_file); //Taper le nom du niveau
+					strcpy(LEVEL_FILE[NB_LEVEL], new_file);
+					save_level(NB_LEVEL); //On le sauvegarde
+					NB_LEVEL++; //Un niveau de plus youpi
+					level=NB_LEVEL-1; //Pour se rappeler on édite quel niveau maintenant
 					message=SAVE;
 					tempsPrecedent = SDL_GetTicks();
 				}
@@ -175,7 +186,7 @@ void print_info(int *message, int tempsPrecedent, POINT p, int level)
 {
 	int tempsActuel;
 	char tmp[128];
-	sprintf(tmp, "Level %d ", level);
+	sprintf(tmp, "%s ", LEVEL_FILE[level]);
 	switch(*message)
 	{
 		case AUCUN:
