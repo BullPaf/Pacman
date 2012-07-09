@@ -14,6 +14,7 @@ void init_pacman(Pacman *pac, config *cfg)
 		}
 	}
 	pac->score         = 0;
+	pac->ghost_eaten   = 0;
 	pac->counter       = 0;
 	pac->nb_lives      = 2;
 	pac->nb_keys       = 0;
@@ -33,10 +34,11 @@ void init_pacman(Pacman *pac, config *cfg)
 
 void pac_restart(Pacman *pac)
 {
-	pac->position.x = PAC_START_X*BLOCK_SIZE;
-	pac->position.y = PAC_START_Y*BLOCK_SIZE;
+	pac->position.x    = PAC_START_X*BLOCK_SIZE;
+	pac->position.y    = PAC_START_Y*BLOCK_SIZE;
 	pac->cur_direction = PAC_START_DIRECTION;
-	pac->num_image = (pac->cur_direction*2);
+	pac->ghost_eaten   = 0;
+	pac->num_image     = (pac->cur_direction*2);
 	LEVEL[PAC_START_Y][PAC_START_X].type=RIEN;
 }
 
@@ -55,6 +57,8 @@ void affiche_pacman(Pacman *pac)
 
 void updatePacman(Pacman *pac)
 {
+	int tempsEcoule = SDL_GetTicks()-(pac->counter);
+	if(tempsEcoule > 7000) pac->ghost_eaten=0;
 	if( (pac->num_image)%2==0 ) pac->num_image = (pac->cur_direction*2)+1;
 	else pac->num_image = (pac->cur_direction*2);
 }

@@ -9,6 +9,7 @@
 #include "scoremanager.h"
 #include <dirent.h>
 #include <string.h>
+
 typedef struct score_message score_message;
 struct score_message
 {
@@ -17,12 +18,6 @@ struct score_message
 	int elapsed;
 	struct score_message *next;
 };
-
-/*typedef struct
-{
-	score_message scr_m[64];
-	int nb_message;
-}score_message_manager;*/
 
 void one_level(int, config*);
 int jouer(Pacman*, Fantome*, Input, config*, int);

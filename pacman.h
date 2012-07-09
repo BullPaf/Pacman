@@ -15,6 +15,7 @@ typedef struct Pacman
 	int num_image; //L'image à afficher
 	int counter; //Permet de mesurer le temps
 	int controlled_by;
+	int ghost_eaten; //Le nombre de fantomes mangés en un seul coup
 	SDL_Rect position, target; //Position actuelle
 	SDL_Surface* image[19]; //Les différentes images de pacman
 	void (*controllerFonction)(Input, config, int, SDL_Rect*, int*, int*, int*, int*, SDL_Rect);

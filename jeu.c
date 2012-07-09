@@ -126,7 +126,7 @@ int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg, int level)
 void action(Pacman *pac, Fantome *ftm, score_message **msg_list)
 {
 	int i, col;
-	SDL_Rect pos;
+	SDL_Rect pos = get_case(pac->position, pac->cur_direction);
 	//Gagne une vie
 	if(pac->score && (pac->score)%10000 == 0 && pac->nb_lives < 5)
 	{
@@ -142,14 +142,19 @@ void action(Pacman *pac, Fantome *ftm, score_message **msg_list)
 		}
 		if(col==2) {
 			ghost_death(ftm+i); //Fantome meurt
-			pac->score+=500;
+			pac->ghost_eaten++;
+			pac->score+=200*(pac->ghost_eaten);
+			add_new_message(msg_list, 9+pac->ghost_eaten, pos);
 			return;
 		}
 	}
-	pos=get_case(pac->position, pac->cur_direction);
 	if( LEVEL[pos.y][pos.x].type == BONUS && dans_case(pac->position) )
 	{
-		if(LEVEL[pos.y][pos.x].elt_type==0) set_ghosts_eatable(ftm); //Super Pac-gomme
+		if(LEVEL[pos.y][pos.x].elt_type==0) //Super Pac-gomme
+		{
+			set_ghosts_eatable(ftm); 
+			pac->counter=SDL_GetTicks();
+		}
 		else if(LEVEL[pos.y][pos.x].elt_type==1) pac->score+=100; //Cerise
 		else if(LEVEL[pos.y][pos.x].elt_type==2) pac->score+=300; //Fraise
 		else if(LEVEL[pos.y][pos.x].elt_type==3) pac->score+=500; //Orange
@@ -255,7 +260,7 @@ void display_messages(score_message **msg_list)
 	while(tmp!=NULL)
 	{
 		int tempsEcoule = SDL_GetTicks()-(tmp->elapsed);
-		if(tempsEcoule < 1000)
+		if(tempsEcoule < 2000)
 		{
 			SDL_BlitSurface(tmp->img, NULL, screen, &(tmp->pos));
 			(tmp->pos.y)--;
