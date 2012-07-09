@@ -138,10 +138,11 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 	if (C == magenta) sdl_C = Magenta;
 
 	TTF_Init();
+	SDL_EnableUNICODE(1);
 	/* Chargement de la police */
 	police = TTF_OpenFont(POLICE_NAME, taille);
 	/* Ecriture du texte dans la SDL_Surface "texte" en mode shaded (optimal) */
-	if (police) texte = TTF_RenderUTF8_Blended(police, a_ecrire, sdl_C);
+	if (police) texte = TTF_RenderText_Blended(police, a_ecrire, sdl_C);
 
 	position.x = p.x;
 	position.y = p.y;
@@ -150,5 +151,6 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 	if (police) TTF_CloseFont(police);
 	TTF_Quit();
 	if (texte) SDL_FreeSurface(texte);
+	SDL_EnableUNICODE(0);
 }
 #endif

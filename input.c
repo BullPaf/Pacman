@@ -2,6 +2,7 @@
 
 void UpdateEvents(Input* in)
 {
+	SDL_EnableUNICODE(1);
 	SDL_Event event;
 	in->mousebuttons[SDL_BUTTON_WHEELUP] = 0;
 	in->mousebuttons[SDL_BUTTON_WHEELDOWN] = 0;
@@ -11,7 +12,9 @@ void UpdateEvents(Input* in)
 		{
 			case SDL_KEYDOWN:
 				in->key[event.key.keysym.sym]=1;
-				strcpy(in->touche, SDL_GetKeyName(event.key.keysym.sym));
+				//strcpy(in->touche, event.key.keysym.unicode & 0x7F);//SDL_GetKeyName(event.key.keysym.sym));
+				fprintf(stderr, "touche = %c\n", event.key.keysym.unicode);
+				in->touche[0] = event.key.keysym.unicode & 0x7F;
 				break;
 			case SDL_KEYUP:
 				in->key[event.key.keysym.sym]=0;
@@ -36,6 +39,7 @@ void UpdateEvents(Input* in)
 				break;
 		}
 	}
+	SDL_EnableUNICODE(0);
 }
 
 /*Met à jour chaine en fonction de ce qui est tapé
@@ -54,7 +58,7 @@ void print_key(char* chaine, Input *in, int max_size)
 	else if(in->key[SDLK_SPACE] && (size+1 < max_size) ) //Un espace
 	{
 		in->key[SDLK_SPACE]=0;
-		 chaine[size]=' ';
+		//chaine[size]=' ';
 	}
 	/*Si la touche ne fait pas dépasser la taille max de la chaine
 	 * on concatene*/
