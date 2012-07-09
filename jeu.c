@@ -55,7 +55,7 @@ void one_level(int level, config *cfg)
 	int result = jouer(&pac, ftm, in, cfg, level);
 	if(result==1) win_menu();
 	else if(!result) lost_menu();
-	if(result != 2 && cfg->nb_players>0) draw_result(pac.score);
+	if(result != 2 && cfg->nb_players>0) draw_result(pac.score); //Attention vérifier qu'au moins un joueur est pacman
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
@@ -239,6 +239,7 @@ void init_game()
 	}*/
 }
 
+/*Le nouveau message est toujours inseré en tete de liste*/
 void add_new_message(score_message **msg_list, int type, SDL_Rect p)
 {
 	if(type==0 || type==9) return; //Si ce sont des pac gommes
