@@ -106,7 +106,6 @@ void extract_val(char *s, int line)
 void init_level()
 {
 	int i,j;
-	char level[32];
 	for(i=0; i<NB_BLOCKS_HAUTEUR; i++)
 	{
 		for(j=0; j<NB_BLOCKS_LARGEUR; j++)
@@ -115,7 +114,6 @@ void init_level()
 	for(i=0; i<NB_MAX_GHOSTS; i++) GHOST_START_Y[i]=GHOST_START_X[i]=-1;
 	POINTS=0;
 	NB_GHOST=0;
-	//DELAY=20;
 }
 
 /*Affecte à chaque block une texture*/
@@ -296,7 +294,6 @@ int remove_down_bloc(int elt)
 void load_level(int level)
 {
 	NB_GHOST=0;
-	fprintf(stderr, "try to open %s\n", LEVEL_FILE[level]);
 	char myfile[64];
 	sprintf(myfile, "%s%s", LEVEL_PATH, LEVEL_FILE[level]);
 	FILE *level_file = fopen(myfile, "r");

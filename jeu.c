@@ -5,6 +5,7 @@
 void campagne(config *cfg, int level)
 {
 	int result=1;
+	SAVE_ENABLE=1;
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
 	Input in;
@@ -37,8 +38,9 @@ void campagne(config *cfg, int level)
  * disponibles*/
 void one_level(int level, config *cfg)
 {
-	play_menu(level);
 	if(level>=NB_LEVEL) return;
+	SAVE_ENABLE=0;
+	play_menu(level);
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
 	Input in;

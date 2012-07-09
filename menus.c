@@ -95,11 +95,7 @@ int main_menu()
 	strcpy(menu.options[4], "OPTIONS");
 	strcpy(menu.options[5], "HIGH SCORE");
 	strcpy(menu.options[6], "QUITTER");
-	if(!has_saved_game())
-	{
-		fprintf(stderr, "Pas de fichier de sauvergarde\n");
-		menu.available[2]=0;
-	}
+	if(!has_saved_game()) menu.available[2]=0;
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
 	return selection;
@@ -115,6 +111,7 @@ int game_menu()
 	strcpy(menu.options[0], "CONTINUER");
 	strcpy(menu.options[1], "SAUVER");
 	strcpy(menu.options[2], "MENU PRINCIPAL");
+	if(!SAVE_ENABLE) menu.available[1]=0;
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
 	return selection;
@@ -191,7 +188,7 @@ void new_file_menu(char *new_file)
 		if(in.key[SDLK_RETURN]) return;
 		p1.x=100; p1.y=50;
 		aff_pol("TYPE NEW LEVEL NAME", 50, p1, jaune);
-		print_key(new_file, &in, 32); //permet de taper son nom
+		print_key(new_file, &in, 32); //permet de taper le nom du niveau
 		p1.x=50; p1.y=200;
 		aff_pol(new_file, 30, p1, jaune);
 		SDL_Flip(screen);

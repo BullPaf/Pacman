@@ -7,6 +7,7 @@
 void init_graphics(int W, int H, char* s)
 {
 	SDL_Init(SDL_INIT_VIDEO);
+	SDL_EnableUNICODE(1);
 	screen = SDL_SetVideoMode(W, H, 16, SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_RESIZABLE);
 	if ( screen == NULL )
 	{
@@ -111,6 +112,13 @@ void draw_cross(POINT p1, int T, COULEUR c, SDL_Surface* s)
 void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 {
 	SDL_Surface *texte = NULL;
+	/*Uint16 mytexte[64];
+	int i;
+	for(i=0; i<strlen(a_ecrire); i++)
+	{
+		mytexte[i]=a_ecrire[i];
+	}
+	mytexte[i]='\0';*/
 	SDL_Rect position;
 	TTF_Font *police = NULL;
 	SDL_Color Noire   = {  0,   0,   0};
@@ -138,11 +146,12 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 	if (C == magenta) sdl_C = Magenta;
 
 	TTF_Init();
-	SDL_EnableUNICODE(1);
+	//SDL_EnableUNICODE(1);
 	/* Chargement de la police */
 	police = TTF_OpenFont(POLICE_NAME, taille);
 	/* Ecriture du texte dans la SDL_Surface "texte" en mode shaded (optimal) */
 	if (police) texte = TTF_RenderText_Blended(police, a_ecrire, sdl_C);
+	//if (police) texte = TTF_RenderUNICODE_Blended(police, mytexte, sdl_C);
 
 	position.x = p.x;
 	position.y = p.y;
@@ -151,6 +160,6 @@ void aff_pol(char *a_ecrire, int taille, POINT p, COULEUR C)
 	if (police) TTF_CloseFont(police);
 	TTF_Quit();
 	if (texte) SDL_FreeSurface(texte);
-	SDL_EnableUNICODE(0);
+	//SDL_EnableUNICODE(0);
 }
 #endif
