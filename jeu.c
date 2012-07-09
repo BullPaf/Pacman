@@ -13,7 +13,7 @@ void campagne(config *cfg, int level)
 	init_pacman(&pac, cfg);
 	init_blocks();
 	memset(&in,0,sizeof(in));
-	DELAY = 40-(level-1);
+	DELAY = 40-(level);
 
 	while(level < NB_LEVEL && result)
 	{
@@ -70,6 +70,7 @@ int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg, int level)
 {
 	pac_restart(pac);
 	init_ghosts(ftm, cfg);
+	score_message *msg_list = NULL;
 	int i, selection=0;
 	while(POINTS) //Tant que l'on a pas mangé toutes les pac-gommes
 	{
@@ -111,18 +112,18 @@ int jouer(Pacman *pac, Fantome *ftm, Input in, config *cfg, int level)
 		if(selection==2) return 2;
 		else if(selection==1)
 		{
-			fprintf(stderr, "Saving game!\n");
 			save_game(level);
 			selection=game_menu();
 		}
+		action(pac, ftm, &msg_list);
+		display_messages(&msg_list);
 		SDL_Flip(screen);
-		action(pac, ftm);
 	}
 	return 1;
 }
 
 /* Voit si une action peut etre accomplie*/
-void action(Pacman *pac, Fantome *ftm)
+void action(Pacman *pac, Fantome *ftm, score_message **msg_list)
 {
 	int i, col;
 	SDL_Rect pos;
@@ -149,13 +150,13 @@ void action(Pacman *pac, Fantome *ftm)
 	if( LEVEL[pos.y][pos.x].type == BONUS && dans_case(pac->position) )
 	{
 		if(LEVEL[pos.y][pos.x].elt_type==0) set_ghosts_eatable(ftm); //Super Pac-gomme
-		else if(LEVEL[pos.y][pos.x].elt_type==1) pac->score+=200; //Cerise
+		else if(LEVEL[pos.y][pos.x].elt_type==1) pac->score+=100; //Cerise
 		else if(LEVEL[pos.y][pos.x].elt_type==2) pac->score+=300; //Fraise
 		else if(LEVEL[pos.y][pos.x].elt_type==3) pac->score+=500; //Orange
 		else if(LEVEL[pos.y][pos.x].elt_type==4) pac->score+=700; //Pomme
 		else if(LEVEL[pos.y][pos.x].elt_type==5) pac->score+=1000; //Melon
 		else if(LEVEL[pos.y][pos.x].elt_type==6) pac->score+=2000; //Galboss
-		else if(LEVEL[pos.y][pos.x].elt_type==5) pac->score+=3000; //Cloche
+		else if(LEVEL[pos.y][pos.x].elt_type==7) pac->score+=3000; //Cloche
 		else if(LEVEL[pos.y][pos.x].elt_type==8) { //Clé
 			pac->score+=5000;
 			pac->nb_keys++;
@@ -164,6 +165,7 @@ void action(Pacman *pac, Fantome *ftm)
 			//pac->score+=100;
 			POINTS--;
 		}
+		add_new_message(msg_list, LEVEL[pos.y][pos.x].elt_type, pos);
 		LEVEL[pos.y][pos.x].type=RIEN; //On l'a mangé bravo!
 	}
 }
@@ -230,4 +232,46 @@ void init_game()
 	{
 		fprintf(stderr, "Cant read campagne file, campagne won't be available\n");
 	}*/
+}
+
+void add_new_message(score_message **msg_list, int type, SDL_Rect p)
+{
+	if(type==0 || type==9) return; //Si ce sont des pac gommes
+	score_message *new_msg = malloc(sizeof(score_message));
+	char img_point[32];
+	sprintf(img_point, "image/score/%d.png", type-1);
+	new_msg->img = IMG_Load(img_point);
+	new_msg->elapsed = SDL_GetTicks();
+	new_msg->pos.x = (p.x)*BLOCK_SIZE;
+	new_msg->pos.y = (p.y)*BLOCK_SIZE;
+	new_msg->next = *msg_list;
+	*msg_list=new_msg;
+}
+
+void display_messages(score_message **msg_list)
+{
+	score_message *tmp=*msg_list;
+	score_message *tmp2=*msg_list;
+	while(tmp!=NULL)
+	{
+		int tempsEcoule = SDL_GetTicks()-(tmp->elapsed);
+		if(tempsEcoule < 1000)
+		{
+			SDL_BlitSurface(tmp->img, NULL, screen, &(tmp->pos));
+			(tmp->pos.y)--;
+		}
+		else if(tmp==*msg_list) //Si c'est l'élément de tete
+		{
+			free((*msg_list)->img);
+			*msg_list = (*msg_list)->next;
+		}
+		else if(tmp->next==NULL) //Le dernier element
+		{
+			tmp2->next=NULL;
+			free(tmp->img);
+			free(tmp);
+		}
+		tmp2=tmp;
+		tmp=tmp->next;
+	}
 }

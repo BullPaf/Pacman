@@ -158,7 +158,7 @@ int save_menu(int level)
 	Menu menu;
 	init_menu(&menu, nb);
 	strcpy(menu.title, "SAVE MENU");
-	if(level>0)
+	if(level>=0)
 	{
 		strcpy(menu.options[0], LEVEL_FILE[level]);
 	}

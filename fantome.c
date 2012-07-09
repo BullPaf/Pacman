@@ -174,7 +174,7 @@ void ghost_death(Fantome* ftm)
 	//POINT p1;
 	SDL_Rect ftm_case = get_case(ftm->position, ftm->cur_direction);
 	//p1.x=(ftm_case.x+1)*BLOCK_SIZE; p1.y=(ftm_case.y+1)*BLOCK_SIZE;
-	//aff_pol("BRAVO BB!", FONT_SIZE, p1, blanc);
+	//aff_pol("", FONT_SIZE, p1, blanc);
 	//SDL_Flip(screen);
 	SDL_Delay(500);
 	ftm->dead=1;
