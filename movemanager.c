@@ -11,6 +11,7 @@ void human_controller(Input in, config cfg, int controller, SDL_Rect *position, 
 	else if (in.key[cfg.players[controller].left]) new_direction=GAUCHE;
 	else if (in.key[cfg.players[controller].right]) new_direction=DROITE;
 	else new_direction=*cur_direction;
+	adjust_position(position, *cur_direction);
 	//Si on peut se deplacer dans la nouvelle direction
 	if(can_move(*position, new_direction, *cur_direction, nb_keys))
 	{
@@ -26,6 +27,7 @@ void human_controller(Input in, config cfg, int controller, SDL_Rect *position, 
 void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int *cur_direction, int *nb_keys, int *speed, int *num_image, SDL_Rect target)
 {
 	int new_direction;
+	adjust_position(position, *cur_direction);
 	/*Si c'est une intersection on a le droit de cherche à nouveau
 	 * où aller*/
 	if(in_intersection(*position, *cur_direction))
@@ -55,6 +57,8 @@ void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int
  * Si c'est un mur avec un cadenas et que l'on a une clé c'est bon aussi*/
 int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 {
+	//SDL_Rect Case = get_case(pos, cur_direction);
+	//
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
 	switch (new_direction)
 	{
@@ -129,6 +133,29 @@ int in_intersection(SDL_Rect pos, int direction)
 		if(dans_case(pos) && (LEVEL[case_y][case_x+1].type != MUR || LEVEL[case_y][case_x-1].type != MUR)) return 1;
 	}
 	return 0;
+}
+
+void adjust_position(SDL_Rect *pos, int cur_direction)
+{
+	SDL_Rect Case = get_case(*pos, cur_direction);
+	if(LEVEL[Case.y][Case.x].type == MUR) //Probleme
+	{
+		switch(cur_direction)
+		{
+			case DROITE:
+				pos->x = (Case.x-1)*BLOCK_SIZE;
+				break;
+			case GAUCHE:
+				pos->x = (Case.x+1)*BLOCK_SIZE;
+				break;
+			case HAUT:
+				pos->y = (Case.y+1)*BLOCK_SIZE;
+				break;
+			case BAS:
+				pos->y = (Case.y-1)*BLOCK_SIZE;
+				break;
+		}
+	}
 }
 
 //Deplace

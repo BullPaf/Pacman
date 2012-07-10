@@ -9,6 +9,7 @@ typedef struct Fantome
 {
 	int cur_direction; //Direction en cours
 	int speed; //Deplacement en pixel à chaque coup
+	int default_speed;
 	int num_image; //L'image à afficher
 	int invinsible; //S'il est invinsible
 	int dead; //S'il est mort
@@ -27,6 +28,7 @@ void updateGhosts(Fantome *);
 void set_ftm_target(Fantome*, SDL_Rect);
 void set_ghosts_eatable(Fantome*);
 void ghost_restart(Fantome*);
+void speed_up(Fantome*, int);
 void ghost_death(Fantome*);
 void delete_ghosts(Fantome*);
 

@@ -1,7 +1,7 @@
+test 2600
+ohoh 900
+nice 600
 quoi? 300
-ABC 0
-ABC 0
-ABC 0
 ABC 0
 ABC 0
 ABC 0

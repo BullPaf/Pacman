@@ -84,18 +84,19 @@ int draw_menu(Menu menu)
 /*Menu principal du jeu*/
 int main_menu()
 {
-	int nb=7;
+	int nb=8;
 	Menu menu;
 	init_menu(&menu, nb);
 	strcpy(menu.title, "BIENVENUE DANS PACMAN!!");
 	strcpy(menu.options[0], "CAMPAGNE");
-	strcpy(menu.options[1], "JOUER");
-	strcpy(menu.options[2], "CHARGER");
-	strcpy(menu.options[3], "EDITER");
-	strcpy(menu.options[4], "OPTIONS");
-	strcpy(menu.options[5], "HIGH SCORE");
-	strcpy(menu.options[6], "QUITTER");
-	if(!has_saved_game()) menu.available[2]=0;
+	strcpy(menu.options[1], "PARTIE UNIQUE");
+	strcpy(menu.options[2], "SURVIVOR");
+	strcpy(menu.options[3], "CHARGER");
+	strcpy(menu.options[4], "EDITER");
+	strcpy(menu.options[5], "OPTIONS");
+	strcpy(menu.options[6], "HIGH SCORE");
+	strcpy(menu.options[7], "QUITTER");
+	if(!has_saved_game()) menu.available[3]=0;
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
 	return selection;

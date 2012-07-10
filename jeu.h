@@ -20,7 +20,8 @@ struct score_message
 };
 
 void one_level(int, config*);
-int jouer(Pacman*, Fantome*, Input, config*, int);
+void jouer(Pacman*, Fantome*, Input, config*, int, score_message**);
+void survivor(int, config*);
 void campagne(config*, int);
 void action(Pacman*, Fantome*, score_message**);
 void add_new_message(score_message**, int, SDL_Rect);

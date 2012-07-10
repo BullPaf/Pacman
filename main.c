@@ -23,20 +23,23 @@ int main(int argc, char** argv)
 			case 1: //Jouer un niveau
 				one_level(select_file_menu(), &cfg);
 				break;
-			case 2: // Charger une partie
+			case 2: //Mode survivor
+				survivor(select_file_menu(), &cfg);
+				break;
+			case 3: // Charger une partie
 				load_default_config(&cfg); //Pour eviter de faire des campagnes avec des configs folkloriques
 				campagne(&cfg, load_game());
 				break;
-			case 3: //Edition
+			case 4: //Edition
 				editer();
 				break;
-			case 4: //Option
+			case 5: //Option
 				options_menu(&cfg);
 				break;
-			case 5: //Voir les meilleurs score
+			case 6: //Voir les meilleurs score
 				draw_result(0);
 				break;
-			case 6: //Quitter
+			case 7: //Quitter
 				continuer=0;
 				break;
 			default: break;

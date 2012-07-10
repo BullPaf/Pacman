@@ -31,6 +31,7 @@ void init_ghosts(Fantome *ftm, config *cfg)
 		ftm[i].start.y       = GHOST_START_Y[i];
 		ftm[i].position.x    = ftm[i].start.x*BLOCK_SIZE;
 		ftm[i].position.y    = ftm[i].start.y*BLOCK_SIZE;
+		ftm[i].default_speed = 4;
 		ftm[i].speed         = 4;
 		ftm[i].cur_direction = HAUT;
 		ftm[i].num_image     = (ftm[i].cur_direction)*2;
@@ -62,7 +63,7 @@ void ghost_restart(Fantome *ftm)
 	ftm->position.y    = ftm->start.y*BLOCK_SIZE;
 	ftm->cur_direction = rand()%4;
 	ftm->num_image     = (ftm->cur_direction)*2;
-	ftm->speed         = 4;
+	ftm->speed         = ftm->default_speed;
 	ftm->invinsible    = 1;
 	ftm->dead          = 0;
 	ftm->counter       = 0;
@@ -126,10 +127,10 @@ void updateGhosts(Fantome *ftm)
 			else if (tempsEcoule >= 7000) //Fantome redevient invulnérable
 			{
 				ftm[i].invinsible = 1;
-				ftm[i].speed      = 4;
+				ftm[i].speed      = ftm[i].default_speed;
 				//On calle les corrdonnées pour eviter des effets bizarre
-				if(ftm[i].position.x % 4 != 0) ftm[i].position.x+=2;
-				if(ftm[i].position.y % 4 != 0) ftm[i].position.y+=2;
+				//if(ftm[i].position.x % 4 != 0) ftm[i].position.x+=2;
+				//if(ftm[i].position.y % 4 != 0) ftm[i].position.y+=2;
 				//On charge l'image correspondante à la direction en cours
 				ftm[i].num_image=(ftm[i].cur_direction)*2;
 			}
@@ -150,6 +151,16 @@ void updateGhosts(Fantome *ftm)
 	}
 }
 
+void speed_up(Fantome *ftm, int acc)
+{
+	int i;
+	for(i=0; i<NB_GHOST; i++)
+	{
+		ftm[i].default_speed += acc;
+		if( !(ftm[i].dead) && ftm[i].invinsible) ftm[i].speed = ftm[i].default_speed;
+	}
+}
+
 /*rend les fantomes mangeables*/
 void set_ghosts_eatable(Fantome *ftm)
 {
@@ -159,7 +170,7 @@ void set_ghosts_eatable(Fantome *ftm)
 		if( !(ftm[i].dead) ) //S'il n'est pas déjà mort
 		{
 			ftm[i].invinsible = 0;
-			ftm[i].speed      = 2;
+			ftm[i].speed      = ftm[i].default_speed/2;
 			//Initialisation du compteur pour compter 5 sec
 			ftm[i].counter = SDL_GetTicks();
 			//On charge l'image du fantome vulnérable
@@ -171,19 +182,15 @@ void set_ghosts_eatable(Fantome *ftm)
 /*Tue le fantome*/
 void ghost_death(Fantome* ftm)
 {
-	//POINT p1;
-	SDL_Rect ftm_case = get_case(ftm->position, ftm->cur_direction);
-	//p1.x=(ftm_case.x+1)*BLOCK_SIZE; p1.y=(ftm_case.y+1)*BLOCK_SIZE;
-	//aff_pol("", FONT_SIZE, p1, blanc);
-	//SDL_Flip(screen);
+	//SDL_Rect ftm_case = get_case(ftm->position, ftm->cur_direction);
 	SDL_Delay(500);
 	ftm->dead=1;
 	/*Fantome controllé par IA pour revenir à la position initiale
 	n'est util que si le fantome était controllé par un humain*/
 	ftm->controllerFonction = ia_controller;
 	ftm->speed = 10;
-	ftm->position.x=ftm_case.x*BLOCK_SIZE;
-	ftm->position.y=ftm_case.y*BLOCK_SIZE;
+	//ftm->position.x=ftm_case.x*BLOCK_SIZE;
+	//ftm->position.y=ftm_case.y*BLOCK_SIZE;
 	ftm->counter=SDL_GetTicks();
 }
 
