@@ -119,7 +119,7 @@ int editer()
 	return 0;
 }
 
-/*Affecte à une case l'élément séléctioné*/
+/*Affecte à une case l'élément séléctionné*/
 void plot_object(int x, int y, int type)
 {
 	//Si on veut placer un pacman
@@ -142,11 +142,7 @@ void plot_object(int x, int y, int type)
 	//Si on veut placer un fantome
 	else if(editor[type].type==GHOST)
 	{
-		if(NB_GHOST >= NB_MAX_GHOSTS) //Trop de fantome
-		{
-			fprintf(stderr, "Too much ghost, plz remove at least one ghost\n");
-			return;
-		}
+		if(NB_GHOST >= NB_MAX_GHOSTS) return;//Trop de fantome
 		else if(LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE].type != GHOST) NB_GHOST++; //Si on plot un fantome sur un autre pas d'incrément
 	}
 	else if(LEVEL[y/BLOCK_SIZE][x/BLOCK_SIZE].type == GHOST) NB_GHOST--; //Si on efface un fantome

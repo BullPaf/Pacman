@@ -128,9 +128,6 @@ void updateGhosts(Fantome *ftm)
 			{
 				ftm[i].invinsible = 1;
 				ftm[i].speed      = ftm[i].default_speed;
-				//On calle les corrdonnées pour eviter des effets bizarre
-				//if(ftm[i].position.x % 4 != 0) ftm[i].position.x+=2;
-				//if(ftm[i].position.y % 4 != 0) ftm[i].position.y+=2;
 				//On charge l'image correspondante à la direction en cours
 				ftm[i].num_image=(ftm[i].cur_direction)*2;
 			}
@@ -182,15 +179,12 @@ void set_ghosts_eatable(Fantome *ftm)
 /*Tue le fantome*/
 void ghost_death(Fantome* ftm)
 {
-	//SDL_Rect ftm_case = get_case(ftm->position, ftm->cur_direction);
 	SDL_Delay(500);
 	ftm->dead=1;
 	/*Fantome controllé par IA pour revenir à la position initiale
 	n'est util que si le fantome était controllé par un humain*/
 	ftm->controllerFonction = ia_controller;
 	ftm->speed = 10;
-	//ftm->position.x=ftm_case.x*BLOCK_SIZE;
-	//ftm->position.y=ftm_case.y*BLOCK_SIZE;
 	ftm->counter=SDL_GetTicks();
 }
 

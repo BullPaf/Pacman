@@ -28,9 +28,7 @@ void campagne(config *cfg, int level)
 			UpdateEvents(&in);
 			if(in.quit) //Si clique sur croix
 			{
-				delete_pacman(&pac);
-				delete_ghosts(ftm);
-				delete_blocks();
+				delete(&pac, ftm);
 				exit(EXIT_SUCCESS);
 			}
 			while(in.key[SDLK_ESCAPE])
@@ -40,9 +38,7 @@ void campagne(config *cfg, int level)
 				else if(selection==1) save_game(level);
 				else if(selection==2) //Retour menu principal
 				{
-					delete_pacman(&pac);
-					delete_ghosts(ftm);
-					delete_blocks();
+					delete(&pac, ftm);
 					return;
 				}
 			}
@@ -50,10 +46,8 @@ void campagne(config *cfg, int level)
 			else if (in.key[SDLK_l] || !(pac.nb_lives)) //cheat code for loosing!!
 			{
 				lost_menu();
-				delete_pacman(&pac);
-				delete_ghosts(ftm);
-				delete_blocks();
 				draw_result(pac.score);
+				delete(&pac, ftm);
 				return;
 			}
 			jouer(&pac, ftm, in, cfg, level, &msg_list);
@@ -63,9 +57,7 @@ void campagne(config *cfg, int level)
 		DELAY--; //On accélère youpi!*/
 	}
 	draw_result(pac.score);
-	delete_pacman(&pac);
-	delete_ghosts(ftm);
-	delete_blocks();
+	delete(&pac, ftm);
 }
 
 /*Permet de jouer un seul niveau
@@ -95,9 +87,7 @@ void one_level(int level, config *cfg)
 		UpdateEvents(&in);
 		if(in.quit) //Si clique sur croix
 		{
-			delete_pacman(&pac);
-			delete_ghosts(ftm);
-			delete_blocks();
+			delete(&pac, ftm);
 			exit(EXIT_SUCCESS);
 		}
 		while(in.key[SDLK_ESCAPE])
@@ -106,9 +96,7 @@ void one_level(int level, config *cfg)
 			if(selection==0) in.key[SDLK_ESCAPE]=0;
 			else if(selection==2) //Retour menu principal
 			{
-				delete_pacman(&pac);
-				delete_ghosts(ftm);
-				delete_blocks();
+				delete(&pac, ftm);
 				return;
 			}
 		}
@@ -116,9 +104,7 @@ void one_level(int level, config *cfg)
 		else if (in.key[SDLK_l] || !(pac.nb_lives)) //cheat code for loosing!!
 		{
 			lost_menu();
-			delete_pacman(&pac);
-			delete_ghosts(ftm);
-			delete_blocks();
+			delete(&pac, ftm);
 			if(pacmanIsHuman(cfg)) draw_result(pac.score);
 			return;
 		}
@@ -126,9 +112,7 @@ void one_level(int level, config *cfg)
 	}
 	win_menu();
 	if(pacmanIsHuman(cfg)) draw_result(pac.score);
-	delete_pacman(&pac);
-	delete_ghosts(ftm);
-	delete_blocks();
+	delete(&pac, ftm);
 }
 
 /*Ici les fantomes accélèrent de plus en plus
@@ -154,22 +138,19 @@ void survivor(int level, config *cfg)
 	init_ghosts(ftm, cfg);
 	memset(&in,0,sizeof(in));
 	DELAY = 40;
-	while(pac.nb_lives) //Tant que l'on a pas mangé toutes les pac-gommes
+	while(pac.nb_lives && POINTS)
 	{
 		elapsed = SDL_GetTicks()-tmp;
 		if(elapsed > 10000)
 		{
 			//On accélere les fantomes
 			speed_up(ftm, 1);
-			fprintf(stderr, "Fantome accélerer! Speed = %d\n", ftm[0].default_speed);
 			tmp=SDL_GetTicks();
 		}
 		UpdateEvents(&in);
 		if(in.quit) //Si clique sur croix
 		{
-			delete_pacman(&pac);
-			delete_ghosts(ftm);
-			delete_blocks();
+			delete(&pac, ftm);
 			exit(EXIT_SUCCESS);
 		}
 		while(in.key[SDLK_ESCAPE])
@@ -178,9 +159,7 @@ void survivor(int level, config *cfg)
 			if(selection==0) in.key[SDLK_ESCAPE]=0;
 			else if(selection==2) //Retour menu principal
 			{
-				delete_pacman(&pac);
-				delete_ghosts(ftm);
-				delete_blocks();
+				delete(&pac, ftm);
 				return;
 			}
 		}
@@ -188,9 +167,7 @@ void survivor(int level, config *cfg)
 	}
 	counter = SDL_GetTicks() - counter;
 	fprintf(stderr, "Wouaw tu as tenu %d ms!\n", counter);
-	delete_pacman(&pac);
-	delete_ghosts(ftm);
-	delete_blocks();
+	delete(&pac, ftm);
 }
 
 /*Fonction du jeu*/
@@ -386,4 +363,11 @@ int pacmanIsHuman(config *cfg)
 		if(cfg->players[i].character==PACMAN) return 1;
 	}
 	return 0;
+}
+
+void delete(Pacman *pac, Fantome*ftm)
+{
+	delete_pacman(pac);
+	delete_ghosts(ftm);
+	delete_blocks();
 }

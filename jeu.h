@@ -23,6 +23,7 @@ void one_level(int, config*);
 void jouer(Pacman*, Fantome*, Input, config*, int, score_message**);
 void survivor(int, config*);
 int pacmanIsHuman(config*);
+void delete(Pacman *, Fantome*);
 void campagne(config*, int);
 void action(Pacman*, Fantome*, score_message**);
 void add_new_message(score_message**, int, SDL_Rect);
