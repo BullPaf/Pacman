@@ -14,7 +14,7 @@ void campagne(config *cfg, int level)
 	init_pacman(&pac, cfg);
 	init_blocks();
 	memset(&in,0,sizeof(in));
-	DELAY = 40-(level);
+	DELAY = 40-level;
 
 	while(level < NB_LEVEL)
 	{
@@ -89,7 +89,7 @@ void one_level(int level, config *cfg)
 	pac_restart(&pac);
 	init_ghosts(ftm, cfg);
 	memset(&in,0,sizeof(in));
-	DELAY = 40-(level-1);
+	DELAY = 40-level;
 	while(POINTS) //Tant que l'on a pas mangé toutes les pac-gommes
 	{
 		UpdateEvents(&in);
@@ -104,7 +104,6 @@ void one_level(int level, config *cfg)
 		{
 			selection=game_menu();
 			if(selection==0) in.key[SDLK_ESCAPE]=0;
-			//else if(selection==1) save_game(level);
 			else if(selection==2) //Retour menu principal
 			{
 				delete_pacman(&pac);
@@ -120,13 +119,13 @@ void one_level(int level, config *cfg)
 			delete_pacman(&pac);
 			delete_ghosts(ftm);
 			delete_blocks();
-			draw_result(pac.score);
+			if(pacmanIsHuman(cfg)) draw_result(pac.score);
 			return;
 		}
 		jouer(&pac, ftm, in, cfg, level, &msg_list);
 	}
 	win_menu();
-	draw_result(pac.score);
+	if(pacmanIsHuman(cfg)) draw_result(pac.score);
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
@@ -158,7 +157,7 @@ void survivor(int level, config *cfg)
 	while(pac.nb_lives) //Tant que l'on a pas mangé toutes les pac-gommes
 	{
 		elapsed = SDL_GetTicks()-tmp;
-		if(elapsed > 5000)
+		if(elapsed > 10000)
 		{
 			//On accélere les fantomes
 			speed_up(ftm, 1);
@@ -177,7 +176,6 @@ void survivor(int level, config *cfg)
 		{
 			selection=game_menu();
 			if(selection==0) in.key[SDLK_ESCAPE]=0;
-			//else if(selection==1) save_game(level);
 			else if(selection==2) //Retour menu principal
 			{
 				delete_pacman(&pac);
@@ -186,22 +184,10 @@ void survivor(int level, config *cfg)
 				return;
 			}
 		}
-		//if (in.key[SDLK_w]) POINTS=0; //cheat code for winning!!
-		/*else if (in.key[SDLK_l] || !(pac.nb_lives)) //cheat code for loosing!!
-		{
-			lost_menu();
-			delete_pacman(&pac);
-			delete_ghosts(ftm);
-			delete_blocks();
-			draw_result(pac.score);
-			return;
-		}*/
 		jouer(&pac, ftm, in, cfg, level, &msg_list);
 	}
 	counter = SDL_GetTicks() - counter;
 	fprintf(stderr, "Wouaw tu as tenu %d ms!\n", counter);
-	//win_menu();
-	//draw_result(pac.score);
 	delete_pacman(&pac);
 	delete_ghosts(ftm);
 	delete_blocks();
@@ -390,4 +376,14 @@ void display_messages(score_message **msg_list)
 		tmp2=tmp;
 		tmp=tmp->next;
 	}
+}
+
+int pacmanIsHuman(config *cfg)
+{
+	int i;
+	for(i=0; i<cfg->nb_players; i++)
+	{
+		if(cfg->players[i].character==PACMAN) return 1;
+	}
+	return 0;
 }

@@ -3,6 +3,7 @@
 /*Config par défaut*/
 void load_default_config(config *cfg)
 {
+	fprintf(stderr, "Default config loaded\n");
 	cfg->nb_players = 1;
 	cfg->players[0].character = PACMAN;
 	cfg->players[0].up = SDLK_UP;
@@ -17,9 +18,3 @@ void load_default_config(config *cfg)
 	cfg->players[1].right = SDLK_d;
 }
 
-/*void configure(config *cfg)
-{
-	//options_menu(*cfg);
-	fprintf(stderr, "Default configuration loaded\n");
-	load_default_config(cfg);
-}*/

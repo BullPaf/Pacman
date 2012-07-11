@@ -17,6 +17,5 @@ typedef struct config
 }config;
 
 void load_default_config(config*);
-//void configure(config*);
 
 #endif

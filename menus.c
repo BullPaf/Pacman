@@ -224,6 +224,7 @@ void play_menu(int level)
  * Accessoirement c'est tres moche*/
 void options_menu(config *cfg)
 {
+	config tmp = *cfg;
 	int i, j=0, nb=9, couleur[nb], available[nb], selection=0;
 	SDL_Surface *pac[2], *ghost[2], *fleche[2];
 	SDL_Rect pos;
@@ -248,7 +249,6 @@ void options_menu(config *cfg)
 		fprintf(stderr, "Erreur loading pngs in >>options_menu()<<\n");
 		exit(EXIT_FAILURE);
 	}
-	load_default_config(cfg);
 	memset(&in,0,sizeof(in));
 	strcpy(title, "OPTIONS");
 	strcpy(options[0], "Nb players");
@@ -296,9 +296,7 @@ void options_menu(config *cfg)
 			}
 			else if(selection==nb-2) //Cancel
 			{
-				/*Remet la config par defaut mais devrait
-				Restaurer la config comme elle etait au depart*/
-				load_default_config(cfg);
+				*cfg=tmp;
 				return;
 			}
 			else if(selection==nb-1) //Save
