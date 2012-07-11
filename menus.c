@@ -304,7 +304,7 @@ void options_menu(config *cfg)
 				if(cfg->nb_players==2)
 				{
 					if(cfg->players[0].character == PACMAN && cfg->players[1].character == PACMAN)
-						fprintf(stderr, "Only one pacman is allowed!\n");
+						fprintf(stderr, "Only one pacman is allowed!\n"); //Should not happen
 					else return;
 				}
 				else return;
