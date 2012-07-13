@@ -4,7 +4,7 @@
 #include "menus.h"
 #include "config.h"
 
-int main(int argc, char** argv)
+int main()
 {
 	int continuer=1, selection=0;
 	init_graphics(EDIT_WIDTH, EDIT_HEIGHT, "Pacman");
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 				options_menu(&cfg);
 				break;
 			case 6: //Voir les meilleurs score
-				draw_result(0);
+				draw_result("data/results.txt", 0);
 				break;
 			case 7: //Quitter
 				continuer=0;

@@ -14,6 +14,6 @@ typedef struct
 }Input;
 
 void UpdateEvents(Input*);
-void print_key(char*, Input*, int);
+void print_key(char*, Input*, unsigned);
 
 #endif

@@ -285,7 +285,8 @@ void options_menu(config *cfg)
 			in.key[SDLK_RETURN]=0;
 			if(selection==nb-4) //reset score
 			{
-				reset_score();
+				reset_score("data/results.txt");
+				reset_score("data/survivor.txt");
 			}
 			if(selection==nb-3)
 			{

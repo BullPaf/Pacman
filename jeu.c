@@ -46,7 +46,7 @@ void campagne(config *cfg, int level)
 			else if (in.key[SDLK_l] || !(pac.nb_lives)) //cheat code for loosing!!
 			{
 				lost_menu();
-				draw_result(pac.score);
+				draw_result("data/results.txt", pac.score);
 				delete(&pac, ftm);
 				return;
 			}
@@ -56,7 +56,7 @@ void campagne(config *cfg, int level)
 		win_menu();
 		DELAY--; //On accélère youpi!*/
 	}
-	draw_result(pac.score);
+	draw_result("data/results.txt", pac.score);
 	delete(&pac, ftm);
 }
 
@@ -105,13 +105,13 @@ void one_level(int level, config *cfg)
 		{
 			lost_menu();
 			delete(&pac, ftm);
-			if(pacmanIsHuman(cfg)) draw_result(pac.score);
+			if(pacmanIsHuman(cfg)) draw_result("data/results.txt", pac.score);
 			return;
 		}
 		jouer(&pac, ftm, in, cfg, level, &msg_list);
 	}
 	win_menu();
-	if(pacmanIsHuman(cfg)) draw_result(pac.score);
+	if(pacmanIsHuman(cfg)) draw_result("data/results.txt", pac.score);
 	delete(&pac, ftm);
 }
 
@@ -167,6 +167,7 @@ void survivor(int level, config *cfg)
 	}
 	counter = SDL_GetTicks() - counter;
 	fprintf(stderr, "Wouaw tu as tenu %d ms!\n", counter);
+	if(pacmanIsHuman(cfg)) draw_result("data/survivor.txt", counter);
 	delete(&pac, ftm);
 }
 
@@ -207,6 +208,7 @@ void action(Pacman *pac, Fantome *ftm, score_message **msg_list)
 		pac->nb_lives++;
 		pac->score+=100;
 	}
+	//Verifie si pacman et fantomes se rencontrent
 	for(i=0; i<NB_GHOST; i++) {
 		col=check_colision(pac, ftm[i]);
 		if(col==1) {

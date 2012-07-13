@@ -2,7 +2,6 @@
 
 void UpdateEvents(Input* in)
 {
-	//SDL_EnableUNICODE(1);
 	SDL_Event event;
 	in->mousebuttons[SDL_BUTTON_WHEELUP] = 0;
 	in->mousebuttons[SDL_BUTTON_WHEELDOWN] = 0;
@@ -14,11 +13,7 @@ void UpdateEvents(Input* in)
 				in->key[event.key.keysym.sym]=1;
 				if( (event.key.keysym.sym>=32 && event.key.keysym.sym<=126) || \
 					(event.key.keysym.sym>=SDLK_KP0 && event.key.keysym.sym<=SDLK_KP9) )
-				{
-					//fprintf(stderr, "touche = %c\n", event.key.keysym.unicode);
-					in->touche[0] = event.key.keysym.unicode & 0x7F;
-					//in->touche[1] = '\0';
-				}
+						in->touche[0] = event.key.keysym.unicode & 0x7F;
 				break;
 			case SDL_KEYUP:
 				in->key[event.key.keysym.sym]=0;
@@ -43,12 +38,11 @@ void UpdateEvents(Input* in)
 				break;
 		}
 	}
-	//SDL_EnableUNICODE(0);
 }
 
 /*Met à jour chaine en fonction de ce qui est tapé
  * Manque plein de chose pour eviter des bugs*/
-void print_key(char* chaine, Input *in, int max_size)
+void print_key(char* chaine, Input *in, unsigned max_size)
 {
 	int size = strlen(chaine);
 	if(in->key[SDLK_BACKSPACE] && size > 0) //Pour effacer

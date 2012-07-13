@@ -1,16 +1,16 @@
 #include "scoremanager.h"
 
-int read_results(One *p)
+int read_results(char *file, One *p)
 {
 	int i=0;
-	FILE *result_file = fopen("data/results.txt", "r");
+	FILE *result_file = fopen(file, "r");
 	if(result_file != NULL)
 	{
 		while (fscanf(result_file, "%s %d", p[i].name, &(p[i].score)) != EOF) i++;
 		if(i!=10)
 		{
 			fclose(result_file);
-			reset_score();
+			reset_score(file);
 			fprintf(stderr, "Oups, format file for score file is wrong... Reset all score plz!\n");
 			return 0;
 		}
@@ -24,10 +24,10 @@ int read_results(One *p)
 	}
 }
 
-int write_score(One *p)
+int write_score(char *file, One *p)
 {
 	int i;
-	FILE *result_file = fopen("data/results.txt", "w+");
+	FILE *result_file = fopen(file, "w+");
 	if(result_file != NULL)
 	{
 		for(i=0; i<10; i++) fprintf(result_file, "%s %d\n", p[i].name, p[i].score);
@@ -41,10 +41,10 @@ int write_score(One *p)
 	}
 }
 
-int reset_score()
+int reset_score(char *file)
 {
 	int i;
-	FILE *result_file = fopen("data/results.txt", "w+");
+	FILE *result_file = fopen(file, "w+");
 	if(result_file != NULL)
 	{
 		for(i=0; i<10; i++) fputs("ABC 0\n", result_file);
@@ -59,14 +59,14 @@ int reset_score()
 	}
 }
 
-int draw_result(int score)
+int draw_result(char *file, int score)
 {
 	POINT p1,p2;
 	int i=0, j=9, newscore=-1;
 	One p[10];
 	char chaine[128];
 	char title[32];
-	if(!read_results(p)) return 0;
+	if(!read_results(file, p)) return 0;
 	//Cherche si on a fait un record
 	for(i=0; i<10; i++)
 	{
@@ -90,7 +90,7 @@ int draw_result(int score)
 		strcpy(title, "NEW SCORE!");
 	}
 	else strcpy(title, "SCORE");
-	/*Affichage des scores*/
+	//Affichage des scores
 	Input in;
 	memset(&in,0,sizeof(in));
 	while(!in.quit)
@@ -98,7 +98,7 @@ int draw_result(int score)
 		UpdateEvents(&in);
 		if(in.key[SDLK_RETURN])
 		{
-			if(!write_score(p)) return 0;
+			if(!write_score(file, p)) return 0;
 			else return 1;
 		}
 		else if(in.key[SDLK_ESCAPE]) return 0;

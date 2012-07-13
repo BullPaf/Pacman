@@ -57,8 +57,6 @@ void ia_controller(Input in, config cfg, int controller, SDL_Rect *position, int
  * Si c'est un mur avec un cadenas et que l'on a une clé c'est bon aussi*/
 int can_move(SDL_Rect pos, int new_direction, int cur_direction, int *key)
 {
-	//SDL_Rect Case = get_case(pos, cur_direction);
-	//
 	int case_x = pos.x / BLOCK_SIZE, case_y = pos.y / BLOCK_SIZE;
 	switch (new_direction)
 	{
