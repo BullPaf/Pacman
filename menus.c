@@ -65,9 +65,9 @@ int draw_menu(Menu menu)
 		}
 		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
 		menu.couleur[menu.selection]=jaune;
-		menu.p1.x=100; menu.p1.y=50;
+		menu.p1.x=100; menu.p1.y=25;
 		aff_pol(menu.title, 50, menu.p1, jaune);
-		menu.p1.x=300; menu.p1.y=150;
+		menu.p1.x=300; menu.p1.y=100;
 		menu.pos.x=menu.p1.x-60;
 		menu.pos.y=menu.p1.y+(menu.selection*menu.space)-5;
 		SDL_BlitSurface(menu.img, NULL, screen, &(menu.pos));
@@ -84,22 +84,28 @@ int draw_menu(Menu menu)
 /*Menu principal du jeu*/
 int main_menu()
 {
-	int nb=8;
+	int nb=9;
 	Menu menu;
 	init_menu(&menu, nb);
 	strcpy(menu.title, "BIENVENUE DANS PACMAN!!");
 	strcpy(menu.options[0], "CAMPAGNE");
-	strcpy(menu.options[1], "PARTIE UNIQUE");
-	strcpy(menu.options[2], "SURVIVOR");
-	strcpy(menu.options[3], "CHARGER");
-	strcpy(menu.options[4], "EDITER");
-	strcpy(menu.options[5], "OPTIONS");
-	strcpy(menu.options[6], "HIGH SCORE");
-	strcpy(menu.options[7], "QUITTER");
-	if(!has_saved_game()) menu.available[3]=0;
+	strcpy(menu.options[1], "EDIT CAMPAGNE");
+	strcpy(menu.options[2], "PARTIE UNIQUE");
+	strcpy(menu.options[3], "SURVIVOR");
+	strcpy(menu.options[4], "CHARGER");
+	strcpy(menu.options[5], "EDITER");
+	strcpy(menu.options[6], "OPTIONS");
+	strcpy(menu.options[7], "HIGH SCORE");
+	strcpy(menu.options[8], "QUITTER");
+	if(!has_saved_game()) menu.available[4]=0;
 	int selection = draw_menu(menu);
 	delete_menu(&menu);
 	return selection;
+}
+
+void edit_campagne()
+{
+	
 }
 
 /*Quand on appuis echap lors d'une partie*/

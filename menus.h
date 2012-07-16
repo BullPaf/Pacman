@@ -20,6 +20,7 @@ typedef struct
 
 void init_menu(Menu*, int);
 void delete_menu(Menu*);
+void edit_campagne();
 void draw_version();
 int main_menu();
 int save_menu(int);

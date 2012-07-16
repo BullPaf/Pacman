@@ -17,29 +17,35 @@ int main()
 		switch(selection)
 		{
 			case 0: //Campagne
-				load_default_config(&cfg); //Pour eviter de faire des campagnes avec des configs folkloriques
-				campagne(&cfg, 0);
+				if(CAMPAGNE_LEVEL)
+				{
+					load_default_config(&cfg); //Pour eviter de faire des campagnes avec des configs folkloriques
+					campagne(&cfg, 0);
+				}
 				break;
-			case 1: //Jouer un niveau
+			case 1: //Campagne
+				edit_campagne();
+				break;
+			case 2: //Jouer un niveau
 				one_level(select_file_menu(), &cfg);
 				break;
-			case 2: //Mode survivor
+			case 3: //Mode survivor
 				survivor(select_file_menu(), &cfg);
 				break;
-			case 3: // Charger une partie
+			case 4: // Charger une partie
 				load_default_config(&cfg); //Pour eviter de faire des campagnes avec des configs folkloriques
 				campagne(&cfg, load_game());
 				break;
-			case 4: //Edition
+			case 5: //Edition
 				editer();
 				break;
-			case 5: //Option
+			case 6: //Option
 				options_menu(&cfg);
 				break;
-			case 6: //Voir les meilleurs score
+			case 7: //Voir les meilleurs score
 				draw_result("data/results.txt", 0);
 				break;
-			case 7: //Quitter
+			case 8: //Quitter
 				continuer=0;
 				break;
 			default: break;

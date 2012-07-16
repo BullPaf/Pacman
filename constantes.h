@@ -13,7 +13,6 @@ enum {HAUT, DROITE, BAS, GAUCHE};
 #define NB_GHOST_BLOCKS 4 //Pour l'editeur
 #define NB_MAX_GHOSTS 16 //Nombre maximum de fantome dans une carte
 #define NB_ALL_BLOCKS NB_BONUS_BLOCKS+NB_WALL_BLOCKS+NB_PACMAN_BLOCK+NB_GHOST_BLOCKS
-//#define NB_LEVEL 3+1 //3 niveaux + 1 de sauvegarde
 
 #define WIDTH BLOCK_SIZE*NB_BLOCKS_LARGEUR //Largeur de la carte
 #define HEIGHT BLOCK_SIZE*NB_BLOCKS_HAUTEUR //Hauteur d'ecran

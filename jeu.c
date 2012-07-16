@@ -2,9 +2,9 @@
 
 /*Permet de jouer tout les niveaux
  * à la suite*/
-void campagne(config *cfg, int level)
+void campagne(config *cfg, int cmp_level)
 {
-	int selection=0;
+	int selection=0, level;
 	SAVE_ENABLE=1;
 	Pacman pac;
 	Fantome ftm[NB_MAX_GHOSTS];
@@ -14,11 +14,16 @@ void campagne(config *cfg, int level)
 	init_pacman(&pac, cfg);
 	init_blocks();
 	memset(&in,0,sizeof(in));
-	DELAY = 40-level;
 
-	while(level < NB_LEVEL)
+	while(cmp_level < CAMPAGNE_LEVEL)
 	{
-		play_menu(level);
+		level=0;
+		while(strcmp(LEVEL_FILE[level], CAMPAGNE[cmp_level]) && level < NB_LEVEL)
+		{
+			level++;
+		}
+		DELAY = 40-cmp_level;
+		play_menu(cmp_level);
 		init_level();
 		load_level(level);
 		pac_restart(&pac);
@@ -35,14 +40,18 @@ void campagne(config *cfg, int level)
 			{
 				selection=game_menu();
 				if(selection==0) in.key[SDLK_ESCAPE]=0;
-				else if(selection==1) save_game(level);
+				else if(selection==1) save_game(cmp_level);
 				else if(selection==2) //Retour menu principal
 				{
 					delete(&pac, ftm);
 					return;
 				}
 			}
-			if (in.key[SDLK_w]) POINTS=0; //cheat code for winning!!
+			if (in.key[SDLK_w])
+			{
+				in.key[SDLK_w]=0;
+				POINTS=0; //cheat code for winning!!
+			}
 			else if (in.key[SDLK_l] || !(pac.nb_lives)) //cheat code for loosing!!
 			{
 				lost_menu();
@@ -50,11 +59,10 @@ void campagne(config *cfg, int level)
 				delete(&pac, ftm);
 				return;
 			}
-			jouer(&pac, ftm, in, cfg, level, &msg_list);
+			jouer(&pac, ftm, in, cfg, cmp_level, &msg_list);
 		}
-		level++;
+		cmp_level++;
 		win_menu();
-		DELAY--; //On accélère youpi!*/
 	}
 	draw_result("data/results.txt", pac.score);
 	delete(&pac, ftm);
@@ -283,9 +291,7 @@ void draw_score(int score, int level)
 void init_game()
 {
 	NB_LEVEL=0;
-	//CAMPAGNE_LEVEL=0;
-	//char dirname[64];
-	//strcpy(dirname, "level/");
+	CAMPAGNE_LEVEL=0;
 	DIR *dp = opendir(LEVEL_PATH);
 	if (dp) {
 		struct dirent *entry;
@@ -294,22 +300,18 @@ void init_game()
 					continue;
 			else
 			{
-				//printf("L'entrée lue s'appelle '%s'\n", entry->d_name); 
 				strcpy(LEVEL_FILE[NB_LEVEL], entry->d_name);
 				NB_LEVEL++;
 			}
 		}
 		closedir(dp);
 	}
-	/*FILE *cmp=fopen("data/campagne.txt", "r");
+	FILE *cmp=fopen("data/campagne.txt", "r");
 	if(cmp != NULL)
-	{
 		while (fscanf(cmp, "%s", CAMPAGNE[CAMPAGNE_LEVEL]) != EOF) CAMPAGNE_LEVEL++;
-	}
 	else
-	{
 		fprintf(stderr, "Cant read campagne file, campagne won't be available\n");
-	}*/
+	fprintf(stderr, "%d Level in campagne\n", CAMPAGNE_LEVEL);
 }
 
 /*Le nouveau message est toujours inseré en tete de liste*/
